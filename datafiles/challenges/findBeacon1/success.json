@@ -1,0 +1,20 @@
+{
+    "validationCheck":
+    {
+        "postRunWorld": "robot(11,13) and not beacon(12,13) and not robotHasBeacon",
+        "postRunProgram": "MoveForward and RotateRight and RotateLeft and Repeat and RandomBool and If and GripperEat"
+    },
+    "hintRules" :
+    [
+        {"premise": "not RandomBool", "value" : "hint.auto.noFlipCoinUsed", "type" : "program"},
+        {"premise": "not Repeat", "value" : "hint.auto.noRepeatUsed", "type" : "program"},
+        {"premise": "not If", "value" : "hint.auto.noIfUsed", "type" : "program"},
+        {"premise": "not MoveForward", "value" : "hint.auto.noForwardUsed", "type" : "program"},
+        {"premise": "not RotateRight", "value" : "hint.auto.noRightUsed", "type" : "program"},
+        {"premise": "not RotateLeft", "value" : "hint.auto.noLeftUsed", "type" : "program"},
+        {"premise": "not GripperEat", "value" : "hint.auto.noEatUpUsed", "type" : "program"},
+        {"premise": "robotHasBeacon", "value" : "hint.auto.noEatUpUsed", "type" : "program"},
+        {"premise": "not robot(11,13)", "value" : "hint.auto.youDidNotEndUpAtEndLocation", "type" : "usage"},
+        {"premise": "beacon(12,13)", "value" : "hint.auto.beaconLeftInWrongSpot", "type" : "usage"}
+    ]
+}

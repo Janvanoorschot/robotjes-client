@@ -1,121 +1,153 @@
 #!/usr/bin/env python3
 
-import sys, os
+import sys
+import os
 import resource
 import uuid
 import argparse
-import pika, json
+import importlib
+import json
+from robotjes.sim import Mazes
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
-from robotjes.remote import RemoteHandler
+# from robotjes.remote import RemoteHandler
 from robotjes.sim import Engine, Map, Success
 
-parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
-parser.add_argument('--pikaurl', type=str, default='amqp://guest:guest@localhost:5672/%2F', help='rabbitmq url')
-parser.add_argument('--rmqqueue', type=str, default='simulation_queue', help='rabbitmq queue to use for rpc calls')
-parser.add_argument('--simhost', type=str, default='localhost', help='host used to connect simulation server and client')
-parser.add_argument('--simport', type=int, default=9876, help='port on simulation server')
-parser.add_argument('--authkey', type=str, default='myownsecret', help='shared secret')
-args = parser.parse_args()
+# def set_max_memory(size):    # size (in bytes)
+#     soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+#     resource.setrlimit(resource.RLIMIT_AS, (size, hard))
+#
+#
+# def run_simulation(mapstr, successjson, scriptstr):
+#     """ run a simulation """
+#
+#     # prepare supporting objects
+#     map = Map.fromstring(mapstr)
+#     script = scriptstr.split('\n')
+#     engine = Engine(map)
+#     player_id = str(uuid.uuid4())
+#     robo_id = engine.create_robo()
+#     success = Success.from_json(successjson, engine)
+#     handler = RemoteHandler(args.simhost, args.simport, args.authkey)
+#
+#     # run client and server (client is async)
+#     engine.world.inc("scriptTotalCharacters", len(scriptstr))
+#     engine.world.inc("scriptCharacters", len(scriptstr))
+#     success.beforeRun()
+#     handler.run_client(script)
+#     handler.run(engine, robo_id)
+#     success.afterRun()
+#     bot = engine.world.bots[robo_id]
+#     engine.world.inc("robotHasBeacon", len(bot.beacons)>0)
+#     engine.world.inc("robotOrientation", bot.dir)
+#     engine.world.inc("robotX", bot.pos[0])
+#     engine.world.inc("robotY", bot.pos[1])
+#
+#     # prepare the reply
+#     recording = engine.get_recording()
+#     reply = []
+#     reply.append("robo.server.ExecResult")
+#     content = {}
+#     content["success"] = recording.isSuccess() and success.isSuccess()
+#     content["hint"] = success.getHint()
+#     content["messages"] = recording.messages()
+#     content["profile"] = {
+#         "profile": engine.get_profile()
+#     }
+#     content["map"] = map.toMazeMap()
+#     content["recording"] = { "keyFrames": recording.toMap() }
+#     reply.append(content)
+#     return reply
+#
+# def failure_reply(mapstr, msg):
+#     reply = []
+#     reply.append("robo.server.ExecResult")
+#     content = {}
+#     content["success"] = False
+#     content["hint"] = None
+#     content["messages"] = []
+#     content["profile"] = {
+#         "profile": {}
+#     }
+#     content["map"] =  Map.fromstring(mapstr).toMazeMap()
+#     content["recording"] = { "keyFrames": []}
+#     reply.append(content)
+#     return reply
+#
+# def on_request(ch, method, props, body):
+#     """ do the request/run/reply cycle"""
+#     try:
+#         request = json.loads(body)
+#         # do some work
+#         if "map" in request and "success" in request and "script" in request:
+#             map = request["map"]
+#             success = request["success"]
+#             script = request["script"]
+#             reply = run_simulation(map, success, script)
+#         else:
+#             reply = {'error': "missing components in request"}
+#     except json.decoder.JSONDecodeError as jsonerror:
+#         reply = failure_reply(map, str(jsonerror))
+#     except Exception as e:
+#         reply = failure_reply(map, str(e))
+#
+#     # send back reply over 'reply_to' queue
+#     j = json.dumps(reply)
+#     ch.basic_publish(exchange='',
+#                      routing_key=props.reply_to,
+#                      properties=pika.BasicProperties(correlation_id = props.correlation_id),
+#                      body=j)
+#     ch.basic_ack(delivery_tag=method.delivery_tag)
+#
+# # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
+# parameters = pika.URLParameters(args.pikaurl)
+# connection = pika.BlockingConnection(parameters)
+# channel = connection.channel()
+# channel.queue_declare(queue=args.rmqqueue)
+#
+# # limit memory usage
+# set_max_memory(400000000)
+#
+# # start listening for work
+# channel.basic_qos(prefetch_count=1)
+# channel.basic_consume(queue=args.rmqqueue, on_message_callback=on_request)
+# channel.start_consuming()
 
-
-def set_max_memory(size):    # size (in bytes)
-    soft, hard = resource.getrlimit(resource.RLIMIT_AS)
-    resource.setrlimit(resource.RLIMIT_AS, (size, hard))
-
-
-def run_simulation(mapstr, successjson, scriptstr):
-    """ run a simulation """
-
-    # prepare supporting objects
-    map = Map.fromstring(mapstr)
-    script = scriptstr.split('\n')
-    engine = Engine(map)
-    player_id = str(uuid.uuid4())
-    robo_id = engine.create_robo()
-    success = Success.from_json(successjson, engine)
-    handler = RemoteHandler(args.simhost, args.simport, args.authkey)
-
-    # run client and server (client is async)
-    engine.world.inc("scriptTotalCharacters", len(scriptstr))
-    engine.world.inc("scriptCharacters", len(scriptstr))
-    success.beforeRun()
-    handler.run_client(script)
-    handler.run(engine, robo_id)
-    success.afterRun()
-    bot = engine.world.bots[robo_id]
-    engine.world.inc("robotHasBeacon", len(bot.beacons)>0)
-    engine.world.inc("robotOrientation", bot.dir)
-    engine.world.inc("robotX", bot.pos[0])
-    engine.world.inc("robotY", bot.pos[1])
-
-    # prepare the reply
-    recording = engine.get_recording()
-    reply = []
-    reply.append("robo.server.ExecResult")
-    content = {}
-    content["success"] = recording.isSuccess() and success.isSuccess()
-    content["hint"] = success.getHint()
-    content["messages"] = recording.messages()
-    content["profile"] = {
-        "profile": engine.get_profile()
-    }
-    content["map"] = map.toMazeMap()
-    content["recording"] = { "keyFrames": recording.toMap() }
-    reply.append(content)
-    return reply
-
-def failure_reply(mapstr, msg):
-    reply = []
-    reply.append("robo.server.ExecResult")
-    content = {}
-    content["success"] = False
-    content["hint"] = None
-    content["messages"] = []
-    content["profile"] = {
-        "profile": {}
-    }
-    content["map"] =  Map.fromstring(mapstr).toMazeMap()
-    content["recording"] = { "keyFrames": []}
-    reply.append(content)
-    return reply
-
-def on_request(ch, method, props, body):
-    """ do the request/run/reply cycle"""
+def load_client(module_name):
+    # load user module that should contain a function like: def execute(robo)
+    execute_entrypoint = None
     try:
-        request = json.loads(body)
-        # do some work
-        if "map" in request and "success" in request and "script" in request:
-            map = request["map"]
-            success = request["success"]
-            script = request["script"]
-            reply = run_simulation(map, success, script)
-        else:
-            reply = {'error': "missing components in request"}
-    except json.decoder.JSONDecodeError as jsonerror:
-        reply = failure_reply(map, str(jsonerror))
+        module = importlib.import_module(module_name)
+        if hasattr(module, 'execute'):
+            execute_entrypoint = module.execute
     except Exception as e:
-        reply = failure_reply(map, str(e))
+        print(f"failure to load user module: {str(e)}")
+        exit(1)
+    return execute_entrypoint
 
-    # send back reply over 'reply_to' queue
-    j = json.dumps(reply)
-    ch.basic_publish(exchange='',
-                     routing_key=props.reply_to,
-                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                     body=j)
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+def load_simulation(maze_name):
+    mazes = Mazes("datafiles/mazes")
+    mapstr = mazes.get_map(maze_name)
+    map = Map.fromstring(mapstr)
+    engine = Engine(map)
+    return engine
 
-# prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
-parameters = pika.URLParameters(args.pikaurl)
-connection = pika.BlockingConnection(parameters)
-channel = connection.channel()
-channel.queue_declare(queue=args.rmqqueue)
 
-# limit memory usage
-set_max_memory(400000000)
+if __name__ == "__main__":
+    # get commandline arguments
+    parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
+    parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
+    parser.add_argument('--module', type=str, default="sample.player.player103", help='module containing the player logic')
+    args = parser.parse_args()
 
-# start listening for work
-channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue=args.rmqqueue, on_message_callback=on_request)
-channel.start_consuming()
+    script = load_client(args.module)
+    simulation = load_simulation(args.maze)
+
+    if script and simulation:
+        exit(0)
+        # aloop = asyncio.get_event_loop()
+        # aloop.run_until_complete(main(execute, aloop))
+        # aloop.stop()
+    else:
+        print(f"Need valid script and maze in order to run")

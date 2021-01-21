@@ -1,0 +1,54 @@
+#map:def
+# Map file for RoboMind
+# www.robomind.net
+#
+# A map is a grid of tiles defined at the bottom
+# of the file starting in the "map:" section.
+# The tiles are:
+#   A..Z    Tiles A through Z
+#   @       Start
+#   *       Beacon
+#
+# Additional tiles can be added at the "extra:" section.
+# These definitions have the form: [basename]@[x],[y].
+#
+#
+# Paint strokes kan be added in the "paint:" section
+# by adding tuples of the form: ([color],[type],[x],[y])
+# [color] :   w = white
+#             b = black
+# [type]  :   . = single dot
+#             - = horizontal stroke to the right
+#             | = vertical stroke down
+# [x]     :   integer horizontal position
+# [y]     :   integer vertical position
+#
+# (Lines that start with '#' are comments)
+
+extra:
+palm@0,8
+palm@0,11
+
+map:
+AAAAAAAAAAAAAAAAAAAAAA
+ARRRRRRRRRRRRRRRRRRRRA
+ARCHHHDRRRRRRRRCHHHDRA
+ARGCHDIRRRRRRRRGCHDIRA
+ARGGAIIRRRRRRRRGGAIIRA
+ARGBFEIPRRRRRRPGBFEIRA
+ARBFFFCHHHHHHHHDFFFERA
+ARRRRPGMFFFFFFJIPRRRRA
+ARRRRRGI   QQ GIRRRRRA
+AAAAAAGIQQ    GIRRRRRA
+ANNNNNGI Q   QGIRRRRRA
+ANNNNNGI   @  GIRRRRRA
+AAAAAAGI Q  QQGIRRRRRA
+ARRRRRGI    * GIRRRRRA
+ARRRRPGLHHHHHHKIPRRRRA
+ARCHHHBFFFFFFFFEHHHDRA
+ARGCHDIPRRRRRRPGCHDIRA
+ARGGAIIRRRRRRRRGGAIIRA
+ARGBFEIRRRRRRRRGBFEIRA
+ARBFFFERRRRRRRRBFFFERA
+ARRRRRRRRRRRRRRRRRRRRA
+AAAAAAAAAAAAAAAAAAAAAA
