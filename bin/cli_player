@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+
+import sys, os
+import argparse
+import asyncio
+import importlib
+
+import config
+import client
+
+rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(rootdir)
+
+
+class Timer:
+    def __init__(self, timeout, callback, repeat=False):
+        self.timeout = timeout
+        self.callback = callback
+        self.repeat = repeat
+        self.task = asyncio.ensure_future(self.job())
+
+    async def job(self):
+        await asyncio.sleep(self.timeout)
+        await self.callback()
+        if self.repeat:
+            self.task = asyncio.ensure_future(self.job())
+
+    def cancel(self):
+        self.task.cancel()
+
+
+class Player_Client:
+
+    def __init__(self):
+        pass
+
+    def registered(self, game_id, player_name):
+        print(f"player registered: {game_id}/{player_name}")
+
+    def player(self, player_id, player_name):
+        print(f"player discovered: {player_id}/{player_name}")
+
+    def started(self):
+        print(f"player started")
+
+    def stopped(self, success):
+        print(f"player stopped: {success}")
+
+    def game_status(self, game_tick, game_status):
+        pass
+
+    def player_status(self, game_tick, player_status):
+        pass
+
+    def robo_status(self, game_tick, robo_id, robo_status):
+        pass
+
+
+async def main(execute, loop):
+    clnt = Player_Client()
+    player = client.CLIPlayer(loop, args.url, clnt)
+    timer = Timer(1, player.timer, True)
+    success = await player.run_game(args.player, args.name, args.password, execute)
+    timer.cancel()
+
+if __name__ == "__main__":
+    # get commandline arguments
+    parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Player')
+    parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
+    parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
+    parser.add_argument('--name', type=str, default="game1", help='name of the game to join')
+    parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
+    parser.add_argument('--module', type=str, default="sample.player.player103", help='module containing the player logic')
+    args = parser.parse_args()
+
+    # load user module that should contain a function like: def execute(robo)
+    execute = None
+    try:
+        if args.module:
+            module = importlib.import_module(args.module)
+            if hasattr(module, 'execute'):
+                execute = module.execute
+    except Exception as e:
+        print(f"failure to load user module: {str(e)}")
+    if execute:
+        aloop = asyncio.get_event_loop()
+        aloop.run_until_complete(main(execute, aloop))
+        aloop.stop()
+    else:
+        print(f"no valid user module: {args.module if args.module else 'ABSENT'}")

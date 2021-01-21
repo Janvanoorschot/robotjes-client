@@ -1,3 +1,11 @@
 venv
 .idea
 *.iml
+
+# client: ASCII art
+asciimatics
+
+# client: HTTP/REST
+requests
+
+tracelog

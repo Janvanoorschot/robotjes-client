@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(rootdir)
+
+import argparse
+import asyncio
+import functools
+
+import config
+import client
+import aui
+
+from monitor.trace_log import TraceLog
+
+
+class Timer:
+
+    def __init__(self, timeout, callback, repeat=False):
+        self.timeout = timeout
+        self.callback = callback
+        self.repeat = repeat
+        self.task = asyncio.ensure_future(self.job())
+
+    async def job(self):
+        try:
+            await asyncio.sleep(self.timeout)
+        except asyncio.exceptions.CancelledError:
+            return
+        await self.callback()
+        if self.repeat:
+            self.task = asyncio.ensure_future(self.job())
+
+    def cancel(self):
+        self.repeat = False
+        self.task.cancel()
+
+
+class ViewerClient:
+    cmd_translate = {
+        "f": "forward",
+        "r": "right",
+        "l": "left",
+    }
+
+    def __init__(self, args, viewer_screen):
+        if args.trace:
+            self.trace = True
+        else:
+            self.trace = False
+        self.viewer_screen = viewer_screen
+        self.game_id = None
+        self.game_name = None
+
+    def started(self, game_id, game_name):
+        self.game_id = game_id
+        self.game_name = game_name
+
+    def frames(self, game_tick, frames):
+        for frame in frames:
+            for action in frame:
+                if self.trace:
+                    TraceLog.default_logger().trace(
+                        'viewer.frames',
+                        action['tick'],
+                        [0, action['sprite'], ViewerClient.cmd_translate.get(action['action'][0],'unknown'), action['action'][1]]
+                    )
+
+    def map_status(self, game_tick, map_status):
+        robos = map_status['robotLines']
+        for robo in robos:
+            if self.trace:
+                TraceLog.default_logger().trace('viewer.mapstatus', game_tick, [robo['x'],robo['y']], robo['beacons'], robo['dir'])
+
+
+async def screen_timer(scrn, player, loop):
+    if scrn.has_key():
+        scrn.close()
+        await player.stop()
+    else:
+        scrn.timer()
+
+
+async def main(args, loop):
+    # create and start viewer
+    scrn = aui.ViewerDisplay()
+    clnt = ViewerClient(args, scrn)
+    viewer = client.CLIViewer(loop, args.url, clnt)
+    timer1 = Timer(1, viewer.timer, True)
+    timer2 = Timer(0.05, functools.partial(screen_timer, scrn, viewer, loop), True)
+    await viewer.run_game(args.name, args.password)
+    timer1.cancel()
+    timer2.cancel()
+
+if __name__ == "__main__":
+    # get commandline arguments
+    parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Player')
+    parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
+    parser.add_argument('--name', type=str, default="game1", help='name of the game to view')
+    parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
+    parser.add_argument('--trace', default=False, action="store_true", help='name of the maze to use')
+    args = parser.parse_args()
+
+    # start our run in main
+    aloop = asyncio.get_event_loop()
+    try:
+        aloop.run_until_complete(main(args, aloop))
+    except:
+        pass
+    aloop.stop()

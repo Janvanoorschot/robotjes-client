@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(rootdir)
+
+import argparse
+import importlib
+import asyncio
+import functools
+
+# facilitate exiting this complex asyncio/multithreaded program
+import atexit
+from concurrent.futures import thread
+atexit.unregister(thread._python_exit)
+
+import config
+import client
+import aui
+
+from trace_log import TraceLog
+
+
+class Timer:
+    def __init__(self, timeout, callback, repeat=False):
+        self.timeout = timeout
+        self.callback = callback
+        self.repeat = repeat
+        self.task = asyncio.ensure_future(self.job())
+
+    async def job(self):
+        try:
+            await asyncio.sleep(self.timeout)
+        except asyncio.exceptions.CancelledError:
+            return
+        await self.callback()
+        if self.repeat:
+            self.task = asyncio.ensure_future(self.job())
+
+    def cancel(self):
+        self.repeat = False
+        self.task.cancel()
+
+
+class PlayerClient:
+
+    def __init__(self, args, player_screen):
+        if args.trace:
+            self.trace = True
+        else:
+            self.trace = False
+        self.player_screen = player_screen
+        self.game_id = ""
+        self.player_id = ""
+        self.player_name = ""
+        self.last_recording_tick = {}
+
+    def registered(self, game_id, player_name):
+        self.game_id = game_id
+
+    def player(self, player_id, player_name):
+        self.player_id = player_id
+        self.player_name = player_name
+        pass
+
+    def started(self):
+        # print(f"player started")
+        pass
+
+    def stopped(self, success):
+        # print(f"player stopped: {success}")
+        pass
+
+    def game_status(self, game_tick, game_status):
+        self.player_screen.game_status(game_tick, game_status)
+
+    def player_status(self, game_tick, player_status):
+        self.player_screen.player_status(game_tick, player_status)
+        if player_status:
+            robos = player_status['player_status']['robos']
+            for robo_id, robo in robos.items():
+                recording = robo['recording']
+                for rec in recording:
+                    if (robo_id not in self.last_recording_tick) or (rec[0] > self.last_recording_tick[robo_id]):
+                        if self.trace:
+                            TraceLog.default_logger().trace('player.recorded_command', rec[0], self.game_id, self.player_id, [0, robo_id, rec[1]]+rec[2], rec[3])
+                        self.last_recording_tick[robo_id] = rec[0]
+
+    def robo_status(self, game_tick, robo_id, robo_status):
+        self.player_screen.robo_status(game_tick, robo_id, robo_status)
+
+    def issue_command(self, game_tick, move):
+        if self.trace:
+            TraceLog.default_logger().trace('player.issue_command', game_tick, self.game_id, self.player_id, move)
+
+
+async def screen_timer(scrn, player, loop):
+    if scrn.has_key():
+        scrn.close()
+        await player.stop()
+    else:
+        scrn.timer()
+
+
+async def main(args, execute, loop):
+    # create and start player
+    scrn = aui.PlayerDisplay()
+    clnt = PlayerClient(args, scrn)
+    player = client.CLIPlayer(loop, args.url, clnt)
+    timer1 = Timer(1, player.timer, True)
+    timer2 = Timer(0.05, functools.partial(screen_timer, scrn, player, loop), True)
+    await player.run_game(args.player, args.name, args.password, execute)
+    timer1.cancel()
+    timer2.cancel()
+
+if __name__ == "__main__":
+    # get commandline arguments
+    parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Player')
+    parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
+    parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
+    parser.add_argument('--name', type=str, default="game1", help='name of the game to join')
+    parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
+    parser.add_argument('--module', type=str, default="sample.player.player103", help='module containing the player logic')
+    parser.add_argument('--trace', default=False, action="store_true", help='name of the maze to use')
+    args = parser.parse_args()
+
+    # load user module that should contain a function like: def execute(robo)
+    execute = None
+    try:
+        if args.module:
+            module = importlib.import_module(args.module)
+            if hasattr(module, 'execute'):
+                execute = module.execute
+    except Exception as e:
+        print(f"failure to load user module: {str(e)}")
+
+    # start our run in main
+    if execute:
+        aloop = asyncio.get_event_loop()
+        try:
+            aloop.run_until_complete(main(args, execute, aloop))
+        except:
+            pass
+        aloop.stop()
+    else:
+        print(f"no valid user module: {args.module if args.module else 'ABSENT'}")
