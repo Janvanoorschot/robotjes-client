@@ -9,8 +9,9 @@ from robotjes.sim import Mazes
 
 import client
 
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+mazepath = os.path.join(rootpath, "datafiles/mazes")
+sys.path.append(rootpath)
 
 # from robotjes.remote import RemoteHandler
 from robotjes.sim import Engine, Map, Success
@@ -138,26 +139,11 @@ class Player_Client:
     def __init__(self):
         pass
 
-    def registered(self, game_id, player_name):
-        print(f"player registered: {game_id}/{player_name}")
-
-    def player(self, player_id, player_name):
-        print(f"player discovered: {player_id}/{player_name}")
-
-    def started(self):
-        print(f"player started")
-
-    def stopped(self, success):
-        print(f"player stopped: {success}")
-
-    def game_status(self, game_tick, game_status):
-        pass
-
-    def player_status(self, game_tick, player_status):
-        pass
-
     def robo_status(self, game_tick, robo_id, robo_status):
         pass
+
+    def issue_command(self, game_tick, robo_id, cmd):
+        print(f"command: {game_tick}/{robo_id}/{cmd}")
 
 
 async def main(script, simulation, loop):
@@ -182,7 +168,7 @@ def load_client(module_name):
 
 
 def load_simulation(maze_name):
-    mazes = Mazes("datafiles/mazes")
+    mazes = Mazes(mazepath)
     mapstr = mazes.get_map(maze_name)
     map = Map.fromstring(mapstr)
     engine = Engine(map)
@@ -200,7 +186,6 @@ if __name__ == "__main__":
     simulation = load_simulation(args.maze)
 
     if script and simulation:
-        exit(0)
         aloop = asyncio.get_event_loop()
         aloop.run_until_complete(main(script, simulation, aloop))
         aloop.stop()

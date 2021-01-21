@@ -20,7 +20,7 @@ class LocalRequestor(object):
 
     async def async_execute(self, cmd):
         await self.command_queue.put(cmd)
-        if(len(cmd)>2):
+        if len(cmd) > 2:
             reply = await self.reply_queue.get()
         else:
             reply = {'result':[]}
