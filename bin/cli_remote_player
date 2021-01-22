@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 
-import signal
-import sys
-import os
-import asyncio
+import sys, os
 import argparse
+import asyncio
 import importlib
-from robotjes.sim import Mazes
 
+import config
 import client
-from robotjes.sim import Engine, Map, Success
 
-rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-mazepath = os.path.join(rootpath, "datafiles/mazes")
-sys.path.append(rootpath)
+rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(rootdir)
+
 
 class Timer:
     def __init__(self, timeout, callback, repeat=False):
@@ -44,13 +41,13 @@ class Player_Client:
         print(f"command: {game_tick}/{robo_id}/{cmd}/{reply}")
 
 
-async def main(script, engine, loop):
+async def main(args, script, loop):
     clnt = Player_Client()
-    handler = client.LocalEngineHandler(engine)
+    rest_client = client.RestClient(loop, args.url)
+    handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password)
     player = client.CLILocalPlayer(handler, loop, clnt)
     timer = Timer(1, player.timer, True)
-    for i in range(1, len(engine.map.start_positions())):
-        await player.create_robo(script)
+    player.create_robo(script)
     success = await player.run_game()
     timer.cancel()
 
@@ -68,27 +65,21 @@ def load_client(module_name):
     return execute_entrypoint
 
 
-def load_simulation(maze_name):
-    mazes = Mazes(mazepath)
-    mapstr = mazes.get_map(maze_name)
-    map = Map.fromstring(mapstr)
-    engine = Engine(map)
-    return engine
-
-
 if __name__ == "__main__":
     # get commandline arguments
-    parser = argparse.ArgumentParser(description='Execute a Robomind Academy Python script.')
-    parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
+    parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Player')
+    parser.add_argument('--url', type=str, default=config.REST_URL, help='url of the robotjes REST entrypoint')
+    parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
+    parser.add_argument('--name', type=str, default="game1", help='name of the game to join')
+    parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
     parser.add_argument('--module', type=str, default="sample.player.player103", help='module containing the player logic')
     args = parser.parse_args()
 
     script = load_client(args.module)
-    engine = load_simulation(args.maze)
 
-    if script and engine:
+    if script:
         aloop = asyncio.get_event_loop()
-        aloop.run_until_complete(main(script, engine, aloop))
+        aloop.run_until_complete(main(args, script, aloop))
         aloop.stop()
     else:
-        print(f"Need valid script and maze in order to run")
+        print(f"no valid user module: {args.module if args.module else 'ABSENT'}")
