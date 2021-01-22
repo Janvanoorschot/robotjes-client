@@ -9,8 +9,8 @@ from robotjes.local import LocalRequestor
 
 class CLILocalPlayer:
 
-    def __init__(self, engine, loop, client):
-        self.engine = engine
+    def __init__(self, handler, loop, client):
+        self.handler = handler
         self.loop = loop
         self.client = client
 
@@ -24,7 +24,7 @@ class CLILocalPlayer:
         self.game_tick = 0
 
     def create_robo(self, execute):
-        robo_id = self.engine.create_robo()
+        robo_id = self.handler.create_robo()
         if(robo_id):
             requestor = LocalRequestor(self.loop)
             robo = Robo(requestor, id=robo_id)
@@ -55,7 +55,7 @@ class CLILocalPlayer:
                         reply = {'result': boolean}
                     else:
                         reply = {'result': True}
-                    secret_reply = self.engine.execute(self.game_tick, robo.id, cmd)
+                    secret_reply = self.handler.execute(self.game_tick, robo.id, cmd)
                     self.callback('issue_command', self.game_tick, robo.id, cmd, secret_reply)
                     await robo.requestor.put(reply)
         return True
@@ -71,11 +71,10 @@ class CLILocalPlayer:
     async def timer(self):
         if not self.stopped:
             # update all timers
-            self.game_tick = self.game_tick + 1
-            self.engine.game_timer(self.game_tick)
+            self.game_tick = self.handler.game_timer(self.game_tick)
             # collect the status of mice and store it
             for robo_id, robo in self.robos.items():
-                self.robo_status[robo_id] = self.engine.get_status(robo_id)
+                self.robo_status[robo_id] = self.handler.get_robo_status(robo_id)
             if self.timer_lock.locked():
                 self.timer_lock.release()
 

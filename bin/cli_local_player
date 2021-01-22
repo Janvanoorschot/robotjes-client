@@ -46,7 +46,8 @@ class Player_Client:
 
 async def main(script, engine, loop):
     clnt = Player_Client()
-    player = client.CLILocalPlayer(engine, loop, clnt)
+    handler = client.LocalEngineHandler(engine)
+    player = client.CLILocalPlayer(handler, loop, clnt)
     timer = Timer(1, player.timer, True)
     for i in range(1, len(engine.map.start_positions())):
         player.create_robo(script)
