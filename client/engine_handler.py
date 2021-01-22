@@ -60,31 +60,33 @@ class RemoteEngineHandler:
         self.register_lock.acquire()
 
     async def create_robo(self):
-        list = await self.rest_client.list_games()
-        for id, name in list.items():
-            if self.game_name == name:
-                self.game_id = id
-                result = await self.rest_client.register_player(self.player_name, self.game_id, self.password)
-                if not result:
-                    raise Exception(f"can not join game {self.game_name}")
-                else:
-                    self.player_id = result['player_id']
-                break
-        else:
-            raise Exception(f"no such game {self.game_name}")
-        # now wait for the registration info to come in (during timer)
-        await self.register_lock.acquire()
-        if self.robo_id:
-            self.started = True
-            return self.robo_id
+        if self.game_id is None:
+            list = await self.rest_client.list_games()
+            for id, name in list.items():
+                if self.game_name == name:
+                    self.game_id = id
+                    result = await self.rest_client.register_player(self.player_name, self.game_id, self.password)
+                    if not result:
+                        raise Exception(f"can not join game {self.game_name}")
+                    else:
+                        self.player_id = result['player_id']
+                    break
+            else:
+                raise Exception(f"no such game {self.game_name}")
+            # now wait for the registration info to come in (during timer)
+            await self.register_lock.acquire()
+            if self.robo_id:
+                self.started = True
+                return self.robo_id
+            else:
+                return None
         else:
             return None
 
-    def destroy_robo(self, robo_id):
-        if robo_id in self.robos:
-            del self.robos[robo_id]
-            if len(self.robos) == 0:
-                self.started = False
+    async def destroy_robo(self, robo_id):
+        if not self.robo_id  is None:
+            await self.rest_client.deregister_player(self.game_id, self.player_id)
+            self.robo_id = None
         else:
             raise Exception(f"Non-existing robo {robo_id}")
 
