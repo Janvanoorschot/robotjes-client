@@ -28,6 +28,9 @@ class LocalRequestor(object):
         # [[UUID('056c5f92-1457-4e45-be8e-32d6f2a18685'), 'paintWhite'], ([[True]],)]
         return [["some-uuid", cmd], [[[reply['result']]]]]
 
+    def empty(self):
+        return self.command_queue.empty()
+
     async def get(self):
         return await self.command_queue.get()
 

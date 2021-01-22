@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import signal
 import sys
 import os
 import asyncio
@@ -8,114 +9,11 @@ import importlib
 from robotjes.sim import Mazes
 
 import client
+from robotjes.sim import Engine, Map, Success
 
 rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 mazepath = os.path.join(rootpath, "datafiles/mazes")
 sys.path.append(rootpath)
-
-# from robotjes.remote import RemoteHandler
-from robotjes.sim import Engine, Map, Success
-
-# def set_max_memory(size):    # size (in bytes)
-#     soft, hard = resource.getrlimit(resource.RLIMIT_AS)
-#     resource.setrlimit(resource.RLIMIT_AS, (size, hard))
-#
-#
-# def run_simulation(mapstr, successjson, scriptstr):
-#     """ run a simulation """
-#
-#     # prepare supporting objects
-#     map = Map.fromstring(mapstr)
-#     script = scriptstr.split('\n')
-#     engine = Engine(map)
-#     player_id = str(uuid.uuid4())
-#     robo_id = engine.create_robo()
-#     success = Success.from_json(successjson, engine)
-#     handler = RemoteHandler(args.simhost, args.simport, args.authkey)
-#
-#     # run client and server (client is async)
-#     engine.world.inc("scriptTotalCharacters", len(scriptstr))
-#     engine.world.inc("scriptCharacters", len(scriptstr))
-#     success.beforeRun()
-#     handler.run_client(script)
-#     handler.run(engine, robo_id)
-#     success.afterRun()
-#     bot = engine.world.bots[robo_id]
-#     engine.world.inc("robotHasBeacon", len(bot.beacons)>0)
-#     engine.world.inc("robotOrientation", bot.dir)
-#     engine.world.inc("robotX", bot.pos[0])
-#     engine.world.inc("robotY", bot.pos[1])
-#
-#     # prepare the reply
-#     recording = engine.get_recording()
-#     reply = []
-#     reply.append("robo.server.ExecResult")
-#     content = {}
-#     content["success"] = recording.isSuccess() and success.isSuccess()
-#     content["hint"] = success.getHint()
-#     content["messages"] = recording.messages()
-#     content["profile"] = {
-#         "profile": engine.get_profile()
-#     }
-#     content["map"] = map.toMazeMap()
-#     content["recording"] = { "keyFrames": recording.toMap() }
-#     reply.append(content)
-#     return reply
-#
-# def failure_reply(mapstr, msg):
-#     reply = []
-#     reply.append("robo.server.ExecResult")
-#     content = {}
-#     content["success"] = False
-#     content["hint"] = None
-#     content["messages"] = []
-#     content["profile"] = {
-#         "profile": {}
-#     }
-#     content["map"] =  Map.fromstring(mapstr).toMazeMap()
-#     content["recording"] = { "keyFrames": []}
-#     reply.append(content)
-#     return reply
-#
-# def on_request(ch, method, props, body):
-#     """ do the request/run/reply cycle"""
-#     try:
-#         request = json.loads(body)
-#         # do some work
-#         if "map" in request and "success" in request and "script" in request:
-#             map = request["map"]
-#             success = request["success"]
-#             script = request["script"]
-#             reply = run_simulation(map, success, script)
-#         else:
-#             reply = {'error': "missing components in request"}
-#     except json.decoder.JSONDecodeError as jsonerror:
-#         reply = failure_reply(map, str(jsonerror))
-#     except Exception as e:
-#         reply = failure_reply(map, str(e))
-#
-#     # send back reply over 'reply_to' queue
-#     j = json.dumps(reply)
-#     ch.basic_publish(exchange='',
-#                      routing_key=props.reply_to,
-#                      properties=pika.BasicProperties(correlation_id = props.correlation_id),
-#                      body=j)
-#     ch.basic_ack(delivery_tag=method.delivery_tag)
-#
-# # prepare pika (blocking, one RPC queue and a requestor-created reply-to queue)
-# parameters = pika.URLParameters(args.pikaurl)
-# connection = pika.BlockingConnection(parameters)
-# channel = connection.channel()
-# channel.queue_declare(queue=args.rmqqueue)
-#
-# # limit memory usage
-# set_max_memory(400000000)
-#
-# # start listening for work
-# channel.basic_qos(prefetch_count=1)
-# channel.basic_consume(queue=args.rmqqueue, on_message_callback=on_request)
-# channel.start_consuming()
-
 
 class Timer:
     def __init__(self, timeout, callback, repeat=False):
@@ -146,11 +44,13 @@ class Player_Client:
         print(f"command: {game_tick}/{robo_id}/{cmd}/{reply}")
 
 
-async def main(script, simulation, loop):
+async def main(script, engine, loop):
     clnt = Player_Client()
-    player = client.CLILocalPlayer(simulation, loop, clnt)
+    player = client.CLILocalPlayer(engine, loop, clnt)
     timer = Timer(1, player.timer, True)
-    success = await player.run_game(script)
+    for i in range(1, len(engine.map.start_positions())):
+        player.create_robo(script)
+    success = await player.run_game()
     timer.cancel()
 
 
@@ -183,11 +83,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     script = load_client(args.module)
-    simulation = load_simulation(args.maze)
+    engine = load_simulation(args.maze)
 
-    if script and simulation:
+    if script and engine:
         aloop = asyncio.get_event_loop()
-        aloop.run_until_complete(main(script, simulation, aloop))
+        aloop.run_until_complete(main(script, engine, aloop))
         aloop.stop()
     else:
         print(f"Need valid script and maze in order to run")
