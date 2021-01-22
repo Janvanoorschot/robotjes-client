@@ -142,8 +142,8 @@ class Player_Client:
     def robo_status(self, game_tick, robo_id, robo_status):
         pass
 
-    def issue_command(self, game_tick, robo_id, cmd):
-        print(f"command: {game_tick}/{robo_id}/{cmd}")
+    def issue_command(self, game_tick, robo_id, cmd, reply):
+        print(f"command: {game_tick}/{robo_id}/{cmd}/{reply}")
 
 
 async def main(script, simulation, loop):

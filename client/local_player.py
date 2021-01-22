@@ -23,7 +23,7 @@ class CLILocalPlayer:
         self.robos = {}
         self.robo_coroutines = {}
         self.robo_status = {}
-        self.game_tick = None
+        self.game_tick = 0
 
     def create_robo(self, execute):
         robo_id = self.engine.create_robo()
@@ -34,7 +34,7 @@ class CLILocalPlayer:
                 self.executor,
                 client_code.run)
             self.robos[robo_id] = robo
-            return robo
+            return robo_id
         else:
             raise Exception("Failed to create Robo")
 
@@ -44,7 +44,6 @@ class CLILocalPlayer:
         while not self.stopped:
             await self.timer_lock.acquire()
             cmd = await self.local_requestor.get()
-            print(cmd)
             if len(cmd) < 2 or self.stopped:
                 break
             elif Robo.is_observation(cmd):
@@ -56,7 +55,8 @@ class CLILocalPlayer:
                 reply = {'result': boolean}
             else:
                 reply = {'result': True}
-            self.callback('issue_command', self.game_tick, robo_id, cmd)
+            secret_reply = self.engine.execute(self.game_tick, robo_id, cmd)
+            self.callback('issue_command', self.game_tick, robo_id, cmd, secret_reply)
             await self.local_requestor.put(reply)
         self.robo_coroutines[robo_id].cancel()
         return True
@@ -69,10 +69,12 @@ class CLILocalPlayer:
 
     async def timer(self):
         if not self.stopped:
-            # collect the status of game/player/mouse and store it
+            # update all timers
+            self.game_tick = self.game_tick + 1
+            self.engine.game_timer(self.game_tick)
+            # collect the status of mice and store it
             for robo_id, robo in self.robos.items():
                 self.robo_status[robo_id] = self.engine.get_status(robo_id)
-            self.game_tick = self.engine.game_time
             if self.timer_lock.locked():
                 self.timer_lock.release()
 
