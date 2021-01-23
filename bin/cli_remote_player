@@ -47,7 +47,7 @@ async def main(args, script, loop):
     handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password)
     player = client.CLILocalPlayer(handler, loop, clnt)
     timer = Timer(1, player.timer, True)
-    player.create_robo(script)
+    await player.create_robo(script)
     success = await player.run_game()
     timer.cancel()
 

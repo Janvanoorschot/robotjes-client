@@ -17,7 +17,7 @@ class LocalEngineHandler:
         else:
             return None
 
-    def destroy_robo(self, robo_id):
+    async def destroy_robo(self, robo_id):
         if robo_id in self.robos:
             del self.robos[robo_id]
             if len(self.robos) == 0:
@@ -25,7 +25,7 @@ class LocalEngineHandler:
         else:
             raise Exception(f"Non-existing robo {robo_id}")
 
-    def execute(self, game_tick, robo_id, cmd):
+    async def execute(self, game_tick, robo_id, cmd):
         return self.engine.execute(game_tick, robo_id, cmd)
 
     async def game_timer(self, cur_tick):
@@ -57,7 +57,6 @@ class RemoteEngineHandler:
         self.game_tick = 0
         self.robo_status = None
         self.register_lock = asyncio.Lock()
-        self.register_lock.acquire()
 
     async def create_robo(self):
         if self.game_id is None:
@@ -75,6 +74,7 @@ class RemoteEngineHandler:
                 raise Exception(f"no such game {self.game_name}")
             # now wait for the registration info to come in (during timer)
             await self.register_lock.acquire()
+            await self.register_lock.acquire()
             if self.robo_id:
                 self.started = True
                 return self.robo_id
@@ -90,8 +90,9 @@ class RemoteEngineHandler:
         else:
             raise Exception(f"Non-existing robo {robo_id}")
 
-    def execute(self, game_tick, robo_id, cmd):
-        return self.engine.execute(game_tick, robo_id, cmd)
+    async def execute(self, game_tick, robo_id, cmd):
+        return await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
+        # return self.engine.execute(game_tick, robo_id, cmd)
 
     async def game_timer(self, cur_tick):
         status = await self.rest_client.status_player(self.game_id, self.player_id)
@@ -102,7 +103,7 @@ class RemoteEngineHandler:
                 for robo_id, robo_status in status['player_status']['robos'].items():
                     self.robo_id = robo_id
                     self.robo_status = robo_status
-                self.register_lock.release()
+                    self.register_lock.release()
             else:
                 for robo_id, robo_status in status['player_status']['robos'].items():
                     if robo_id == self.robo_id:

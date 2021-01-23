@@ -55,7 +55,7 @@ class CLILocalPlayer:
                         reply = {'result': boolean}
                     else:
                         reply = {'result': True}
-                    secret_reply = self.handler.execute(self.game_tick, robo.id, cmd)
+                    secret_reply = await self.handler.execute(self.game_tick, robo.id, cmd)
                     self.callback('issue_command', self.game_tick, robo.id, cmd, secret_reply)
                     await robo.requestor.put(reply)
         return True
