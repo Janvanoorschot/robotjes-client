@@ -6,7 +6,7 @@ import asyncio
 import importlib
 
 import config
-import client
+from robotjes import client
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)

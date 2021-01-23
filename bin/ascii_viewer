@@ -10,8 +10,7 @@ import asyncio
 import functools
 
 import config
-import client
-import aui
+from robotjes import client, aui
 
 from monitor.trace_log import TraceLog
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import signal
 import sys
 import os
 import asyncio
@@ -8,8 +7,8 @@ import argparse
 import importlib
 from robotjes.sim import Mazes
 
-import client
-from robotjes.sim import Engine, Map, Success
+from robotjes import client
+from robotjes.sim import Engine, Map
 
 rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 mazepath = os.path.join(rootpath, "datafiles/mazes")

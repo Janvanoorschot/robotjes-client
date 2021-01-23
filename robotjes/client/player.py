@@ -4,7 +4,7 @@ import sys
 
 import concurrent
 
-from client import RestClient
+from robotjes.client import RestClient
 from robotjes.local import LocalRequestor
 
 

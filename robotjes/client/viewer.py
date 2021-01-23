@@ -1,11 +1,7 @@
 import asyncio
-from robotjes.bot import RoboThread, Robo
 import sys
 
-import concurrent
-
-from client import RestClient
-from robotjes.local import LocalRequestor
+from robotjes.client import RestClient
 
 
 class CLIViewer:
