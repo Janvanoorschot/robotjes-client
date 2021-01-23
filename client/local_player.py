@@ -23,8 +23,8 @@ class CLILocalPlayer:
         self.robo_status = {}
         self.game_tick = 0
 
-    async def create_robo(self, execute):
-        robo_id = await self.handler.create_robo()
+    async def start_player(self, execute):
+        robo_id = await self.handler.start_player()
         if(robo_id):
             requestor = LocalRequestor(self.loop)
             robo = Robo(requestor, id=robo_id)

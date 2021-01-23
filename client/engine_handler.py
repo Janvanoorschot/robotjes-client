@@ -8,7 +8,7 @@ class LocalEngineHandler:
         self.robos = {}
         self.started = False
 
-    async def create_robo(self):
+    async def start_player(self):
         robo_id = self.engine.create_robo()
         if robo_id:
             self.started = True
@@ -17,13 +17,12 @@ class LocalEngineHandler:
         else:
             return None
 
-    async def destroy_robo(self, robo_id):
-        if robo_id in self.robos:
+    async def stop_player(self):
+        for robo_id, robo_id in self.robos.items():
+            self.engine.destroy_robo(robo_id)
             del self.robos[robo_id]
             if len(self.robos) == 0:
                 self.started = False
-        else:
-            raise Exception(f"Non-existing robo {robo_id}")
 
     async def execute(self, game_tick, robo_id, cmd):
         return self.engine.execute(game_tick, robo_id, cmd)
@@ -58,7 +57,7 @@ class RemoteEngineHandler:
         self.robo_status = None
         self.register_lock = asyncio.Lock()
 
-    async def create_robo(self):
+    async def start_player(self):
         if self.game_id is None:
             list = await self.rest_client.list_games()
             for id, name in list.items():
@@ -83,16 +82,12 @@ class RemoteEngineHandler:
         else:
             return None
 
-    async def destroy_robo(self, robo_id):
-        if not self.robo_id  is None:
+    async def stop_player(self):
             await self.rest_client.deregister_player(self.game_id, self.player_id)
-            self.robo_id = None
-        else:
-            raise Exception(f"Non-existing robo {robo_id}")
+            self.started = False
 
     async def execute(self, game_tick, robo_id, cmd):
         return await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
-        # return self.engine.execute(game_tick, robo_id, cmd)
 
     async def game_timer(self, cur_tick):
         status = await self.rest_client.status_player(self.game_id, self.player_id)
