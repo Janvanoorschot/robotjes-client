@@ -16,7 +16,8 @@ from concurrent.futures import thread
 atexit.unregister(thread._python_exit)
 
 import config
-from robotjes import client, aui
+from robotjes import client
+from robotjes.client import aui
 
 from trace_log import TraceLog
 
