@@ -5,8 +5,8 @@ import os
 import asyncio
 import argparse
 import importlib
-from robotjes.sim import Mazes
 
+from robotjes.sim import Mazes
 from robotjes import client
 from robotjes.sim import Engine, Map
 
@@ -34,6 +34,9 @@ class Timer:
 class Player_Client:
 
     def __init__(self):
+        pass
+
+    def create_robo(self, game_tick, robo_id):
         pass
 
     def robo_status(self, game_tick, robo_id, robo_status):

@@ -25,6 +25,7 @@ class CLILocalPlayer:
 
     async def start_player(self, execute):
         robo_id = await self.handler.start_player()
+        self.callback('create_robo', self.game_tick, robo_id)
         if(robo_id):
             requestor = LocalRequestor(self.loop)
             robo = Robo(requestor, id=robo_id)
@@ -75,6 +76,7 @@ class CLILocalPlayer:
             # collect the status of mice and store it
             for robo_id, robo in self.robos.items():
                 self.robo_status[robo_id] = self.handler.get_robo_status(robo_id)
+                self.callback('robo_status', self.game_tick, robo.id, self.robo_status[robo_id])
             if self.timer_lock.locked():
                 self.timer_lock.release()
 
