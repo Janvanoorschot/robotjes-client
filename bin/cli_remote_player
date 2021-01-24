@@ -8,7 +8,7 @@ import importlib
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
-import config
+from robotjes.client import config
 from robotjes import client, Timer
 
 

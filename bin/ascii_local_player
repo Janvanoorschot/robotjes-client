@@ -17,12 +17,9 @@ import atexit
 from concurrent.futures import thread
 atexit.unregister(thread._python_exit)
 
-import config
 from robotjes import client, Timer
 from robotjes.sim import Mazes, Engine, Map
 from robotjes.client import aui
-
-from trace_log import TraceLog
 
 
 class PlayerClient:

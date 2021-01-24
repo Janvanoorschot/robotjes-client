@@ -16,9 +16,8 @@ import atexit
 from concurrent.futures import thread
 atexit.unregister(thread._python_exit)
 
-import config
 from robotjes import client, Timer
-from robotjes.client import aui
+from robotjes.client import aui, config
 
 
 class PlayerClient:
