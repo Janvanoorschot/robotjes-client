@@ -32,7 +32,7 @@ class Player_Client:
 async def main(script, engine, loop):
     clnt = Player_Client()
     handler = client.LocalEngineHandler(engine)
-    player = client.CLILocalPlayer(handler, loop, clnt)
+    player = client.Player(handler, loop, clnt)
     timer = Timer(1, player.timer, True)
     await player.start_player(script)
     success = await player.run_game()
