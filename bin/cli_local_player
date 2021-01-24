@@ -7,29 +7,12 @@ import argparse
 import importlib
 
 from robotjes.sim import Mazes
-from robotjes import client
+from robotjes import client, Timer
 from robotjes.sim import Engine, Map
 
 rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 mazepath = os.path.join(rootpath, "datafiles/mazes")
 sys.path.append(rootpath)
-
-class Timer:
-    def __init__(self, timeout, callback, repeat=False):
-        self.timeout = timeout
-        self.callback = callback
-        self.repeat = repeat
-        self.task = asyncio.ensure_future(self.job())
-
-    async def job(self):
-        await asyncio.sleep(self.timeout)
-        await self.callback()
-        if self.repeat:
-            self.task = asyncio.ensure_future(self.job())
-
-    def cancel(self):
-        self.task.cancel()
-
 
 class Player_Client:
 
