@@ -11,7 +11,7 @@ from robotjes import client, Timer
 from robotjes.sim import Engine, Map
 
 rootpath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-mazepath = os.path.join(rootpath, "datafiles/mazes")
+mazepath = os.path.join(rootpath, "sample/mazes")
 sys.path.append(rootpath)
 
 class Player_Client:
