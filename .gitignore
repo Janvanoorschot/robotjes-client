@@ -1,4 +1,9 @@
+# python development
 venv
+build
+__pycache__
+
+# intellij
 .idea
 *.iml
 
