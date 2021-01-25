@@ -1,3 +1,6 @@
 asciimatics
 requests
 pyparsing
+
+wheel
+twine
