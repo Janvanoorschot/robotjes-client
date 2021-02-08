@@ -56,7 +56,7 @@ if __name__ == "__main__":
     parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
     parser.add_argument('--name', type=str, default="game1", help='name of the game to join')
     parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
-    parser.add_argument('--module', type=str, default="sample.player.player103", help='module containing the player logic')
+    parser.add_argument('--module', type=str, default="sample.player.player104", help='module containing the player logic')
     args = parser.parse_args()
 
     script = load_client(args.module)

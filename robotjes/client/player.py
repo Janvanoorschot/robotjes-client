@@ -19,6 +19,7 @@ class Player:
 
         self.stopped = False
         self.robos = {}
+        self.robos_longcmd = {}
         self.robo_coroutines = {}
         self.robo_status = {}
         self.game_tick = 0
@@ -44,7 +45,21 @@ class Player:
             await self.timer_lock.acquire()
             for robo_id, robo in self.robos.items():
                 if not robo.requestor.empty():
-                    cmd = await robo.requestor.get()
+                    if robo_id in self.robos_longcmd:
+                        prevcmd = self.robos_longcmd[robo_id]
+                        cmd = list(prevcmd)
+                        cmd[3] = 1
+                        if prevcmd[3] > 1:
+                            prevcmd[3] = prevcmd[3] - 1
+                        else:
+                            del self.robos_longcmd[robo_id]
+                    else:
+                        cmd = await robo.requestor.get()
+                        if cmd[2] in ['forward', 'backward', 'left', 'right'] and cmd[3] > 1:
+                            nextcmd = list(cmd)
+                            nextcmd[3] = nextcmd[3] - 1
+                            cmd[3] = 1
+                            self.robos_longcmd[robo_id] = nextcmd
                     if len(cmd) < 2 or self.stopped:
                         break
                     elif Robo.is_observation(cmd):
