@@ -12,21 +12,19 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='robotjes-client',
-    version='0.0.1',
+    version='0.0.1a2',
     description='Client package for the Robomind Academy Python course',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/Janvanoorschot/robotjes-client',
     author='Jan van Oorschot',
     author_email='info@robomindacademy.com',
     classifiers=[
-        # How mature is this project? Common values are
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
         'Development Status :: 3 - Alpha',
-        'Intended Audience :: Students',
-        'Topic :: Educational Software',
-        'License :: GPL3',
-        'Programming Language :: Python :: 3.7',
+        'Intended Audience :: Education',
+        'Topic :: Education',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: Python :: 3.8',
     ],
     keywords='educational, learning, student, programming',
     python_requires='>=3.6, <4',
