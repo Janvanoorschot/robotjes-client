@@ -4,3 +4,4 @@ pyparsing
 
 wheel
 twine
+build

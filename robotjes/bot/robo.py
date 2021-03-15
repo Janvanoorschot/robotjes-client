@@ -43,7 +43,7 @@ class Robo(object):
         # [[UUID('056c5f92-1457-4e45-be8e-32d6f2a18685'), 'paintWhite'], ([[True]],)]
         if not self.is_running:
             self.stop()
-        return [result[1][0][0][0], result[2]]
+        return result[1][0][0][0]
 
     def forward(self, steps=1):
         """do a number of steps forward."""

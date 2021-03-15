@@ -12,7 +12,7 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='robotjes-client',
-    version='0.0.1a2',
+    version='0.0.1a4',
     description='Client package for the Robomind Academy Python course',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -28,7 +28,15 @@ setup(
     ],
     keywords='educational, learning, student, programming',
     python_requires='>=3.6, <4',
-    packages=['robotjes'],
+    packages=[
+        'robotjes',
+        'robotjes.bot',
+        'robotjes.client',
+        'robotjes.client.aui',
+        'robotjes.local',
+        'robotjes.sim',
+        'robotjes.sim.success',
+    ],
     install_requires=[
         'asciimatics',
         'requests',
