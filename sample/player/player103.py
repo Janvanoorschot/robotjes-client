@@ -1,8 +1,10 @@
+from robotjes import Robo
 
 
-def execute(robo):
+def execute(robo: Robo):
+
     while True:
-        robo.forward()
+        result = robo.forward()
         robo.right()
         robo.forward()
         robo.left()

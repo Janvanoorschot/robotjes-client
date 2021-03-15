@@ -1,3 +1,5 @@
+from .bot.robo import Robo
+
 import asyncio
 
 class Timer:
