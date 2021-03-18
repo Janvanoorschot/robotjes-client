@@ -249,11 +249,13 @@ class Engine(object):
             message = message.format(loc=loc, cargo=cargo, paint=paint)
             self.recording.message(message)
             success = True
+            reply.append([success])
         elif command == "error":
             message = "none" if len(args) < 1 else args[0]
             if len(message) > 1 and message != "none":
                 self.recording.error(message)
             success = False
+            reply.append([success])
         else:
             success = False
             reply.append([False])

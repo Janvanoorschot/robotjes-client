@@ -23,10 +23,9 @@ class LocalRequestor(object):
         if len(cmd) > 2:
             reply = await self.reply_queue.get()
         else:
-            reply = {'result':[]}
-        # somehow, the original requestor returned something like this:
-        # [[UUID('056c5f92-1457-4e45-be8e-32d6f2a18685'), 'paintWhite'], ([[True]],)]
-        return [["some-uuid", cmd], [[[reply['result']]]]]
+            reply = [False, {}]
+        return reply
+        # return [["some-uuid", cmd], [[[reply['result']]]]]
 
     def empty(self):
         return self.command_queue.empty()

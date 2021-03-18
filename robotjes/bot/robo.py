@@ -45,18 +45,20 @@ class Robo(object):
     #     'load': 0,
     #     'pos': (7, 11),
     #     'recording': [[1, 'message', ['starting'], True],
-    #                   [2, 'right', [2], True]]}],)]
+    #                   [2, 'right', [2], True]]
+    #    }
+    #   ],
+    #  )
+    # ]
     def _handle_result(self, result):
         if not self.is_running:
             self.stop()
-        # return [result[1][0][0][0], result[2]]
-        return result[1][0][1]
+        return result[1]
 
     def _handle_boolean_result(self, result):
-        # [[UUID('056c5f92-1457-4e45-be8e-32d6f2a18685'), 'paintWhite'], ([[True]],)]
         if not self.is_running:
             self.stop()
-        return result[1][0][0][0]
+        return result[0]
 
     def forward(self, steps=1):
         """do a number of steps forward."""

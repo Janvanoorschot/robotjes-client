@@ -62,17 +62,8 @@ class Player:
                             self.robos_longcmd[robo_id] = nextcmd
                     if len(cmd) < 2 or self.stopped:
                         break
-                    elif Robo.is_observation(cmd):
-                        if robo.id in self.robo_status:
-                            status = self.robo_status[robo.id]
-                            boolean = Robo.observation(status, cmd)
-                        else:
-                            boolean = False
-                        reply = {'result': boolean}
-                    else:
-                        reply = {'result': True}
-                    secret_reply = await self.handler.execute(self.game_tick, robo.id, cmd)
-                    self.callback('issue_command', self.game_tick, robo.id, cmd, secret_reply)
+                    reply = await self.handler.execute(self.game_tick, robo.id, cmd)
+                    self.callback('issue_command', self.game_tick, robo.id, cmd, reply)
                     await robo.requestor.put(reply)
         return True
 

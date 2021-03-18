@@ -5,8 +5,6 @@ from io import StringIO
 def exec_on_steroid(object, globals, locals):
     stdout_old = sys.stdout
     stderr_old = sys.stderr
-    # redirected_stdout = sys.stdout = StringIO()
-    # redirected_stderr = sys.stderr = StringIO()
     try:
         exec(object, globals, locals)
         return True
@@ -15,8 +13,6 @@ def exec_on_steroid(object, globals, locals):
     finally:
         sys.stdout = stdout_old
         sys.stderr = stderr_old
-        # redirected_stdout.close()
-        # redirected_stderr.close()
 
 class RoboThread():
 

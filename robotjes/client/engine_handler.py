@@ -1,4 +1,5 @@
 import asyncio
+from robotjes.bot import Robo
 
 
 class LocalEngineHandler:
@@ -25,8 +26,20 @@ class LocalEngineHandler:
                 self.started = False
 
     async def execute(self, game_tick, robo_id, cmd):
-        result = self.engine.execute(game_tick, robo_id, cmd)
-        return result
+        reply = self.engine.execute(game_tick, robo_id, cmd)
+        # The reply from the engine looks like this:
+        # [
+        #   [7, '002d66f0-ec5c-48e5-bc40-e364f1779f3c', 'forward', 1],
+        #   (
+        #     [
+        #       [True, (7, 11)],
+        #       {'pos': (7, 11), 'load': 0, 'dir': 90, 'recording': [[2, 'forward', [1], True]], 'fog_of_war': {'left': [None, None, None, False], 'front': [None, None, None, False], 'right': [None, None, None, False]}}
+        #     ],
+        #    )
+        # ]
+        b = reply[1][0][0][0]
+        status = reply[1][0][1]
+        return [b, status]
 
     async def game_timer(self, cur_tick):
         next_tick = cur_tick + 1
@@ -55,7 +68,7 @@ class RemoteEngineHandler:
         self.started = False
         self.robo_id = None
         self.game_tick = 0
-        self.robo_status = None
+        self.robo_status = {}
         self.register_lock = asyncio.Lock()
 
     async def start_player(self):
@@ -88,8 +101,13 @@ class RemoteEngineHandler:
             self.started = False
 
     async def execute(self, game_tick, robo_id, cmd):
-        result = await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
-        return result
+        rest_reply = await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
+        robo_status = self.robo_status.get(robo_id, None)
+        if Robo.is_observation(cmd) and robo_status:
+            b = Robo.observation(robo_status, cmd)
+        else:
+            b = False
+        return [b, robo_status]
 
     async def game_timer(self, cur_tick):
         status = await self.rest_client.status_player(self.game_id, self.player_id)
@@ -99,19 +117,13 @@ class RemoteEngineHandler:
             if self.robo_id is None:
                 for robo_id, robo_status in status['player_status']['robos'].items():
                     self.robo_id = robo_id
-                    self.robo_status = robo_status
                     self.register_lock.release()
-            else:
-                for robo_id, robo_status in status['player_status']['robos'].items():
-                    if robo_id == self.robo_id:
-                        self.robo_status = robo_status
+            for robo_id, robo_status in status['player_status']['robos'].items():
+                self.robo_status[robo_id] = robo_status
         return self.game_tick
 
     def get_robo_status(self, robo_id):
-        if robo_id == self.robo_id:
-            return self.robo_status
-        else:
-            return None
+        return self.robo_status.get(robo_id, None)
 
     def started(self):
         return self.started
