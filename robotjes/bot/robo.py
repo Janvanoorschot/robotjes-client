@@ -37,7 +37,8 @@ class Robo(object):
     def _handle_result(self, result):
         if not self.is_running:
             self.stop()
-        return [result[1][0][0][0], result[2]]
+        # return [result[1][0][0][0], result[2]]
+        return result[1][0][0][0]
 
     def _handle_boolean_result(self, result):
         # [[UUID('056c5f92-1457-4e45-be8e-32d6f2a18685'), 'paintWhite'], ([[True]],)]
