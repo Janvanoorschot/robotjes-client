@@ -25,7 +25,8 @@ class LocalEngineHandler:
                 self.started = False
 
     async def execute(self, game_tick, robo_id, cmd):
-        return self.engine.execute(game_tick, robo_id, cmd)
+        result = self.engine.execute(game_tick, robo_id, cmd)
+        return result
 
     async def game_timer(self, cur_tick):
         next_tick = cur_tick + 1
@@ -87,7 +88,8 @@ class RemoteEngineHandler:
             self.started = False
 
     async def execute(self, game_tick, robo_id, cmd):
-        return await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
+        result = await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
+        return result
 
     async def game_timer(self, cur_tick):
         status = await self.rest_client.status_player(self.game_id, self.player_id)

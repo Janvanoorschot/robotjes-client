@@ -34,11 +34,23 @@ class Robo(object):
     def _set_id(self, robo_id):
         self.id = robo_id
 
+    # A result looks like this (at least in run-simulation, still need to do cli_remote_player. cli_local_player)
+    # [[6, '06264681-6bac-4a91-9a88-73f70ae1f942', 'right', 2],
+    #  ([[True, 0],
+    #    [True, 270],
+    #    {'dir': 270,
+    #     'fog_of_war': {'front': [None, None, None, False],
+    #                    'left': [None, None, None, False],
+    #                    'right': [None, None, None, False]},
+    #     'load': 0,
+    #     'pos': (7, 11),
+    #     'recording': [[1, 'message', ['starting'], True],
+    #                   [2, 'right', [2], True]]}],)]
     def _handle_result(self, result):
         if not self.is_running:
             self.stop()
         # return [result[1][0][0][0], result[2]]
-        return result[1][0][0][0]
+        return result[1][0][1]
 
     def _handle_boolean_result(self, result):
         # [[UUID('056c5f92-1457-4e45-be8e-32d6f2a18685'), 'paintWhite'], ([[True]],)]

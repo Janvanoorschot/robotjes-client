@@ -258,6 +258,7 @@ class Engine(object):
             success = False
             reply.append([False])
         bot.record(game_tick, command, args, success)
+        reply.append(self.get_status(robo_id))
         return self.prepare_reply(cmd, reply)
 
     def get_status(self, robo_id):
