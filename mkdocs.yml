@@ -1,0 +1,6 @@
+site_name: Robotjes-client
+
+nav:
+  - Home: index.md
+  - Devops: devops
+  - Attic: attic

@@ -1,7 +1,19 @@
-asciimatics
+# basic client functionality, REST-calls client-side
 requests
 pyparsing
 
+# Web server for robotjesengine
+fastapi[all]
+fastapi_utils
+uvicorn
+
+# UI for CLI tools
+asciimatics
+
+# support for Pypi releasing
 wheel
 twine
 build
+
+# documentation
+mkdocs
