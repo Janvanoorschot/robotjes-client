@@ -1,5 +1,6 @@
 # python development
 venv
+.venv
 build
 __pycache__
 dist
