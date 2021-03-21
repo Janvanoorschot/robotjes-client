@@ -6,14 +6,7 @@ import os
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
-import robotjessrv.server.roborest as roborest
-import robotjessrv.server.monitor as monitor
-# initialise
-roborest.pikaurl = args.pikaurl
-
-monitor.mon = monitor.async_monitor_client.AsyncMonitorClient(args.monitorexchange)
-
-from robotjessrv.server.roborest import StatusKeeper
+from robotjes.server import StatusKeeper
 
 roborest.status_keeper = StatusKeeper()
 
