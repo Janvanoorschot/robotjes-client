@@ -1,3 +1,4 @@
+'use strict';
 (function($) {
 
     var defaults = {
@@ -12,16 +13,37 @@
     $.fn.robotjes.robotjesviewer = function(node,skin,images,challengeId,language) {
         var that = {};
 
-        skin = loadSkin(that);
-
+        that.skin = null;
+        that.images = {}
+        $.getJSON("/challenge/skin")
+            .done(function(skin) {
+                var count = 0;
+                for (const [key, path] of Object.entries(skin)) {
+                    count++;
+                    var image = document.createElement("img");
+                    image.onload = function () {
+                        count--;
+                        if (count <= 0) {
+                            return that.images;
+                        }
+                    };
+                    image.onerror = function(evt) {
+                        count--;
+                        if(count<=0) {
+                            return that.images;
+                        }
+                    }
+                    that.images[key] = image
+                    image.src = path
+                }
+            })
+            .done(function(images) {
+                console.log("yes!!!");
+            })
         return that;
     };
 
     function loadSkin(that) {
-        let skin = $.getJSON("/challenge/skin")
-            .done(function(data) {
-                console.log(data);
-            })
     }
 
 })(jQuery);
