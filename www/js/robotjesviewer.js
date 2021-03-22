@@ -21,7 +21,6 @@
                 that.skin = skin;
                 return $.getJSON("/challenge/map")
                     .done(function (map) {
-                        console.log("done3");
                         that.map = map;
                     })
             })
@@ -33,14 +32,12 @@
                         var image = document.createElement("img");
                         image.onload = function () {
                             count--;
-                            console.log(count)
                             if (count <= 0) {
                                 resolve(that.images);
                             }
                         };
                         image.onerror = function(evt) {
                             count--;
-                            console.log(count)
                             if(count<=0) {
                                 reject(that.images);
                             }

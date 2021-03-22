@@ -152,7 +152,9 @@
                 if(that.speedbuttonbar){
                     that.speedbuttonbar.update()
                 }
-                $.fn.rm.updateSessionAttribute('speed', speed);
+                if (typeof $.fn.rm.updateSessionAttribute === 'function') {
+                    $.fn.rm.updateSessionAttribute('speed', speed);
+                }
             }
         };
 
@@ -175,8 +177,9 @@
                 that.speedbuttonbar.update();
             }
             // save in session state
-            // todo elsewhere
-            $.fn.rm.updateSessionAttribute('soundenabled', bool);
+            if (typeof $.fn.rm.updateSessionAttribute === 'function') {
+                $.fn.rm.updateSessionAttribute('soundenabled', bool);
+            }
 
         };
 
