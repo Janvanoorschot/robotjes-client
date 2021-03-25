@@ -1,35 +1,35 @@
 /*************************************************************************************************************/
 /* Movieplayer layout */
 
-.robomindide {
+.robotjesviewer {
 
 }
 
-.robomindide .worldpane {
+.robotjesviewer .worldpane {
     position: relative;
 }
 
-.robomindide .worldpane [name="runbuttonbar"]{
+.robotjesviewer .worldpane [name="runbuttonbar"]{
     position: absolute;
     top: auto;
     bottom: 0;
 }
 
-.robomindide .worldpane [name="speedbuttonbar"]{
+.robotjesviewer .worldpane [name="speedbuttonbar"]{
     top: 0;
     position: absolute;
     right: auto;
     left: 0;
 }
 
-.robomindide .worldpane [name="zoombuttonbar"]{
+.robotjesviewer .worldpane [name="zoombuttonbar"]{
     top: 0;
     position: absolute;
     right: 0;
     left: auto;
 }
 
-.robomindide .buttonbar {
+.robotjesviewer .buttonbar {
     text-align: left;
 }
 
