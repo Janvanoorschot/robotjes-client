@@ -39,7 +39,7 @@ async def list_maze(maze_id: str):
 @app.get("/challenge/skin")
 async def get_skin():
     # walk over the skin directory (the same as SkinService in robomindacademy)
-    skinName = 'defaultSkin'
+    skinName = 'dessertSkinWeb'
     skindir = Path(rootdir) / 'www' / 'images' / 'skins' / skinName
     pathlist = skindir.rglob('*.png')
     result = {}

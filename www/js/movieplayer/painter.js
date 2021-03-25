@@ -94,12 +94,9 @@
             "extra2":extra2Painter
         };
 
-        // if requested, create the optional painters
-        if(!$.fn.rm.sessionstate.hasOwnProperty('noeffects') || ($.fn.rm.sessionstate.hasOwnProperty('noeffects') && ! $.fn.rm.sessionstate.noeffects)) {
-            var cloudPainter = $.fn.rm.scrollingpatternpainter(that.recording, that.viewport, that.recording.images['clouds512'], 10, 0.2, -0.1);
-            that.painters.push(cloudPainter);
-            that.painterByName.cloud = cloudPainter;
-        }
+        var cloudPainter = $.fn.rm.scrollingpatternpainter(that.recording, that.viewport, that.recording.images['clouds512'], 10, 0.2, -0.1);
+        that.painters.push(cloudPainter);
+        that.painterByName.cloud = cloudPainter;
 
         update(that);
     }
