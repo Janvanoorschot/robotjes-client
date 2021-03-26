@@ -73,6 +73,7 @@
                 var moviePlayerNode = $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" style="height: 100%; width: 100%;" class="animation"></div></div>');
                 that.movieplayer =  $.fn.rm.movieplayer('movieplayer1',moviePlayerNode.find('#worldsubpane'), that, that.skin,that.images);
                 that.node.append(moviePlayerNode);
+                that.node.resize();
                 that.timerListeners.push(that.movieplayer);
                 loadMap(that)
                 startTimer(that)

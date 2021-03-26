@@ -19,23 +19,6 @@ async def create_game(specs: GameSpec):
     pass
 
 
-@app.get("/games")
-async def list_games():
-    """List current games"""
-    pass
-
-
-@app.get("/mazes")
-async def list_mazes():
-    """List current mazes"""
-    pass
-
-
-@app.get("/mazes/{maze_id}")
-async def list_maze(maze_id: str):
-    """List specific maze"""
-    pass
-
 @app.get("/challenge/skin")
 async def get_skin():
     # walk over the skin directory (the same as SkinService in robomindacademy)
