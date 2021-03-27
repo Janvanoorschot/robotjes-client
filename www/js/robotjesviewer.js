@@ -24,14 +24,6 @@
         that.timerListeners = [];
         that.timerTicks = 0
 
-        that.start = function () {
-
-        }
-
-        that.stop = function () {
-
-        }
-
         populate(that);
 
         return that;
@@ -79,20 +71,32 @@
                 startTimer(that)
             })
 
-        // that.node.on('runmodechanged', function(event, data) {
-        //     var newmode = data.newmode;
-        //     switch (newmode) {
-        //         case "stopped":
-        //             pass;
-        //             break;
-        //         case "paused":
-        //             pass;
-        //             break;
-        //         case "running":
-        //             pass;
-        //             break;
-        //     }
-        // });
+        that.node.on('runmodechanged', function(event, data) {
+            var newmode = data.newmode;
+            // console.log("old: " +data.oldmode + "->" + "new: " + data.newmode + "\n");
+            if(data.oldmode === "stopped" && data.newmode === "running") {
+                $.post("/game/stopped2running")
+                    .then(function() {
+                        pass
+                    })
+            } else if(data.oldmode === "running" && data.newmode === "stopped") {
+                $.post("/game/running2stopped")
+                    .then(function() {
+                        pass
+                    })
+            } else if(data.oldmode === "running" && data.newmode === "paused") {
+                $.post("/game/running2paused")
+                    .then(function() {
+                        pass
+                    })
+            } else if(data.oldmode === "paused" && data.newmode === "running") {
+                $.post("/game/paused2running")
+                    .then(function() {
+                        pass
+                    })
+            }
+            return true;
+        });
 
         return that;
     }

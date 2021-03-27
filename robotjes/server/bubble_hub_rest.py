@@ -13,10 +13,11 @@ async def redirect():
     return response
 
 
-@app.post("/games")
-async def create_game(specs: GameSpec):
-    """ Create a game"""
-    pass
+@app.get("/games")
+async def list_games():
+    """ List current game(s)"""
+    lst = server.status_keeper.list_games()
+    return lst
 
 
 @app.get("/challenge/skin")
@@ -42,3 +43,22 @@ async def get_map():
             }
         }
     ]
+
+@app.post("/game/stopped2running")
+async def stopped2running():
+    if not server.robotjes_engine.isRunning():
+        server.robotjes_engine.start()
+
+@app.post("/game/running2stopped")
+async def running2stopped():
+    if server.robotjes_engine.isRunning():
+        server.robotjes_engine.stop()
+
+@app.post("/game/running2paused")
+async def running2paused():
+    pass
+
+@app.post("/game/paused2running")
+async def paused2running():
+    pass
+

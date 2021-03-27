@@ -65,7 +65,7 @@
                         $(that.rootnode).triggerHandler('runmodechanged', {intent:'delayedstartrunning',source:'runbuttonbar',oldmode:'stopped',newmode:'running'});
                         break;
                     case "running":
-                        $(that.rootnode).triggerHandler('runmodechanged', {intent:'stop',source:'runbuttonbar',oldmode:'runnning',newmode:'stopped'});
+                        $(that.rootnode).triggerHandler('runmodechanged', {intent:'stop',source:'runbuttonbar',oldmode:'running',newmode:'stopped'});
                         break;
                     case "paused":
                         $(that.rootnode).triggerHandler('runmodechanged', {intent:'cont',source:'runbuttonbar',oldmode:'paused',newmode:'running'});
