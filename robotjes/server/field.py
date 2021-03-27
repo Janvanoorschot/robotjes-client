@@ -1,5 +1,4 @@
-from robotjessrv.server.bubblehub.model import GameSpec
-from . import GameStatus, RoboGame, Player
+from . import GameSpec, GameStatus, RoboGame, Player
 
 
 class Field:

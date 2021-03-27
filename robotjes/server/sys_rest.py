@@ -7,11 +7,12 @@ from . import app
 
 @app.on_event("startup")
 async def startup_event():
-    pass
+    server.robotjes_engine.start()
 
 @app.on_event("startup")
 @repeat_every(seconds=2)
 async def timer_task():
     now = datetime.datetime.now()
     server.status_keeper.timer(now)
+    server.robotjes_engine.timer(now)
 

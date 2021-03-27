@@ -8,9 +8,11 @@ rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
 from robotjes.server import StatusKeeper
+from robotjes.server import RobotjesEngine
 import robotjes.server as server
 
 server.status_keeper = StatusKeeper()
+server.robotjes_engine = RobotjesEngine(server.status_keeper)
 
 # initialise the roborest module
 import fastapi

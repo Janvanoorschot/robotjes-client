@@ -71,13 +71,29 @@
             })
             .then(function(images) {
                 var moviePlayerNode = $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" style="height: 100%; width: 100%;" class="animation"></div></div>');
-                that.movieplayer =  $.fn.rm.movieplayer('movieplayer1',moviePlayerNode.find('#worldsubpane'), that, that.skin,that.images);
+                that.movieplayer =  $.fn.rm.movieplayer('movieplayer1',moviePlayerNode.find('#worldsubpane'), that.node, that.skin,that.images);
                 that.node.append(moviePlayerNode);
                 that.node.resize();
                 that.timerListeners.push(that.movieplayer);
                 loadMap(that)
                 startTimer(that)
             })
+
+        that.node.on('runmodechanged', function(event, data) {
+            var newmode = data.newmode;
+            switch (newmode) {
+                case "stopped":
+                    pass;
+                    break;
+                case "paused":
+                    pass;
+                    break;
+                case "running":
+                    pass;
+                    break;
+            }
+        });
+
         return that;
     }
 
