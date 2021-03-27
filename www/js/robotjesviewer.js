@@ -79,20 +79,20 @@
                 startTimer(that)
             })
 
-        that.node.on('runmodechanged', function(event, data) {
-            var newmode = data.newmode;
-            switch (newmode) {
-                case "stopped":
-                    pass;
-                    break;
-                case "paused":
-                    pass;
-                    break;
-                case "running":
-                    pass;
-                    break;
-            }
-        });
+        // that.node.on('runmodechanged', function(event, data) {
+        //     var newmode = data.newmode;
+        //     switch (newmode) {
+        //         case "stopped":
+        //             pass;
+        //             break;
+        //         case "paused":
+        //             pass;
+        //             break;
+        //         case "running":
+        //             pass;
+        //             break;
+        //     }
+        // });
 
         return that;
     }
