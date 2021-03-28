@@ -10,13 +10,19 @@ from robotjes.server.model import RegistrationSpec, CommandSpec
 async def register_with_game(game_id: str, specs: RegistrationSpec):
     """Register with a game"""
     player_id = str(uuid.uuid4())
-    request = {
+    data = {
         "cmd": "register",
         "game_id": game_id,
         "player_id": player_id,
         "player_name": specs.player_name,
         "password": specs.game_password
     }
+    server.robotjes_engine.register_with_game(data)
+    return {
+        "player_id": player_id
+    }
+
+
 
 
 @app.delete("/game/{game_id}/player/{player_id}")
