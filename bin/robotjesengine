@@ -13,24 +13,30 @@ from robotjes.server import RobotjesEngine
 import robotjes.server as server
 from robotjes.server.model import GameSpec
 
-idle_spec = GameSpec(umpire_id="", game_name="", game_password="", maze_id="default")
-server.mazes = Mazes(os.path.join(rootdir, "sample/mazes"))
-server.status_keeper = StatusKeeper()
-server.robotjes_engine = RobotjesEngine(server.status_keeper, server.mazes, idle_spec)
-
 # initialise the roborest module
 import fastapi
-server.app = fastapi.FastAPI()
-
-# import the files with REST calls (do not remove!!!)
-import robotjes.server.sys_rest
-import robotjes.server.bubble_hub_rest
-import robotjes.server.game_rest
-
-
-# do static files support
 from fastapi.staticfiles import StaticFiles
-server.app.mount("/", StaticFiles(directory=os.path.join(rootdir, "www")), name="www")
+
+
+
+
+def main(args):
+    #
+    idle_spec = GameSpec(umpire_id="", game_name=args.name, game_password=args.password, maze_id=args.maze)
+    server.mazes = Mazes(os.path.join(rootdir, "sample/mazes"))
+    server.status_keeper = StatusKeeper()
+    server.robotjes_engine = RobotjesEngine(server.status_keeper, server.mazes, idle_spec)
+    server.app = fastapi.FastAPI()
+
+    # import the files with REST calls (do not remove!!!)
+    import robotjes.server.sys_rest
+    import robotjes.server.bubble_hub_rest
+    import robotjes.server.game_rest
+
+    # start the webserver (note the logging configuration)
+    import uvicorn
+    server.app.mount("/", StaticFiles(directory=os.path.join(rootdir, "www")), name="www")
+    uvicorn.run(server.app, host=args.host, port=args.port, log_config=args.logconf)
 
 
 if __name__ == "__main__":
@@ -40,12 +46,12 @@ if __name__ == "__main__":
     parser.add_argument('--logconf', type=str, default=os.path.join(rootdir, "bin/log.conf"), help='port')
     parser.add_argument('--host', type=str, default='0.0.0.0', help='host')
     parser.add_argument('--port', type=int, default=8765, help='port')
+    parser.add_argument('--name', type=str, default="game1", help='name of the game to join')
+    parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
     parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
     args = parser.parse_args()
     # init logging
     logging.config.fileConfig(args.logconf)
     logger = logging.getLogger(__name__)
     logger.warning("starting logger")
-    # start the webserver (note the logging configuration)
-    import uvicorn
-    uvicorn.run(server.app, host=args.host, port=args.port, log_config=args.logconf)
+    main(args)
