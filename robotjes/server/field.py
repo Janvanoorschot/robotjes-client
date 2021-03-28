@@ -1,4 +1,5 @@
-from . import GameSpec, GameStatus, RoboGame, Player
+from . import RoboGame, Player
+from robotjes.server.model import GameSpec, GameStatus
 
 
 class Field:

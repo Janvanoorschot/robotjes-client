@@ -7,12 +7,16 @@ import logging.config
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
+from robotjes.sim import Mazes
 from robotjes.server import StatusKeeper
 from robotjes.server import RobotjesEngine
 import robotjes.server as server
+from robotjes.server.model import GameSpec
 
+idle_spec = GameSpec(umpire_id="", game_name="", game_password="", maze_id="default")
+server.mazes = Mazes(os.path.join(rootdir, "sample/mazes"))
 server.status_keeper = StatusKeeper()
-server.robotjes_engine = RobotjesEngine(server.status_keeper)
+server.robotjes_engine = RobotjesEngine(server.status_keeper, server.mazes, idle_spec)
 
 # initialise the roborest module
 import fastapi
