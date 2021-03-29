@@ -507,7 +507,8 @@
         function doGetDeltas(that) {
             if(that.game_id) {
                 let map = null;
-                let url = window.location.pathname+'/field/gamerecording?game_id=' + that.game_id+"&before_game_time="+that.before_game_time;
+                // let url = window.location.pathname+'/field/gamerecording?game_id=' + that.game_id+"&before_game_time="+that.before_game_time;
+                let url = '/field/gamerecording?game_id=' + that.game_id+"&before_game_time="+that.before_game_time;
                 $.ajax({
                     url: url,
                     async: false,

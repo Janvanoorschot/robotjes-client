@@ -7,7 +7,7 @@ from . import app
 
 @app.on_event("startup")
 async def startup_event():
-    server.robotjes_engine.start()
+    pass
 
 @app.on_event("startup")
 @repeat_every(seconds=2)

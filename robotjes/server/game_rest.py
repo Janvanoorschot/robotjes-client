@@ -76,10 +76,18 @@ async def get_player_status(game_id: str, player_id: str):
 @app.put("/game/{game_id}/player/{player_id}")
 async def player_move(game_id: str, player_id: str, specs: CommandSpec):
     """Move within a game"""
-    request = {
+    data = {
         "cmd": "move",
         "game_id": game_id,
         "player_id": player_id,
         "move": specs.move
     }
+    server.robotjes_engine.move_in_game(data)
+
+@app.get("/field/gamerecording")
+async def game_recording(game_id:str, before_game_time:int):
+    """Move within a game"""
+    result = server.status_keeper.get_game_recording(game_id, before_game_time)
+    return result
+
 
