@@ -6,8 +6,12 @@ class RoboGame:
         self.robos = {}
         self.map = Map.fromstring(mapstr)
         self.engine = Engine(self.map)
+        self.engine.add_listener(self._engine_event)
         self.game_tick = 0
         self.last_recording_delta = 0
+
+    def _engine_event(self, evt, data):
+        pass
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
