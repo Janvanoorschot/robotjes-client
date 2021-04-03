@@ -4,8 +4,6 @@ def execute(robo: Robo):
 
     while not robo.frontIsObstacle():
         robo.forward(1)
-
-    rob
         reply = robo.forward(2)
         reply = robo.right()
         reply = robo.forward()

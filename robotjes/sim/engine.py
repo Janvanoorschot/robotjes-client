@@ -1,14 +1,7 @@
 import uuid
 from .world import World
 from .recording import Recording
-from enum import Enum
-
-
-class Event(Enum):
-    EVT_BEACON_EATEN = 1
-    EVT_BUMP = 2
-    EVT_HIT_BOT = 3
-
+from . import WorldEvent
 
 LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
                   "eatUp", "paintWhite", "paintBlack", "stopPainting",
@@ -37,7 +30,7 @@ class Engine(object):
         if listener in self.listeners:
             self.listeners.remove(listener)
 
-    def event(self, event: Event, data: dict):
+    def event(self, event: WorldEvent, data: dict):
         for listener in self.listeners:
             listener(event, data)
 
@@ -112,10 +105,10 @@ class Engine(object):
                         pos = self.world.calc_pos(robo_id, World.FRONT, 1)
                         for bot in self.world.bots:
                             if bot.pos == pos:
-                                self.event(Event.EVT_HIT_BOT, {"robo_id", robo_id, "victim", bot})
+                                self.event(WorldEvent.WORLD_EVT_HIT_BOT, {"robo_id", robo_id, "victim", bot})
                                 break
                     else:
-                        self.event(Event.EVT_BUMP, {"robo_id", robo_id})
+                        self.event(WorldEvent.WORLD_EVT_BUMP, {"robo_id", robo_id})
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
                     self.world.inc("robotHasBumped")
@@ -135,10 +128,10 @@ class Engine(object):
                         pos = self.world.calc_pos(robo_id, World.BACK, 1)
                         for bot in self.world.bots:
                             if bot.pos == pos:
-                                self.event(Event.EVT_HIT_BOT, {"robo_id", robo_id, "victim", bot})
+                                self.event(WorldEvent.WORLD_EVT_HIT_BOT, {"robo_id", robo_id, "victim", bot})
                                 break
                     else:
-                        self.event(Event.EVT_BUMP, {"robo_id", robo_id})
+                        self.event(WorldEvent.WORLD_EVT_BUMP, {"robo_id", robo_id})
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
                     self.world.inc("robotHasBumped")
@@ -169,7 +162,7 @@ class Engine(object):
         elif command == "eatUp":
             success = self.world.eatUp(robo_id)
             if success:
-                self.event(Event.EVT_BEACON_EATEN,
+                self.event(WorldEvent.WORLD_EVT_BEACON_EATEN,
                            {"robo_id": robo_id})
             reply.append([success])
             self.recording.eatUp(success)

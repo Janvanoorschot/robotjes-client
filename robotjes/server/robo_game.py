@@ -1,4 +1,4 @@
-from robotjes.sim import Engine, Map
+from robotjes.sim import Engine, Map, WorldEvent
 
 class RoboGame:
     """ Robotjes specific game behaviour. """
@@ -10,8 +10,13 @@ class RoboGame:
         self.game_tick = 0
         self.last_recording_delta = 0
 
-    def _engine_event(self, evt, data):
-        pass
+    def _engine_event(self, evt: WorldEvent, data: map):
+        if evt == WorldEvent.WORLD_EVT_BUMP:
+            pass
+        elif evt == WorldEvent.WORLD_EVT_HIT_BOT:
+            pass
+        elif evt == WorldEvent.WORLD_EVT_BEACON_EATEN:
+            pass
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
