@@ -1,5 +1,6 @@
 from . import RoboGame, Player, FieldEvent
 from robotjes.server.model import GameSpec, GameStatus
+from robotjes.sim import WorldEvent
 
 
 class Field:
@@ -27,19 +28,19 @@ class Field:
         if spec.game_name == 'eat_three':
             counters = {
                 "min": {
-                    FieldEvent.FIELD_EVT_MAX_BEACON_EATEN: 3
+                    WorldEvent.WORLD_EVT_BEACON_EATEN: 3
                 },
                 "max": {
-                    FieldEvent.FIELD_EVT_MAX_BUMP.name: 1
+                    WorldEvent.WORLD_EVT_BUMP: 1
                 }
             }
         elif spec.game_name == 'hit_three':
             counters = {
                 "min": {
-                    FieldEvent.FIELD_EVT_MAX_HIT_BOT: 3
+                    WorldEvent.WORLD_EVT_HIT_BOT: 3
                 },
                 "max": {
-                    FieldEvent.FIELD_EVT_MAX_BUMP.name: 1
+                    WorldEvent.WORLD_EVT_BUMP: 1
                 }
             }
         else:

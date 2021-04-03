@@ -43,7 +43,7 @@ if __name__ == "__main__":
     parser.add_argument('--logconf', type=str, default=os.path.join(rootdir, "bin/log.conf"), help='port')
     parser.add_argument('--host', type=str, default='0.0.0.0', help='host')
     parser.add_argument('--port', type=int, default=8765, help='port')
-    parser.add_argument('--name', type=str, default="game1", help='name of the game to join')
+    parser.add_argument('--name', type=str, default="eat_three", help='name of the game to join')
     parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
     parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
     input_args = parser.parse_args()

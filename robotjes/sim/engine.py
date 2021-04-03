@@ -105,10 +105,10 @@ class Engine(object):
                         pos = self.world.calc_pos(robo_id, World.FRONT, 1)
                         for bot in self.world.bots:
                             if bot.pos == pos:
-                                self.event(WorldEvent.WORLD_EVT_HIT_BOT, {"robo_id", robo_id, "victim", bot})
+                                self.event(WorldEvent.WORLD_EVT_HIT_BOT, {"robo_id": robo_id, "victim": bot})
                                 break
                     else:
-                        self.event(WorldEvent.WORLD_EVT_BUMP, {"robo_id", robo_id})
+                        self.event(WorldEvent.WORLD_EVT_BUMP, {"robo_id": robo_id})
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
                     self.world.inc("robotHasBumped")
@@ -128,10 +128,10 @@ class Engine(object):
                         pos = self.world.calc_pos(robo_id, World.BACK, 1)
                         for bot in self.world.bots:
                             if bot.pos == pos:
-                                self.event(WorldEvent.WORLD_EVT_HIT_BOT, {"robo_id", robo_id, "victim", bot})
+                                self.event(WorldEvent.WORLD_EVT_HIT_BOT, {"robo_id": robo_id, "victim": bot})
                                 break
                     else:
-                        self.event(WorldEvent.WORLD_EVT_BUMP, {"robo_id", robo_id})
+                        self.event(WorldEvent.WORLD_EVT_BUMP, {"robo_id": robo_id})
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
                     self.world.inc("robotHasBumped")
