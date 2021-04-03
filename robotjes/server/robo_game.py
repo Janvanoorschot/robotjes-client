@@ -12,7 +12,10 @@ class RoboGame:
         self.engine.add_listener(self._world_event)
         self.game_tick = 0
         self.last_recording_delta = 0
-        self.robo_counters = {"bumps": {}, "hits": {}, "eats": {}}
+        self.robo_counters = {
+            "min": {},
+            "max": {}
+        }
         self.listeners = []
 
     def add_listener(self, listener):

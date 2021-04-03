@@ -18,10 +18,7 @@ import fastapi
 from fastapi.staticfiles import StaticFiles
 
 
-
-
-def main(args):
-    #
+def main(args: map):
     idle_spec = GameSpec(umpire_id="", game_name=args.name, game_password=args.password, maze_id=args.maze)
     server.mazes = Mazes(os.path.join(rootdir, "sample/mazes"))
     server.status_keeper = StatusKeeper()
@@ -49,9 +46,9 @@ if __name__ == "__main__":
     parser.add_argument('--name', type=str, default="game1", help='name of the game to join')
     parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
     parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
-    args = parser.parse_args()
+    input_args = parser.parse_args()
     # init logging
-    logging.config.fileConfig(args.logconf)
+    logging.config.fileConfig(input_args.logconf)
     logger = logging.getLogger(__name__)
     logger.warning("starting logger")
-    main(args)
+    main(input_args)

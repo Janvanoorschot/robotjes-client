@@ -24,11 +24,27 @@ class Field:
         self.resolution = 5
 
     def create_game(self, spec: GameSpec):
-        # for the time being only create RoboGame's
+        if spec.game_name == 'eat_three':
+            counters = {
+                "min": {
+                    FieldEvent.FIELD_EVT_MAX_BEACON_EATEN: 3
+                },
+                "max": {
+                    FieldEvent.FIELD_EVT_MAX_BUMP.name: 1
+                }
+            }
+        elif spec.game_name == 'hit_three':
+            counters = {
+                "min": {
+                    FieldEvent.FIELD_EVT_MAX_HIT_BOT: 3
+                },
+                "max": {
+                    FieldEvent.FIELD_EVT_MAX_BUMP.name: 1
+                }
+            }
+        else:
+            raise ValueError(f"invalid game name: {spec.game_name}")
         mapstr = self.owner.mazes.get_map(spec.maze_id)
-        counters = {
-            FieldEvent.FIELD_EVT_MAX_BUMP.name: 1
-        }
         game = RoboGame(mapstr, counters)
         game.add_listener(self._field_event)
         return game
