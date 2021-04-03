@@ -1,22 +1,48 @@
 from robotjes.sim import Engine, Map, WorldEvent
+from . import FieldEvent
+
 
 class RoboGame:
     """ Robotjes specific game behaviour. """
-    def __init__(self, mapstr):
+    def __init__(self, mapstr, max_counters={}):
         self.robos = {}
+        self.max_counters = max_counters
         self.map = Map.fromstring(mapstr)
         self.engine = Engine(self.map)
-        self.engine.add_listener(self._engine_event)
+        self.engine.add_listener(self._world_event)
         self.game_tick = 0
         self.last_recording_delta = 0
+        self.robo_counters = {"bumps": {}, "hits": {}, "eats": {}}
+        self.listeners = []
 
-    def _engine_event(self, evt: WorldEvent, data: map):
+    def add_listener(self, listener):
+        if callable(listener) and listener not in self.listeners:
+            self.listeners.append(listener)
+
+    def remove_listener(self, listener):
+        if listener in self.listeners:
+            self.listeners.remove(listener)
+
+    def event(self, event: FieldEvent, data: dict):
+        for listener in self.listeners:
+            listener(event, data)
+
+    def _world_event(self, evt: WorldEvent, data: map):
         if evt == WorldEvent.WORLD_EVT_BUMP:
-            pass
+            robo_id = data["robo_id"]
+            self.robo_counters[FieldEvent.FIELD_EVT_MAX_BUMP][robo_id] += 1
+            if self.robo_counters[FieldEvent.FIELD_EVT_MAX_BUMP][robo_id] > self.max_counters["FieldEvent.FIELD_EVT_MAX_BUMP"]:
+                self.event(FieldEvent.FIELD_EVT_MAX_HIT_BOT, data)
         elif evt == WorldEvent.WORLD_EVT_HIT_BOT:
-            pass
+            robo_id = data["robo_id"]
+            self.robo_counters[FieldEvent.FIELD_EVT_MAX_HIT_BOT][robo_id] += 1
+            if self.robo_counters[FieldEvent.FIELD_EVT_MAX_HIT_BOT][robo_id] > self.max_counters[FieldEvent.FIELD_EVT_MAX_HIT_BOT]:
+                self.event(FieldEvent.FIELD_EVT_MAX_HIT_BOT, data)
         elif evt == WorldEvent.WORLD_EVT_BEACON_EATEN:
-            pass
+            robo_id = data["robo_id"]
+            self.robo_counters[FieldEvent.FIELD_EVT_MAX_BEACON_EATEN][robo_id] += 1
+            if self.robo_counters[FieldEvent.FIELD_EVT_MAX_BEACON_EATEN][robo_id] > self.max_counters[FieldEvent.FIELD_EVT_MAX_BEACON_EATEN]:
+                self.event(FieldEvent.FIELD_EVT_MAX_BEACON_EATEN, data)
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
@@ -24,6 +50,9 @@ class RoboGame:
             self.robos[robo_id] = {
                 'player': player_id
             }
+            self.robo_counters["bumps"][robo_id] = 0
+            self.robo_counters["hits"][robo_id] = 0
+            self.robo_counters["eats"][robo_id] = 0
             return robo_id
         else:
             return None

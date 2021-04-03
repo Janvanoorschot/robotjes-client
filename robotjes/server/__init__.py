@@ -1,3 +1,11 @@
+from enum import Enum
+
+
+class FieldEvent(Enum):
+    FIELD_EVT_MAX_BEACON_EATEN = 1
+    FIELD_EVT_MAX_BUMP = 2
+    FIELD_EVT_MAX_HIT_BOT = 3
+
 
 from .robo_game import RoboGame
 from .player import Player

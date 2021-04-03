@@ -1,4 +1,4 @@
-from . import RoboGame, Player
+from . import RoboGame, Player, FieldEvent
 from robotjes.server.model import GameSpec, GameStatus
 
 
@@ -26,7 +26,15 @@ class Field:
     def create_game(self, spec: GameSpec):
         # for the time being only create RoboGame's
         mapstr = self.owner.mazes.get_map(spec.maze_id)
-        return RoboGame(mapstr)
+        counters = {
+            FieldEvent.FIELD_EVT_MAX_BUMP.name: 1
+        }
+        game = RoboGame(mapstr, counters)
+        game.add_listener(self._field_event)
+        return game
+
+    def _field_event(self, evt: FieldEvent, data: map):
+        pass
 
     def created(self):
         # send a status change to the games exchange
