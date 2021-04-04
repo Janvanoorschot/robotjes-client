@@ -27,12 +27,6 @@ class RobotjesEngine(object):
         self.tick = -1
         self.now = None
 
-    def _field_event(self, evt: FieldEvent, data: dict):
-        pass
-
-    def isRunning(self):
-        return self.game_state == GameStatus.STARTED
-
     ####### Requests from robotjes_viewer via REST
     def start_game(self):
         if self.game_state == GameStatus.CREATED:
@@ -43,6 +37,9 @@ class RobotjesEngine(object):
     def stop_game(self):
         # stop the currently running game and create a new one in the 'created' (not 'running') state
         pass
+
+    def isRunning(self):
+        return self.game_state == GameStatus.STARTED
 
     ####### Requests from robotjes_client via REST
     def register_with_game(self, data):
@@ -56,7 +53,11 @@ class RobotjesEngine(object):
             move = data.get("move", {})
             self.moves[player_id] = move
 
-    ######## Useed by Field
+    ######## Useed by Field to publish status updates (stored by status_keeper)
+    def _field_event(self, evt: FieldEvent, data: dict):
+        # received an event that says the bot is done.
+        pass
+
     def publish(self, type: GameStatus, data: map):
         if type == GameStatus.CREATED:
             request = self._create_request(type, data)
@@ -81,7 +82,7 @@ class RobotjesEngine(object):
         players_status = {}
         for player_id, dummy in self.players.items():
             players_status[player_id] = self.field.get_player_status(player_id)
-        item = {
+        request = {
             "bubble_id": self.bubble_id,
             "game_id":  self.game_id,
             "game_name":  self.game_name,
@@ -95,7 +96,7 @@ class RobotjesEngine(object):
             "players_status": players_status,
             "data": data
         }
-        return item
+        return request
 
     ########## Timer logic
     def timer(self, now):
