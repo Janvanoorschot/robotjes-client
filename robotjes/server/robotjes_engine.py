@@ -1,7 +1,7 @@
 from uuid import uuid4
 from robotjes.server.model import GameSpec, GameStatus
 from robotjes.sim import Mazes
-from . import Field, StatusKeeper
+from . import Field, StatusKeeper, FieldEvent
 
 
 class RobotjesEngine(object):
@@ -19,12 +19,16 @@ class RobotjesEngine(object):
         self.players = {}
         self.moves = {}
         self.field = Field(self, init_spec)
+        self.field.add_listener(self._field_event)
         self.field.created()
         self.game_state = GameStatus.CREATED
         self.resolution = 10
         self.starttime = None
         self.tick = -1
         self.now = None
+
+    def _field_event(self, evt: FieldEvent, data: dict):
+        pass
 
     def isRunning(self):
         return self.game_state == GameStatus.STARTED

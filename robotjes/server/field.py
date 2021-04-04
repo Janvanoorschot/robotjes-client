@@ -23,6 +23,19 @@ class Field:
         self.max_tick = 30
         self.players = {}
         self.resolution = 5
+        self.listeners = []
+
+    def add_listener(self, listener):
+        if callable(listener) and listener not in self.listeners:
+            self.listeners.append(listener)
+
+    def remove_listener(self, listener):
+        if listener in self.listeners:
+            self.listeners.remove(listener)
+
+    def event(self, event: FieldEvent, data: dict):
+        for listener in self.listeners:
+            listener(event, data)
 
     def create_game(self, spec: GameSpec):
         if spec.game_name == 'eat_three':
@@ -47,11 +60,8 @@ class Field:
             raise ValueError(f"invalid game name: {spec.game_name}")
         mapstr = self.owner.mazes.get_map(spec.maze_id)
         game = RoboGame(mapstr, counters)
-        game.add_listener(self._field_event)
+        game.add_listener(self.event)
         return game
-
-    def _field_event(self, evt: FieldEvent, data: map):
-        pass
 
     def created(self):
         # send a status change to the games exchange

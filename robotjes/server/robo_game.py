@@ -15,6 +15,7 @@ class RoboGame:
         self.robo_counters = {}
         for evt in WorldEvent:
             self.robo_counters[evt] = {}
+            self.robo_counters[evt] = {}
         self.listeners = []
 
     def add_listener(self, listener):
@@ -30,29 +31,24 @@ class RoboGame:
             listener(event, data)
 
     def _world_event(self, evt: WorldEvent, data: map):
-        if evt == WorldEvent.WORLD_EVT_BUMP:
-            robo_id = data["robo_id"]
-            self.robo_counters[WorldEvent.WORLD_EVT_BUMP][robo_id] += 1
-            self._test_counters(robo_id, data)
-        elif evt == WorldEvent.WORLD_EVT_HIT_BOT:
-            robo_id = data["robo_id"]
-            self.robo_counters[WorldEvent.WORLD_EVT_HIT_BOT][robo_id] += 1
-            self._test_counters(robo_id, data)
-        elif evt == WorldEvent.WORLD_EVT_BEACON_EATEN:
-            robo_id = data["robo_id"]
-            self.robo_counters[WorldEvent.WORLD_EVT_BEACON_EATEN][robo_id] += 1
-            self._test_counters(robo_id, data)
+        robo_id = data["robo_id"]
+        self.robo_counters[evt][robo_id] += 1
+        self._test_counters(robo_id, data)
 
     def _test_counters(self, robo_id:str, data: dict):
         # first check
         for evt in WorldEvent:
-            if self.robo_counters[evt][robo_id] > self.counters["max"][evt]:
-                # the robo exceded a given limit
-                self.event(FieldEvent.FIELD_EVT_LIMIT_REACHED, data)
+            if "max" in self.counters and evt in self.counters["max"]:
+                if self.robo_counters[evt][robo_id] >= self.counters["max"][evt]:
+                    # the robo exceded a given limit
+                    data["world_event"] = evt
+                    self.event(FieldEvent.FIELD_EVT_LIMIT_REACHED, data)
         for evt in WorldEvent:
-            if self.robo_counters[evt][robo_id] < self.counters["min"][evt]:
-                # robo completed a task
-                self.event(FieldEvent.FIELD_EVT_TASK_DONE, data)
+            if "min" in self.counters and evt in self.counters["min"]:
+                if self.robo_counters[evt][robo_id] >= self.counters["min"][evt]:
+                    # robo completed a task
+                    data["world_event"] = evt
+                    self.event(FieldEvent.FIELD_EVT_TASK_DONE, data)
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
