@@ -10,7 +10,7 @@ async def startup_event():
     pass
 
 @app.on_event("startup")
-@repeat_every(seconds=2)
+@repeat_every(seconds=0.1)
 async def timer_task():
     now = datetime.datetime.now()
     server.status_keeper.timer(now)
