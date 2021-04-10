@@ -23,19 +23,19 @@ class Field:
         self.max_tick = 30
         self.players = {}
         self.resolution = 5
-        self.listeners = []
 
-    def add_listener(self, listener):
-        if callable(listener) and listener not in self.listeners:
-            self.listeners.append(listener)
-
-    def remove_listener(self, listener):
-        if listener in self.listeners:
-            self.listeners.remove(listener)
-
-    def event(self, event: FieldEvent, data: dict):
-        for listener in self.listeners:
-            listener(event, data)
+    def event(self, evt: FieldEvent, data: dict):
+        # handler world even and turn it into owner-publish
+        if evt == FieldEvent.FIELD_EVT_TASK_DONE:
+            self.owner.publish(GameStatus.PLAYER_SUCCESS, {
+                "player_id": self.owned_by(data['robo_id'])
+            })
+        elif evt == FieldEvent.FIELD_EVT_LIMIT_REACHED:
+            self.owner.publish(GameStatus.PLAYER_FAILURE, {
+                "player_id": self.owned_by(data['robo_id'])
+            })
+        else:
+            pass
 
     def create_game(self, spec: GameSpec):
         if spec.game_name == 'eat_three':
@@ -106,6 +106,13 @@ class Field:
 
     def player_count(self):
         return self.max_player_count
+
+    def owned_by(self, robo_id):
+        for player_id, player in self.players.items():
+            for robo in player.robos:
+                if robo_id == robo:
+                    return player_id
+        return None
 
     def get_game_status(self):
         return {

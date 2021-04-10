@@ -2,7 +2,7 @@ from uuid import uuid4
 import datetime
 from robotjes.server.model import GameSpec, GameStatus
 from robotjes.sim import Mazes
-from . import Field, StatusKeeper, FieldEvent
+from robotjes.server import Field, StatusKeeper
 
 
 class RobotjesEngine(object):
@@ -21,7 +21,6 @@ class RobotjesEngine(object):
         self.lastseen = {}
         self.moves = {}
         self.field = Field(self, init_spec)
-        self.field.add_listener(self._field_event)
         self.field.created()
         self.game_state = GameStatus.CREATED
         self.resolution = 10
@@ -66,16 +65,6 @@ class RobotjesEngine(object):
             self.moves[player_id] = move
 
     ######## Useed by Field to publish status updates (stored by status_keeper)
-    def _field_event(self, evt: FieldEvent, data: dict):
-        # received an event that says the bot is done.
-        if evt == FieldEvent.FIELD_EVT_TASK_DONE:
-            # succesfull
-            pass
-        elif evt == FieldEvent.FIELD_EVT_LIMIT_REACHED:
-            # failure
-            pass
-        else:
-            pass
 
     def publish(self, type: GameStatus, data: map):
         if type == GameStatus.CREATED:
@@ -96,6 +85,8 @@ class RobotjesEngine(object):
         elif type == GameStatus.IDLE:
             request = self._create_request(type, data)
             self.status_keeper.game_status_event(request)
+        else:
+            pass
 
     def _create_request(self, msg:GameStatus, data):
         players_status = {}
