@@ -67,26 +67,8 @@ class RobotjesEngine(object):
     ######## Useed by Field to publish status updates (stored by status_keeper)
 
     def publish(self, type: GameStatus, data: map):
-        if type == GameStatus.CREATED:
-            request = self._create_request(type, data)
-            self.status_keeper.game_status_event(request)
-        elif type == GameStatus.STARTED:
-            request = self._create_request(type, data)
-            self.status_keeper.game_status_event(request)
-        elif type == GameStatus.STOPPED:
-            request = self._create_request(type, data)
-            self.status_keeper.game_status_event(request)
-        elif type == GameStatus.GAMETICK:
-            request = self._create_request(type, data)
-            self.status_keeper.game_status_event(request)
-        elif type == GameStatus.DELTAREC:
-            request = self._create_request(type, data)
-            self.status_keeper.game_status_event(request)
-        elif type == GameStatus.IDLE:
-            request = self._create_request(type, data)
-            self.status_keeper.game_status_event(request)
-        else:
-            pass
+        request = self._create_request(type, data)
+        self.status_keeper.game_status_event(request)
 
     def _create_request(self, msg:GameStatus, data):
         players_status = {}

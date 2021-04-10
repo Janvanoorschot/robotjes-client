@@ -37,7 +37,10 @@ class StatusKeeper(object):
             # CREATED event is already handled
             pass
         elif msg == 'IDLE':
-            # IDLE is IDLE
+            pass
+        elif msg == 'PLAYER_SUCCESS':
+            pass
+        elif msg == 'PLAYER_FAILURE':
             pass
         else:
             logger.warning(f"unknown msg: {msg}")
