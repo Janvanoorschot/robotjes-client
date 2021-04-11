@@ -22,7 +22,10 @@ class PlayerClient:
         pass
 
     def issue_command(self, game_tick, robo_id, cmd, reply):
-        print(f"command: {game_tick}/{robo_id}/{cmd}/{reply}")
+        if not reply[2]['active']:
+            print(f"last command: {game_tick}/{robo_id}/{cmd}/{reply}")
+        else:
+            print(f"command: {game_tick}/{robo_id}/{cmd}/{reply}")
 
 
 def load_client(module_name):

@@ -71,13 +71,14 @@ class Player:
 
     async def stop(self):
         for robo_id, robo in self.robos.items():
-            self.robo_coroutines[robo_id].cancel()
-            await robo.requestor.close()
+           self.robo_coroutines[robo_id].cancel()
+           await robo.requestor.close()
+        # the hard way to kill tasks in the executor.
         self.executor._threads.clear()
         concurrent.futures.thread._threads_queues.clear()
+        # the soft way to kill the executor does not work
         # self.executor.shutdown(wait=False)
         self.stopped = True
-        sys.exit("player break")
 
     async def timer(self):
         if not self.stopped:
