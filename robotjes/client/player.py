@@ -65,13 +65,17 @@ class Player:
                     reply = await self.handler.execute(self.game_tick, robo.id, cmd)
                     self.callback('issue_command', self.game_tick, robo.id, cmd, reply)
                     await robo.requestor.put(reply)
+            if not self.stopped and self.handler.stopped():
+                await self.stop()
         return True
 
     async def stop(self):
         for robo_id, robo in self.robos.items():
             self.robo_coroutines[robo_id].cancel()
             await robo.requestor.close()
-        self.executor.shutdown(wait=False)
+        self.executor._threads.clear()
+        concurrent.futures.thread._threads_queues.clear()
+        # self.executor.shutdown(wait=False)
         self.stopped = True
         sys.exit("player break")
 
