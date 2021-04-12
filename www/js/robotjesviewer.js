@@ -78,9 +78,11 @@
         $.getJSON("/challenge/skin")
             .then(function(skin) {
                 that.skin = skin;
-                return $.getJSON("/challenge/map")
+                let url = `/game/${game_id}/map`;
+                return $.getJSON(url)
                     .done(function (result) {
-                        that.map = result[1]["results"]["map"];
+                        // that.map = result[1]["results"]["map"];
+                        that.map = result['maze_map'];
                     })
             })
             .then(function() {
@@ -122,19 +124,19 @@
         that.node.empty();
     }
 
-    function loadMap(that) {
-        $.getJSON("/challenge/map")
-            .then(function(skin) {
-                that.skin = skin;
-                return $.getJSON("/challenge/map")
-                    .done(function (response) {
-                        let recording_json = response[1].results;
-                        let recording = createRecording(that, recording_json);
-                        that.recording = recording
-                        that.movieplayer.start(recording, false, false);
-                    })
-            })
-    }
+    // function loadMap(that) {
+    //     $.getJSON("/challenge/map")
+    //         .then(function(skin) {
+    //             that.skin = skin;
+    //             return $.getJSON("/challenge/map")
+    //                 .done(function (response) {
+    //                     let recording_json = response[1].results;
+    //                     let recording = createRecording(that, recording_json);
+    //                     that.recording = recording
+    //                     that.movieplayer.start(recording, false, false);
+    //                 })
+    //         })
+    // }
 
     function createRecording(that, recording_json) {
         let recording =  $.fn.rm.recording(recording_json.map, that.skin,that.images);
