@@ -9,6 +9,9 @@ class RoboGame:
         self.counters = counters
         self.map = Map.fromstring(mapstr)
         self.engine = Engine(self.map)
+        self.engine.world.beacons.clear()
+        self.beacon_count = 3
+        self._update_beacons()
         self.engine.add_listener(self._world_event)
         self.game_tick = 0
         self.last_recording_delta = 0
@@ -34,6 +37,8 @@ class RoboGame:
         robo_id = data["robo_id"]
         self.robo_counters[evt][robo_id] += 1
         self._test_counters(robo_id, data)
+        if evt == WorldEvent.WORLD_EVT_BEACON_EATEN:
+            self._update_beacons()
 
     def _test_counters(self, robo_id:str, data: dict):
         # first check
@@ -49,6 +54,14 @@ class RoboGame:
                     # robo completed a task
                     data["world_event"] = evt
                     self.event(FieldEvent.FIELD_EVT_TASK_DONE, data)
+
+    def _update_beacons(self):
+        while len(self.engine.world.beacons) < self.beacon_count:
+            # find a next position
+            for pos in self.engine.world.map.beacons:
+                if self.engine.world.available_pos(pos):
+                    self.engine.world.beacons.add(pos)
+                    break
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
