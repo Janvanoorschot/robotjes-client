@@ -47,7 +47,6 @@ async def delete_game(game_id: str):
 @app.get("/game/{game_id}/map")
 async def get_game_map(game_id: str):
     """Get the current game map"""
-    pass
     result = server.status_keeper.get_game_map(game_id)
     return result
 
