@@ -8,6 +8,7 @@
             "name": "Robotjes-Web",
             "request": "launch",
             "type": "pwa-chrome",
+            "runtimeExecutable": "custom",
             "url": "http://localhost:8765",
             "webRoot": "${workspaceFolder}/www"
         },

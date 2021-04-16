@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 class StatusKeeper(object):
 
     def __init__(self):
-        self.games = {}
+        self.games :dict(str, GameStatus) = {}
         self.lastseen = {}
         self.now = None
         self.keep_alive = 10
@@ -61,6 +61,11 @@ class StatusKeeper(object):
 
     def get_game_map(self, game_id):
         if game_id in self.games:
+            # construct the game_map from the original game_map plus
+            # the current game
+            map = self.games[game_id].game_map()
+            # status = self.games[game_id].
+             
             return self.games[game_id].game_map()
         else:
             return {}
