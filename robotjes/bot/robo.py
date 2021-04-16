@@ -51,9 +51,11 @@ class Robo(object):
     #  )
     # ]
     def _handle_result(self, result):
-        if not self.is_running:
-            self.stop()
-        return result[1]
+        player_result = result[2]
+        robo_status = result[1]
+        if not player_result['active']:
+            self.is_running = False
+        return robo_status
 
     def _handle_boolean_result(self, result):
         if not self.is_running:
@@ -203,6 +205,9 @@ class Robo(object):
     def stop(self):
         # self.requestor.execute([])
         sys.exit("robo break")
+
+    def active(self):
+        return self.is_running
 
     @staticmethod
     def is_observation(cmd):

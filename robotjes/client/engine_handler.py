@@ -39,7 +39,7 @@ class LocalEngineHandler:
         # ]
         b = reply[1][0][0][0]
         status = reply[1][0][1]
-        return [b, status]
+        return [b, status, {}]
 
     async def game_timer(self, cur_tick):
         next_tick = cur_tick + 1
@@ -65,10 +65,12 @@ class RemoteEngineHandler:
         self.password = password
         self.game_id = None
         self.player_id = None
-        self.started = False
+        self.is_started = False
+        self.is_stopped = False
         self.robo_id = None
         self.game_tick = 0
         self.robo_status = {}
+        self.player_result = {}
         self.register_lock = asyncio.Lock()
 
     async def start_player(self):
@@ -89,7 +91,8 @@ class RemoteEngineHandler:
             await self.register_lock.acquire()
             await self.register_lock.acquire()
             if self.robo_id:
-                self.started = True
+                self.is_started = True
+                self.is_stopped = False
                 return self.robo_id
             else:
                 return None
@@ -98,16 +101,16 @@ class RemoteEngineHandler:
 
     async def stop_player(self):
             await self.rest_client.deregister_player(self.game_id, self.player_id)
-            self.started = False
 
     async def execute(self, game_tick, robo_id, cmd):
         rest_reply = await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
         robo_status = self.robo_status.get(robo_id, None)
+        player_result = self.player_result
         if Robo.is_observation(cmd) and robo_status:
             b = Robo.observation(robo_status, cmd)
         else:
             b = False
-        return [b, robo_status]
+        return [b, robo_status, player_result]
 
     async def game_timer(self, cur_tick):
         status = await self.rest_client.status_player(self.game_id, self.player_id)
@@ -120,13 +123,19 @@ class RemoteEngineHandler:
                     self.register_lock.release()
             for robo_id, robo_status in status['player_status']['robos'].items():
                 self.robo_status[robo_id] = robo_status
+            self.player_result = status['player_result']
+            if self.started and not self.is_stopped and not status['player_result']['active']:
+                # we are done
+                self.is_stopped = True
+                await self.stop_player()
+
         return self.game_tick
 
     def get_robo_status(self, robo_id):
         return self.robo_status.get(robo_id, None)
 
     def started(self):
-        return self.started
+        return self.is_started
 
     def stopped(self):
-        return not self.started
+        return self.is_stopped

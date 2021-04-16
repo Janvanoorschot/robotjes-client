@@ -1,6 +1,7 @@
 import uuid
 from .world import World
 from .recording import Recording
+from . import WorldEvent
 
 LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
                   "eatUp", "paintWhite", "paintBlack", "stopPainting",
@@ -9,6 +10,8 @@ LEGAL_COMMANDS = ["forward", "backward", "left", "right", "pickUp", "putDown",
                   "rightIsClear", "rightIsObstacle", "rightIsBeacon", "rightIsRobot", "rightIsWhite", "rightIsBlack",
                   "flipCoin", "message", "error"
                   ]
+
+
 class Engine(object):
 
     def __init__(self, map):
@@ -17,6 +20,19 @@ class Engine(object):
         self.recording = Recording()
         self.robos = {}
         self.game_time = 0
+        self.listeners = []
+
+    def add_listener(self, listener):
+        if callable(listener) and listener not in self.listeners:
+            self.listeners.append(listener)
+
+    def remove_listener(self, listener):
+        if listener in self.listeners:
+            self.listeners.remove(listener)
+
+    def event(self, event: WorldEvent, data: dict):
+        for listener in self.listeners:
+            listener(event, data)
 
     def get_recording(self):
         return self.recording
@@ -85,6 +101,14 @@ class Engine(object):
                     reply.append([success, next_pos])
                     actual = actual + 1
                 else:
+                    if self.world.check(robo_id, World.FRONT, World.ROBOT):
+                        pos = self.world.calc_pos(robo_id, World.FRONT, 1)
+                        for bot in self.world.bots:
+                            if bot.pos == pos:
+                                self.event(WorldEvent.WORLD_EVT_HIT_BOT, {"robo_id": robo_id, "victim": bot})
+                                break
+                    else:
+                        self.event(WorldEvent.WORLD_EVT_BUMP, {"robo_id": robo_id})
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
                     self.world.inc("robotHasBumped")
@@ -100,6 +124,14 @@ class Engine(object):
                     reply.append([success, next_pos])
                     actual = actual + 1
                 else:
+                    if self.world.check(robo_id, World.BACK, World.ROBOT):
+                        pos = self.world.calc_pos(robo_id, World.BACK, 1)
+                        for bot in self.world.bots:
+                            if bot.pos == pos:
+                                self.event(WorldEvent.WORLD_EVT_HIT_BOT, {"robo_id": robo_id, "victim": bot})
+                                break
+                    else:
+                        self.event(WorldEvent.WORLD_EVT_BUMP, {"robo_id": robo_id})
                     self.recording.boom(cmd)
                     reply.append([False, next_pos])
                     self.world.inc("robotHasBumped")
@@ -129,6 +161,9 @@ class Engine(object):
             self.recording.putDown(success)
         elif command == "eatUp":
             success = self.world.eatUp(robo_id)
+            if success:
+                self.event(WorldEvent.WORLD_EVT_BEACON_EATEN,
+                           {"robo_id": robo_id})
             reply.append([success])
             self.recording.eatUp(success)
         elif command == "paintWhite":
@@ -270,6 +305,3 @@ class Engine(object):
         result = self.world.get_map_status()
         result['game_time'] = self.game_time
         return result
-
-
-
