@@ -180,7 +180,7 @@
 
     function doRecordingTimer(that, timerTick) {
         if(timerTick % that.recordingDelta === 0) {
-            if(that.game_id) {
+            if(that.game_id && that.recording) {
                 that.recording.timer(timerTick);
             }
         }
