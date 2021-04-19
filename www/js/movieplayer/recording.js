@@ -45,7 +45,7 @@
         determineTileSize(that);
 
         that.setAllFrames = function(frames, init_x, init_y, init_dir) {
-            that.frames = $.fn.rm.classicframeholder(frames, init_x, init_y, init_dir, that.success);
+            that.frames = $.fn.rm.classicframeholder(that.map, frames, init_x, init_y, init_dir, that.success);
         };
 
         that.setDeltaFrames = function(game_id) {
@@ -131,21 +131,36 @@
                 throw new Error("frames not set");
             }
         };
+        that.beaconLines = function() {
+            if(that.frames) {
+                return that.frames.beaconLines();
+            } else {
+                throw new Error("frames not set");
+            }
+            // return that.map.beaconLines;
+        };
+        that.paintLines = function() {
+            if(that.frames) {
+                return that.frames.paintLines();
+            } else {
+                throw new Error("frames not set");
+            }
+            // return that.map.paintLines;
+        };
+        that.robotLines = function() {
+            if(that.frames) {
+                return that.frames.robotLines();
+            } else {
+                throw new Error("frames not set");
+            }
+            // return that.map.robotLines;
+        };
 
         that.mapLines = function() {
             return that.map.mapLines;
         };
-        that.beaconLines = function() {
-            return that.map.beaconLines;
-        };
         that.extraLines = function() {
             return that.map.extraLines;
-        };
-        that.paintLines = function() {
-            return that.map.paintLines;
-        };
-        that.robotLines = function() {
-            return that.map.robotLines;
         };
         that.imageDefs = function() {
             return that.map.images;
@@ -201,10 +216,11 @@
         that.tileSize = defaultImage.width;
     }
 
-    $.fn.rm.classicframeholder = function(recframes, init_x, init_y, init_dir, success) {
+    $.fn.rm.classicframeholder = function(map, recframes, init_x, init_y, init_dir, success) {
 
         var that = {};
 
+        that.map = map;
         let botname = "r";
         if(recframes && recframes.length>0) {
             botname = recframes[0].sprite;
@@ -307,6 +323,16 @@
 
         that.removeSprite = function(sprite_id) {
             // noop in classic recording
+        };
+
+        that.beaconLines = function() {
+            return that.map.beaconLines;
+        };
+        that.paintLines = function() {
+            return that.map.paintLines;
+        };
+        that.robotLines = function() {
+            return that.map.robotLines;
         };
 
         function doCalcFrameDuration(frame) {
@@ -478,6 +504,16 @@
 
         that.removeSprite = function(sprite_id) {
             delete that.sprites[sprite_id];
+        };
+
+        that.beaconLines = function() {
+            return [];
+        };
+        that.paintLines = function() {
+            return [];
+        };
+        that.robotLines = function() {
+            return [];
         };
 
         that.timer = function(timerTick) {
