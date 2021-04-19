@@ -18,6 +18,7 @@
         }
         that.node = node;
         that.skin = null;
+        that.map = null;
         that.images = {}
         that.movieplayer = null;
         that.timer = null;
