@@ -171,10 +171,12 @@
         };
 
         that.center = function () {
-            var robotLine = that.robotLines()[0];
-            var startX = robotLine.x;
-            var startY = robotLine.y;
-            return [startX, startY];
+            if(that.map.robotLines.length > 0) {
+                var robotLine = that.map.robotLines[0]
+                return [robotLine.x, robotLine.y];
+            } else {   
+                return [that.mapWidth/2, that.mapHeight/2];
+            }
         };
 
         that.getEndScore = function () {

@@ -41,11 +41,18 @@
         that.recording = recording;
 
         // called as animation update
-        that.prepare = function(){that.x = (that.x - velocityX) % image.width; that.y = (that.y - velocityY) % image.height};
+        that.prepare = function(){
+            that.x = (that.x - velocityX) % image.width; 
+            that.y = (that.y - velocityY) % image.height;
+        };
 
         // public API (painter)
         that.draw = function(scenery) {
-            scenery.paintInfinitePattern(viewport, image, relativeScale, that.x, that.y);
+            if(that.x !=0) {
+                scenery.paintInfinitePattern(viewport, image, relativeScale, that.x, that.y);
+            } else {
+                scenery.paintInfinitePattern(viewport, image, relativeScale, that.x, that.y);
+            }
         };
 
         return that;
