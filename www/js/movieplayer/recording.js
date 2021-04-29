@@ -396,6 +396,8 @@
         that.deltas = [];                    // ordered list of deltas
         that.cur_delta_ix = -1;              // current delta
         that.cur_frame_ix = -1;              // current/next frame in current delta
+        that.map_status = null;              // current valid game_status
+        that.map_status_game_tick = -1;      // timestamp of current valid game_status
 
         // the following data in maintained during creation/rewind/getNext
         that.sprites = {};                   // sprites that currently (that.ptr) occur in the recording
@@ -545,7 +547,6 @@
         function doGetDeltas(that) {
             if(that.game_id) {
                 let map = null;
-                // let url = window.location.pathname+'/field/gamerecording?game_id=' + that.game_id+"&before_game_time="+that.before_game_time;
                 let url = '/field/gamerecording?game_id=' + that.game_id+"&before_game_time="+that.before_game_time;
                 $.ajax({
                     url: url,
@@ -573,9 +574,10 @@
                     } else {
                         that.first_tick = lst[ix].game_tick;
                     }
+                    that.map_status = lst[ix].map_status;
+                    that.map_status_game_tick = lst[ix].game_tick;
                 }
                 that.deltas.push(lst[ix]);
-                //console.log("recording.js/doAddDeltas["+lst[ix].game_tick+"]["+lst[ix].frames.length+"]");
             }
         }
 
@@ -586,8 +588,14 @@
                     frame = that.deltas[that.cur_delta_ix].frames[that.cur_frame_ix];
                     that.cur_frame_ix++;
                     if(that.cur_frame_ix>= that.deltas[that.cur_delta_ix].frames.length) {
+                        // used the last frame in the current delta, switch to the next delta
                         that.cur_delta_ix++;
                         that.cur_frame_ix = 0;
+                        // if we entered a valid new delta, update the current map_status
+                        if(that.cur_delta_ix < that.deltas.length) {
+                            that.map_status = that.deltas[that.cur_delta_ix].map_status;
+                            that.map_status_game_tick = that.deltas[that.cur_delta_ix].game_tick;
+                        }
                     }
                 } else {
                     that.cur_delta_ix++;

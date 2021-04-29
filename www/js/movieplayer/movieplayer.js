@@ -393,11 +393,6 @@
             that.centerX = center[0];
             that.centerY = center[1];
             that.centerZoom = 0.6;
-
-            // var robotLine = that.recording.robotLines()[0];
-            // that.centerX = robotLine.x;
-            // that.centerY = robotLine.y;
-            // that.centerZoom = 0.6;
         }
         if(!that.isCentered) {
             that.isCentered = true;
