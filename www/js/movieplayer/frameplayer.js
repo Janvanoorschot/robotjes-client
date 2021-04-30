@@ -67,8 +67,10 @@
         that.id = id;
         that.rootnode = rootnode;
         that.recording = recording;
-        that.painter = painter;
+        that.map_status_game_tick = -1;
+
         // remember the sub-painters we need
+        that.painter = painter;
         that.spritePainter = that.painter.subPainter('sprite');
         that.paintPainter = that.painter.subPainter('paint');
         that.beaconPainter = that.painter.subPainter('beacon');
@@ -226,6 +228,7 @@
         that.timerTick = function() {
             var request = that.request;
             that.request = 'none';
+            checkMapStatus(that);
             switch(that.mode) {
                 case 'stopped':
                     switch(request) {
@@ -323,6 +326,26 @@
     /*********************************************************************
      * Actions
      ********************************************************************/
+
+    function checkMapStatus(that) {
+        let status_tick = that.recording.getMapStatusGameTick();
+        if(that.t > status_tick && status_tick>that.map_status_game_tick) {
+            that.map_status_game_tick = status_tick;
+            applyMapStatus(that, status_tick, that.recording.getMapStatus());
+        }
+    }
+
+    function applyMapStatus(that, status_tick, map_status) {
+        // beacons
+        let beacons = that.beaconPainter.getBeacons();
+        map_status['beaconLines'].forEach(function(line) {
+            console.log("beaconLine: " + line + "\n");
+        });
+        // that.beaconPainter.startDroppingBeacon(droid,x,y);
+        // newSfx = that.sfx['Beep7']
+        // that.beaconPainter.addBeacon(x,y);
+
+    }
 
     function runStart(that) {
         that.droids = {};
@@ -449,7 +472,6 @@
         let cnt_started = 0;
         if(!that.recording.atEnd() && that.recording.hasNext() && (that.recording.nextAt() <= that.t)) {
             // it is time to get the next frame (which will forward the recording)
-            // console.log("frameplayer/startCommands["+that.recording.nextAt() + "][" + that.t + "]");
             that.t = that.recording.nextAt();
             let frame = that.recording.getNext(that.t);
             if(frame) {

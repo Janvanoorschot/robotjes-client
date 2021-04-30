@@ -108,6 +108,22 @@
             }
         };
 
+        that.getMapStatusGameTick = function() {
+            if(that.frames) {
+                return that.frames.getMapStatusGameTick();
+            } else {
+                throw new Error("frames not set");
+            }
+        }
+
+        that.getMapStatus = function() {
+            if(that.frames) {
+                return that.frames.getMapStatus();
+            } else {
+                throw new Error("frames not set");
+            }
+        }
+
         that.rewind = function() {
             if(that.frames) {
                 return that.frames.rewind();
@@ -314,6 +330,17 @@
             }
         };
 
+        that.getMapStatusGameTick = function() {
+            // there is only one mapstatus, and it is available at the startg time 0
+            return 0;
+        }
+
+        that.getMapStatus = function() {
+            // return the mapstatus available from the original 
+            // ToDo: implement
+            return []
+        }
+
         that.rewind = function() {
             that.ptr = 0;
             that.next_t = 0;
@@ -498,6 +525,15 @@
             return multiframe;
         };
 
+        that.getMapStatusGameTick = function() {
+            // there is only one mapstatus, and it is available at the startg time 0
+            return that.map_status_game_tick;
+        }
+
+        that.getMapStatus = function() {
+            return that.map_status;
+        }
+
         that.rewind = function() {
             // think about it
         };
@@ -569,13 +605,15 @@
         function doAddDeltas(that, lst, first=false) {
             for(let ix=0; ix < lst.length; ix++) {
                 if(that.first_tick < 0) {
+                    // the first time
                     if(lst[ix].frames.length > 0) {
                         that.first_tick = lst[ix].frames[0][0].tick;
                     } else {
                         that.first_tick = lst[ix].game_tick;
                     }
                     that.map_status = lst[ix].map_status;
-                    that.map_status_game_tick = lst[ix].game_tick;
+                    // that.map_status_game_tick = lst[ix].game_tick;
+                    that.map_status_game_tick = 0;  // very low tick so it is always applied.
                 }
                 that.deltas.push(lst[ix]);
             }

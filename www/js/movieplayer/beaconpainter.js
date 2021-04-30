@@ -35,6 +35,14 @@
             removeBeacon(that,x,y);
         };
 
+        that.getBeacons = function() {
+            result = [];
+            that.beacons.forEach(function(beacon) {
+                result.append([beacon.x, beacon.y]);
+            });
+            return result;
+        }
+
         that.draw = function(scenery) {
             that.beacons.forEach( function(beacon) {
                 beacon.draw(scenery);
