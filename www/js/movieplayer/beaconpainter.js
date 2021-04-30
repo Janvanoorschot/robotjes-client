@@ -38,7 +38,7 @@
         that.getBeacons = function() {
             result = [];
             that.beacons.forEach(function(beacon) {
-                result.append([beacon.x, beacon.y]);
+                result.push([beacon.x, beacon.y]);
             });
             return result;
         }

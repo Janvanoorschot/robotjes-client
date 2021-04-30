@@ -337,14 +337,23 @@
 
     function applyMapStatus(that, status_tick, map_status) {
         // beacons
-        let beacons = that.beaconPainter.getBeacons();
+        let status_beacons = [];
         map_status['beaconLines'].forEach(function(line) {
-            console.log("beaconLine: " + line + "\n");
+            status_beacons.push([line.x, line.y]);
         });
-        // that.beaconPainter.startDroppingBeacon(droid,x,y);
-        // newSfx = that.sfx['Beep7']
-        // that.beaconPainter.addBeacon(x,y);
-
+        let beacons = that.beaconPainter.getBeacons();
+        beacons.forEach(function(coord) {
+            if(!status_beacons.includes(coord)) {
+                that.beaconPainter.removeBeacon(coord[0], coord[1]);
+            }
+        });
+        status_beacons.forEach(function(coord) {
+            if(! beacons.includes(coord)) {
+                that.beaconPainter.addBeacon(coord[0], coord[1]);
+            }
+        });
+        // paint
+        that.paintPainter.setPaintLines(map_status['paintLines']);
     }
 
     function runStart(that) {

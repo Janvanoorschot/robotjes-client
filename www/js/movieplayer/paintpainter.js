@@ -30,6 +30,10 @@
 
         initialize(that);
 
+        that.setPaintLines = function(paintLines) {
+            setPaintLines(that, paintLines);
+        }
+
         that.painterStarted = function(rb,color,fromX,fromY,dx,dy) {
             that.painterLocation[rb] = [fromX,fromY,dx,dy];
         }
@@ -103,10 +107,14 @@
 
     function initialize(that) {
         loadPaintTypes(that);
+        setPaintLines(that, that.recording.paintLines());
+    }
+
+    function setPaintLines(that, paintLines) {
         // walk through initial paints and insert them just like paints made during the run.
         that.paints = [];
-        for(var i in that.recording.paintLines()) {
-            var stroke = that.recording.paintLines()[i];
+        for(var i in paintLines) {
+            var stroke = paintLines[i];
                 var color = stroke.color;
                 var type = stroke.type;
                 var x = stroke.x;
