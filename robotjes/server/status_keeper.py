@@ -61,11 +61,6 @@ class StatusKeeper(object):
 
     def get_game_map(self, game_id):
         if game_id in self.games:
-            # construct the game_map from the original game_map plus
-            # the current game
-            map = self.games[game_id].game_map()
-            # status = self.games[game_id].
-             
             return self.games[game_id].game_map()
         else:
             return {}

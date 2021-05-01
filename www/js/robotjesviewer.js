@@ -18,6 +18,7 @@
         }
         that.node = node;
         that.skin = null;
+        that.map = null;
         that.images = {}
         that.movieplayer = null;
         that.timer = null;
@@ -81,7 +82,6 @@
                 let url = `/game/${game_id}/map`;
                 return $.getJSON(url)
                     .done(function (result) {
-                        // that.map = result[1]["results"]["map"];
                         that.map = result['maze_map'];
                     })
             })
@@ -116,44 +116,11 @@
                 that.recording  =  $.fn.rm.recording(that.map, that.skin,that.images);
                 that.recording.setDeltaFrames(game_id);
                 that.movieplayer.start(that.recording, false, false);
-                // loadMap(that)
             })
     }
 
     function exit_game(that) {
         that.node.empty();
-    }
-
-    // function loadMap(that) {
-    //     $.getJSON("/challenge/map")
-    //         .then(function(skin) {
-    //             that.skin = skin;
-    //             return $.getJSON("/challenge/map")
-    //                 .done(function (response) {
-    //                     let recording_json = response[1].results;
-    //                     let recording = createRecording(that, recording_json);
-    //                     that.recording = recording
-    //                     that.movieplayer.start(recording, false, false);
-    //                 })
-    //         })
-    // }
-
-    function createRecording(that, recording_json) {
-        let recording =  $.fn.rm.recording(recording_json.map, that.skin,that.images);
-        let frames = [];
-        if(recording_json.recording != null) {
-            frames = $.extend(true, [], recording_json.recording.keyFrames);  // deep copy of keyFrames
-        }
-        let robotLine = recording.robotLines()[0];
-        let init_x = robotLine.x;
-        let init_y = robotLine.y;
-        let init_dir = 'up';
-        recording.success = recording_json.success;
-        recording.hint = recording_json.hint;
-        recording.profile = recording_json.profile;
-        recording.messages = recording_json.messages;
-        recording.setAllFrames(frames, init_x, init_y, init_dir);
-        return recording;
     }
 
     function doStatusTimer(that, timerTick) {
@@ -180,7 +147,7 @@
 
     function doRecordingTimer(that, timerTick) {
         if(timerTick % that.recordingDelta === 0) {
-            if(that.game_id) {
+            if(that.game_id && that.recording) {
                 that.recording.timer(timerTick);
             }
         }

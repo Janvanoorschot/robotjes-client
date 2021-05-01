@@ -67,8 +67,14 @@
         that.id = id;
         that.rootnode = rootnode;
         that.recording = recording;
-        that.painter = painter;
+
+        // timer info
+        that.t = null;                       // absolute time maintained by the frameplayer
+        that.game_tick = 0;                 // current game-tick as dictated by current state recording
+        that.map_status_game_tick = -1;      // 
+
         // remember the sub-painters we need
+        that.painter = painter;
         that.spritePainter = that.painter.subPainter('sprite');
         that.paintPainter = that.painter.subPainter('paint');
         that.beaconPainter = that.painter.subPainter('beacon');
@@ -226,6 +232,7 @@
         that.timerTick = function() {
             var request = that.request;
             that.request = 'none';
+            checkMapStatus(that);
             switch(that.mode) {
                 case 'stopped':
                     switch(request) {
@@ -323,6 +330,73 @@
     /*********************************************************************
      * Actions
      ********************************************************************/
+
+    function checkMapStatus(that) {
+        let status_tick = that.recording.getMapStatusGameTick();
+        if(status_tick > that.map_status_game_tick) {
+            console.log("new status_tick: [" 
+            + status_tick + "]->["
+            + that.game_tick + "]->["
+            + that.map_status_game_tick + "]"
+            );
+        }
+        if(that.game_tick > status_tick && status_tick>that.map_status_game_tick) {
+            that.map_status_game_tick = status_tick;
+            console.log("huh status_tick: [" 
+            + status_tick + "]->["
+            + that.game_tick + "]->["
+            + that.map_status_game_tick + "]"
+            );
+            applyMapStatus(that, status_tick, that.recording.getMapStatus());
+        }
+    }
+
+    function applyMapStatus(that, status_tick, map_status) {
+        // beacons
+        let status_beacons = [];
+        map_status['beaconLines'].forEach(function(line) {
+            status_beacons.push([line.x, line.y]);
+        });
+        let beacons = that.beaconPainter.getBeacons();
+        beacons.forEach(function(coord) {
+            if(!status_beacons.includes(coord)) {
+                that.beaconPainter.removeBeacon(coord[0], coord[1]);
+            }
+        });
+        status_beacons.forEach(function(coord) {
+            if(! beacons.includes(coord)) {
+                that.beaconPainter.addBeacon(coord[0], coord[1]);
+            }
+        });
+        // paint
+        that.paintPainter.setPaintLines(map_status['paintLines']);
+        // droids
+        map_status['robotLines'].forEach(function(line) {
+            // line: beacons/dir/id/x/y
+            if(line['id'] in that.droids) {
+                let dirix = Math.trunc(line['dir']/90) % 4;
+                let dirs = ['right', 'up', 'left', 'down'];
+                let droid = that.droids[line['id']];
+                if(line['x']!=droid.currentX || line['y']!=droid.currentY) {
+                    console.log(
+                        "move droid:["
+                        +droid.currentX +"]["
+                        +droid.currentY +"]->["
+                        +line['x'] + "]["
+                        +line['y'] + "]");
+                } else {
+                    console.log("droid on the correct place")
+                }
+                droid.setNextPosition(line['x'], line['y']);
+                droid.setNextDirection(dirs[dirix]);
+                droid.updateCurrent();
+            }
+        });
+        // for (const [droidid, droid] of Object.entries(that.droids)) {
+        //     console.log("eikel");
+        //   }
+          
+    }
 
     function runStart(that) {
         that.droids = {};
@@ -449,15 +523,18 @@
         let cnt_started = 0;
         if(!that.recording.atEnd() && that.recording.hasNext() && (that.recording.nextAt() <= that.t)) {
             // it is time to get the next frame (which will forward the recording)
-            // console.log("frameplayer/startCommands["+that.recording.nextAt() + "][" + that.t + "]");
             that.t = that.recording.nextAt();
-            let frame = that.recording.getNext(that.t);
+            let frame = that.recording.getNext();
             if(frame) {
                 for(let ix=0; ix < frame.length; ix++) {
                     cnt_started += 1;
                     let roboframe = frame[ix];
                     let robo_id = roboframe.sprite;
                     let command = roboframe.action[0];
+                    let game_tick = roboframe.tick;
+                    if(game_tick > that.game_tick) {
+                        that.game_tick = game_tick;
+                    }
                     if(!(robo_id in that.droids)) {
                         // unknown droid
                         let init_x = -1;
@@ -546,7 +623,7 @@
         that.recording.rewind();
         let totalDuration = 0;
         while(that.recording.hasNext()) {
-            let frame = that.recording.getNext(that.t);
+            let frame = that.recording.getNext();
             let command = frame.action[0];
             let duration = commandDuration[command];
             let commandCnt = 1;

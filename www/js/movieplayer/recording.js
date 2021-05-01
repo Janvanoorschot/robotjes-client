@@ -45,7 +45,7 @@
         determineTileSize(that);
 
         that.setAllFrames = function(frames, init_x, init_y, init_dir) {
-            that.frames = $.fn.rm.classicframeholder(frames, init_x, init_y, init_dir, that.success);
+            that.frames = $.fn.rm.classicframeholder(that.map, frames, init_x, init_y, init_dir, that.success);
         };
 
         that.setDeltaFrames = function(game_id) {
@@ -108,6 +108,22 @@
             }
         };
 
+        that.getMapStatusGameTick = function() {
+            if(that.frames) {
+                return that.frames.getMapStatusGameTick();
+            } else {
+                throw new Error("frames not set");
+            }
+        }
+
+        that.getMapStatus = function() {
+            if(that.frames) {
+                return that.frames.getMapStatus();
+            } else {
+                throw new Error("frames not set");
+            }
+        }
+
         that.rewind = function() {
             if(that.frames) {
                 return that.frames.rewind();
@@ -131,21 +147,36 @@
                 throw new Error("frames not set");
             }
         };
+        that.beaconLines = function() {
+            if(that.frames) {
+                return that.frames.beaconLines();
+            } else {
+                throw new Error("frames not set");
+            }
+            // return that.map.beaconLines;
+        };
+        that.paintLines = function() {
+            if(that.frames) {
+                return that.frames.paintLines();
+            } else {
+                throw new Error("frames not set");
+            }
+            // return that.map.paintLines;
+        };
+        that.robotLines = function() {
+            if(that.frames) {
+                return that.frames.robotLines();
+            } else {
+                throw new Error("frames not set");
+            }
+            // return that.map.robotLines;
+        };
 
         that.mapLines = function() {
             return that.map.mapLines;
         };
-        that.beaconLines = function() {
-            return that.map.beaconLines;
-        };
         that.extraLines = function() {
             return that.map.extraLines;
-        };
-        that.paintLines = function() {
-            return that.map.paintLines;
-        };
-        that.robotLines = function() {
-            return that.map.robotLines;
         };
         that.imageDefs = function() {
             return that.map.images;
@@ -156,10 +187,12 @@
         };
 
         that.center = function () {
-            var robotLine = that.robotLines()[0];
-            var startX = robotLine.x;
-            var startY = robotLine.y;
-            return [startX, startY];
+            if(that.map.robotLines.length > 0) {
+                var robotLine = that.map.robotLines[0]
+                return [robotLine.x, robotLine.y];
+            } else {   
+                return [that.mapWidth/2, that.mapHeight/2];
+            }
         };
 
         that.getEndScore = function () {
@@ -201,10 +234,11 @@
         that.tileSize = defaultImage.width;
     }
 
-    $.fn.rm.classicframeholder = function(recframes, init_x, init_y, init_dir, success) {
+    $.fn.rm.classicframeholder = function(map, recframes, init_x, init_y, init_dir, success) {
 
         var that = {};
 
+        that.map = map;
         let botname = "r";
         if(recframes && recframes.length>0) {
             botname = recframes[0].sprite;
@@ -296,6 +330,17 @@
             }
         };
 
+        that.getMapStatusGameTick = function() {
+            // there is only one mapstatus, and it is available at the startg time 0
+            return 0;
+        }
+
+        that.getMapStatus = function() {
+            // return the mapstatus available from the original 
+            // ToDo: implement
+            return []
+        }
+
         that.rewind = function() {
             that.ptr = 0;
             that.next_t = 0;
@@ -307,6 +352,16 @@
 
         that.removeSprite = function(sprite_id) {
             // noop in classic recording
+        };
+
+        that.beaconLines = function() {
+            return that.map.beaconLines;
+        };
+        that.paintLines = function() {
+            return that.map.paintLines;
+        };
+        that.robotLines = function() {
+            return that.map.robotLines;
         };
 
         function doCalcFrameDuration(frame) {
@@ -368,6 +423,8 @@
         that.deltas = [];                    // ordered list of deltas
         that.cur_delta_ix = -1;              // current delta
         that.cur_frame_ix = -1;              // current/next frame in current delta
+        that.map_status = null;              // current valid game_status
+        that.map_status_game_tick = -1;      // timestamp of current valid game_status
 
         // the following data in maintained during creation/rewind/getNext
         that.sprites = {};                   // sprites that currently (that.ptr) occur in the recording
@@ -468,6 +525,15 @@
             return multiframe;
         };
 
+        that.getMapStatusGameTick = function() {
+            // there is only one mapstatus, and it is available at the startg time 0
+            return that.map_status_game_tick;
+        }
+
+        that.getMapStatus = function() {
+            return that.map_status;
+        }
+
         that.rewind = function() {
             // think about it
         };
@@ -478,6 +544,16 @@
 
         that.removeSprite = function(sprite_id) {
             delete that.sprites[sprite_id];
+        };
+
+        that.beaconLines = function() {
+            return [];
+        };
+        that.paintLines = function() {
+            return [];
+        };
+        that.robotLines = function() {
+            return [];
         };
 
         that.timer = function(timerTick) {
@@ -507,7 +583,6 @@
         function doGetDeltas(that) {
             if(that.game_id) {
                 let map = null;
-                // let url = window.location.pathname+'/field/gamerecording?game_id=' + that.game_id+"&before_game_time="+that.before_game_time;
                 let url = '/field/gamerecording?game_id=' + that.game_id+"&before_game_time="+that.before_game_time;
                 $.ajax({
                     url: url,
@@ -530,14 +605,17 @@
         function doAddDeltas(that, lst, first=false) {
             for(let ix=0; ix < lst.length; ix++) {
                 if(that.first_tick < 0) {
+                    // the first time
                     if(lst[ix].frames.length > 0) {
                         that.first_tick = lst[ix].frames[0][0].tick;
                     } else {
                         that.first_tick = lst[ix].game_tick;
                     }
+                    that.map_status = lst[ix].map_status;
+                    // that.map_status_game_tick = lst[ix].game_tick;
+                    that.map_status_game_tick = 0;  // very low tick so it is always applied.
                 }
                 that.deltas.push(lst[ix]);
-                //console.log("recording.js/doAddDeltas["+lst[ix].game_tick+"]["+lst[ix].frames.length+"]");
             }
         }
 
@@ -548,8 +626,14 @@
                     frame = that.deltas[that.cur_delta_ix].frames[that.cur_frame_ix];
                     that.cur_frame_ix++;
                     if(that.cur_frame_ix>= that.deltas[that.cur_delta_ix].frames.length) {
+                        // used the last frame in the current delta, switch to the next delta
                         that.cur_delta_ix++;
                         that.cur_frame_ix = 0;
+                        // if we entered a valid new delta, update the current map_status
+                        if(that.cur_delta_ix < that.deltas.length) {
+                            that.map_status = that.deltas[that.cur_delta_ix].map_status;
+                            that.map_status_game_tick = that.deltas[that.cur_delta_ix].game_tick;
+                        }
                     }
                 } else {
                     that.cur_delta_ix++;
