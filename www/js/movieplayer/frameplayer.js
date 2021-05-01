@@ -67,7 +67,11 @@
         that.id = id;
         that.rootnode = rootnode;
         that.recording = recording;
-        that.map_status_game_tick = -1;
+
+        // timer info
+        that.t = null;                       // absolute time maintained by the frameplayer
+        that.game_tick = 0;                 // current game-tick as dictated by current state recording
+        that.map_status_game_tick = -1;      // 
 
         // remember the sub-painters we need
         that.painter = painter;
@@ -329,8 +333,20 @@
 
     function checkMapStatus(that) {
         let status_tick = that.recording.getMapStatusGameTick();
-        if(that.t > status_tick && status_tick>that.map_status_game_tick) {
+        if(status_tick > that.map_status_game_tick) {
+            console.log("new status_tick: [" 
+            + status_tick + "]->["
+            + that.game_tick + "]->["
+            + that.map_status_game_tick + "]"
+            );
+        }
+        if(that.game_tick > status_tick && status_tick>that.map_status_game_tick) {
             that.map_status_game_tick = status_tick;
+            console.log("huh status_tick: [" 
+            + status_tick + "]->["
+            + that.game_tick + "]->["
+            + that.map_status_game_tick + "]"
+            );
             applyMapStatus(that, status_tick, that.recording.getMapStatus());
         }
     }
@@ -508,13 +524,17 @@
         if(!that.recording.atEnd() && that.recording.hasNext() && (that.recording.nextAt() <= that.t)) {
             // it is time to get the next frame (which will forward the recording)
             that.t = that.recording.nextAt();
-            let frame = that.recording.getNext(that.t);
+            let frame = that.recording.getNext();
             if(frame) {
                 for(let ix=0; ix < frame.length; ix++) {
                     cnt_started += 1;
                     let roboframe = frame[ix];
                     let robo_id = roboframe.sprite;
                     let command = roboframe.action[0];
+                    let game_tick = roboframe.tick;
+                    if(game_tick > that.game_tick) {
+                        that.game_tick = game_tick;
+                    }
                     if(!(robo_id in that.droids)) {
                         // unknown droid
                         let init_x = -1;
@@ -603,7 +623,7 @@
         that.recording.rewind();
         let totalDuration = 0;
         while(that.recording.hasNext()) {
-            let frame = that.recording.getNext(that.t);
+            let frame = that.recording.getNext();
             let command = frame.action[0];
             let duration = commandDuration[command];
             let commandCnt = 1;
