@@ -354,6 +354,32 @@
         });
         // paint
         that.paintPainter.setPaintLines(map_status['paintLines']);
+        // droids
+        map_status['robotLines'].forEach(function(line) {
+            // line: beacons/dir/id/x/y
+            if(line['id'] in that.droids) {
+                let dirix = Math.trunc(line['dir']/90) % 4;
+                let dirs = ['right', 'up', 'left', 'down'];
+                let droid = that.droids[line['id']];
+                if(line['x']!=droid.currentX || line['y']!=droid.currentY) {
+                    console.log(
+                        "move droid:["
+                        +droid.currentX +"]["
+                        +droid.currentY +"]->["
+                        +line['x'] + "]["
+                        +line['y'] + "]");
+                } else {
+                    console.log("droid on the correct place")
+                }
+                droid.setNextPosition(line['x'], line['y']);
+                droid.setNextDirection(dirs[dirix]);
+                droid.updateCurrent();
+            }
+        });
+        // for (const [droidid, droid] of Object.entries(that.droids)) {
+        //     console.log("eikel");
+        //   }
+          
     }
 
     function runStart(that) {

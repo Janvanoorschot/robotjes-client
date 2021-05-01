@@ -112,7 +112,6 @@ class RobotjesEngine(object):
                             inactive_players.append(player_id)
                     for player_id in inactive_players:
                         self.deregister_with_game(player_id)
-                        del self.lastseen[player_id]
             if self.field.is_stopped():
                 self.stop_game()
 
