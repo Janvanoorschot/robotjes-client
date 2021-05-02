@@ -116,6 +116,14 @@
             }
         }
 
+        that.hasMapStatus = function() {
+            if(that.frames) {
+                return that.frames.hasMapStatus();
+            } else {
+                throw new Error("frames not set");
+            }
+        }
+
         that.getMapStatus = function() {
             if(that.frames) {
                 return that.frames.getMapStatus();
@@ -335,6 +343,12 @@
             return 0;
         }
 
+        that.hasMapStatus = function() {
+            // return the mapstatus available from the original 
+            // ToDo: implement
+            return false;
+        }
+
         that.getMapStatus = function() {
             // return the mapstatus available from the original 
             // ToDo: implement
@@ -424,6 +438,7 @@
         that.cur_delta_ix = -1;              // current delta
         that.cur_frame_ix = -1;              // current/next frame in current delta
         that.map_status = null;              // current valid game_status
+        that.has_map_status = null;          // true iff there is a valid game_status
         that.map_status_game_tick = -1;      // timestamp of current valid game_status
 
         // the following data in maintained during creation/rewind/getNext
@@ -530,6 +545,10 @@
             return that.map_status_game_tick;
         }
 
+        that.hasMapStatus = function() {
+            return that.has_map_status;
+        }
+
         that.getMapStatus = function() {
             return that.map_status;
         }
@@ -573,6 +592,21 @@
             doAddDeltas(that, lst, true);
             that.cur_delta_ix = 0; // not 0, we do not want the first one that has no map-status
             that.cur_frame_ix = 0;
+            // initialise first_tick
+            if(lst.length>0) {
+                if(lst[0].frames.length > 0) {
+                    that.first_tick = lst[0].frames[0][0].tick;
+                } else {
+                    that.first_tick = lst[0].game_tick;
+                }
+                // initialise map_status
+                that.map_status = lst[0].map_status;
+                that.map_status_game_tick = lst[0].game_tick;
+                that.has_map_status = true;
+            } else {
+                that.first_tick = 0;
+                that.has_map_status = false;
+            }
         }
 
         function doTimer(that, timerTick) {
@@ -602,19 +636,8 @@
             }
         }
 
-        function doAddDeltas(that, lst, first=false) {
+        function doAddDeltas(that, lst) {
             for(let ix=0; ix < lst.length; ix++) {
-                if(that.first_tick < 0) {
-                    // the first time
-                    if(lst[ix].frames.length > 0) {
-                        that.first_tick = lst[ix].frames[0][0].tick;
-                    } else {
-                        that.first_tick = lst[ix].game_tick;
-                    }
-                    that.map_status = lst[ix].map_status;
-                    // that.map_status_game_tick = lst[ix].game_tick;
-                    that.map_status_game_tick = 0;  // very low tick so it is always applied.
-                }
                 that.deltas.push(lst[ix]);
             }
         }
@@ -622,22 +645,27 @@
         function doCalcNextFieldFrame(that) {
             let frame = null;
             if(that.cur_delta_ix < that.deltas.length) {
+                // there is a delta (frames+mapstatus) available
                 if(that.cur_frame_ix < that.deltas[that.cur_delta_ix].frames.length) {
+                    // the frame-counter points in the current delta
                     frame = that.deltas[that.cur_delta_ix].frames[that.cur_frame_ix];
                     that.cur_frame_ix++;
                     if(that.cur_frame_ix>= that.deltas[that.cur_delta_ix].frames.length) {
-                        // used the last frame in the current delta, switch to the next delta
+                        // we can and should switch to the next delta. This means
+                        // we have a new map-status. 
+                        that.map_status = that.deltas[that.cur_delta_ix].map_status;
+                        that.map_status_game_tick = that.deltas[that.cur_delta_ix].game_tick;
+                        that.has_map_status = true;
+                        // switch to next delta
                         that.cur_delta_ix++;
                         that.cur_frame_ix = 0;
-                        // if we entered a valid new delta, update the current map_status
-                        if(that.cur_delta_ix < that.deltas.length) {
-                            that.map_status = that.deltas[that.cur_delta_ix].map_status;
-                            that.map_status_game_tick = that.deltas[that.cur_delta_ix].game_tick;
-                        }
+                    } else {
+                        that.has_map_status = false;
                     }
                 } else {
                     that.cur_delta_ix++;
                     that.cur_frame_ix = 0;
+                    that.has_map_status = false;
                 }
             }
             if(frame) {

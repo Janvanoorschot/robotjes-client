@@ -332,22 +332,16 @@
      ********************************************************************/
 
     function checkMapStatus(that) {
-        let status_tick = that.recording.getMapStatusGameTick();
-        if(status_tick > that.map_status_game_tick) {
+        if(that.recording.hasMapStatus()) {
+            let status_tick = that.recording.getMapStatusGameTick();
             console.log("new status_tick: [" 
-            + status_tick + "]->["
-            + that.game_tick + "]->["
-            + that.map_status_game_tick + "]"
-            );
-        }
-        if(that.game_tick > status_tick && status_tick>that.map_status_game_tick) {
-            that.map_status_game_tick = status_tick;
-            console.log("huh status_tick: [" 
-            + status_tick + "]->["
-            + that.game_tick + "]->["
-            + that.map_status_game_tick + "]"
+                + status_tick + "]->["
+                + that.game_tick + "]->["
+                + that.map_status_game_tick + "]"
             );
             applyMapStatus(that, status_tick, that.recording.getMapStatus());
+        } else {
+            // console.log("no map_status");
         }
     }
 
