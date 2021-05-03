@@ -45,7 +45,7 @@ class Robo(object):
     #     'load': 0,
     #     'pos': (7, 11),
     #     'recording': [[1, 'message', ['starting'], True],
-    #                   [2, 'right', [2], True]]
+    #                   [2, 'right', [2], True]]c
     #    }
     #   ],
     #  )
@@ -219,14 +219,15 @@ class Robo(object):
         if status and selector in status['fog_of_war']:
             lst = status['fog_of_war'][selector]
             # lst -> [tile, paint, robot, beacon]
+            #     ->  None|t, None|p, None|id, None|True]
             if type == 'clear':
-                return not lst[0] and not lst[2] and not lst[3]
+                return lst[0] is None and lst[2] is None and lst[3] is None
             elif type == 'obstacle':
-                return lst[0] or lst[2] or lst[3]
+                return lst[0] is not None or lst[2] is not None or lst[3] is not None
             elif type == 'beacon':
-                return lst[2] is not None
-            elif type == 'robot':
                 return lst[3] is not None
+            elif type == 'robot':
+                return lst[2] is not None
             elif type == 'black':
                 return lst[1] == 'black'
             elif type == 'white':
