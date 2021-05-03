@@ -583,7 +583,7 @@
             return (tick - that.first_tick)*1000;
         }
 
-        function t2tick(that, t) {
+        function F(that, t) {
             return that.first_tick + Math.floor(t/1000);
         }
 
@@ -637,6 +637,7 @@
         }
 
         function doAddDeltas(that, lst) {
+            // add the new deltas
             for(let ix=0; ix < lst.length; ix++) {
                 that.deltas.push(lst[ix]);
             }
@@ -659,6 +660,9 @@
                         // switch to next delta
                         that.cur_delta_ix++;
                         that.cur_frame_ix = 0;
+                        // remove old deltas
+                        let removed = that.deltas.splice(0, that.cur_delta_ix-1);
+                        that.cur_delta_ix -= removed.length;
                     } else {
                         that.has_map_status = false;
                     }
