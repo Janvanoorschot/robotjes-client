@@ -64,7 +64,7 @@ class World(object):
         ix_start_position = len(self.bots) % len(self.map.start_positions())
         start_position = self.map.start_positions()[ix_start_position]
         if self.available_pos(start_position):
-            bot = Bot(start_position, 90)
+            bot = Bot(robo_id, start_position, 90)
             self.bots[robo_id] = bot
             return True
         else:
@@ -309,8 +309,8 @@ class World(object):
             beacon = None
         else:
             bots = [robo for robo in self.bots.values() if robo.pos==pos]
-            bot = True if len(bots) > 0 else None
-            beacon = True if pos in self.beacons else False
+            bot = bots[0].id if len(bots) > 0 else None
+            beacon = True if pos in self.beacons else None
             if pos in self.paints_black:
                 paint = self.BLACK
             elif pos in self.paints_white:
@@ -323,8 +323,8 @@ class World(object):
         if robo_id in self.bots:
             bot = self.bots[robo_id]
             pos_front = self.calc_pos(bot, self.FRONT, 1)
-            pos_left = self.calc_pos(bot, self.RIGHT, 1)
-            pos_right = self.calc_pos(bot, self.LEFT, 1)
+            pos_left = self.calc_pos(bot, self.LEFT, 1)
+            pos_right = self.calc_pos(bot, self.RIGHT, 1)
             return {
                 "pos": bot.pos,
                 "load": len(bot.beacons),
@@ -405,7 +405,8 @@ def dir_add(dir1, dir2):
 
 class Bot(object):
 
-    def __init__(self, start_position, dir):
+    def __init__(self, id, start_position, dir):
+        self.id = id
         self.pos = start_position
         if not dir in DIRS:
             raise ValueError(f"invalid direction {dir}")

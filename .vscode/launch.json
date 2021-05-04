@@ -24,6 +24,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/bin/cli_remote_player",
+            "args": ["--module",  "sample.player.player102"],
             "console": "integratedTerminal"
         },
     ]

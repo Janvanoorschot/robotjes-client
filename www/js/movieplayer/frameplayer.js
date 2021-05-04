@@ -232,7 +232,6 @@
         that.timerTick = function() {
             var request = that.request;
             that.request = 'none';
-            checkMapStatus(that);
             switch(that.mode) {
                 case 'stopped':
                     switch(request) {
@@ -330,74 +329,6 @@
     /*********************************************************************
      * Actions
      ********************************************************************/
-
-    function checkMapStatus(that) {
-        let status_tick = that.recording.getMapStatusGameTick();
-        if(status_tick > that.map_status_game_tick) {
-            console.log("new status_tick: [" 
-            + status_tick + "]->["
-            + that.game_tick + "]->["
-            + that.map_status_game_tick + "]"
-            );
-        }
-        if(that.game_tick > status_tick && status_tick>that.map_status_game_tick) {
-            that.map_status_game_tick = status_tick;
-            console.log("huh status_tick: [" 
-            + status_tick + "]->["
-            + that.game_tick + "]->["
-            + that.map_status_game_tick + "]"
-            );
-            applyMapStatus(that, status_tick, that.recording.getMapStatus());
-        }
-    }
-
-    function applyMapStatus(that, status_tick, map_status) {
-        // beacons
-        let status_beacons = [];
-        map_status['beaconLines'].forEach(function(line) {
-            status_beacons.push([line.x, line.y]);
-        });
-        let beacons = that.beaconPainter.getBeacons();
-        beacons.forEach(function(coord) {
-            if(!status_beacons.includes(coord)) {
-                that.beaconPainter.removeBeacon(coord[0], coord[1]);
-            }
-        });
-        status_beacons.forEach(function(coord) {
-            if(! beacons.includes(coord)) {
-                that.beaconPainter.addBeacon(coord[0], coord[1]);
-            }
-        });
-        // paint
-        that.paintPainter.setPaintLines(map_status['paintLines']);
-        // droids
-        map_status['robotLines'].forEach(function(line) {
-            // line: beacons/dir/id/x/y
-            if(line['id'] in that.droids) {
-                let dirix = Math.trunc(line['dir']/90) % 4;
-                let dirs = ['right', 'up', 'left', 'down'];
-                let droid = that.droids[line['id']];
-                if(line['x']!=droid.currentX || line['y']!=droid.currentY) {
-                    console.log(
-                        "move droid:["
-                        +droid.currentX +"]["
-                        +droid.currentY +"]->["
-                        +line['x'] + "]["
-                        +line['y'] + "]");
-                } else {
-                    console.log("droid on the correct place")
-                }
-                droid.setNextPosition(line['x'], line['y']);
-                droid.setNextDirection(dirs[dirix]);
-                droid.updateCurrent();
-            }
-        });
-        // for (const [droidid, droid] of Object.entries(that.droids)) {
-        //     console.log("eikel");
-        //   }
-          
-    }
-
     function runStart(that) {
         that.droids = {};
         that.droidsCommandTime = {};
@@ -523,6 +454,7 @@
         let cnt_started = 0;
         if(!that.recording.atEnd() && that.recording.hasNext() && (that.recording.nextAt() <= that.t)) {
             // it is time to get the next frame (which will forward the recording)
+            checkMapStatus(that);
             that.t = that.recording.nextAt();
             let frame = that.recording.getNext();
             if(frame) {
@@ -577,6 +509,65 @@
             }
         }
         return cnt_started;
+    }
+
+
+    function checkMapStatus(that) {
+        if(that.recording.hasMapStatus()) {
+            let status_tick = that.recording.getMapStatusGameTick();
+            // console.log("new status_tick: [" 
+            //     + status_tick + "]->["
+            //     + that.game_tick + "]->["
+            //     + that.map_status_game_tick + "]"
+            // );
+            applyMapStatus(that, status_tick, that.recording.getMapStatus());
+        } else {
+            // console.log("no map_status");
+        }
+    }
+
+    function applyMapStatus(that, status_tick, map_status) {
+        // beacons
+        let status_beacons = [];
+        map_status['beaconLines'].forEach(function(line) {
+            status_beacons.push([line.x, line.y]);
+        });
+        let beacons = that.beaconPainter.getBeacons();
+        beacons.forEach(function(coord) {
+            if(!status_beacons.includes(coord)) {
+                that.beaconPainter.removeBeacon(coord[0], coord[1]);
+            }
+        });
+        status_beacons.forEach(function(coord) {
+            if(! beacons.includes(coord)) {
+                that.beaconPainter.addBeacon(coord[0], coord[1]);
+            }
+        });
+        // paint
+        that.paintPainter.setPaintLines(map_status['paintLines']);
+        // droids
+        map_status['robotLines'].forEach(function(line) {
+            // line: beacons/dir/id/x/y
+            if(line['id'] in that.droids) {
+                let dirix = Math.trunc(line['dir']/90) % 4;
+                let dirs = ['right', 'up', 'left', 'down'];
+                let droid = that.droids[line['id']];
+                if(line['x']!=droid.currentX || line['y']!=droid.currentY) {
+                    console.log(
+                        "move droid:["
+                        +droid.currentX +"]["
+                        +droid.currentY +"]->["
+                        +line['x'] + "]["
+                        +line['y'] + "]");
+                } else {
+                    // console.log("droid on the correct place")
+                }
+                droid.setNextPosition(line['x'], line['y']);
+                droid.setNextDirection(dirs[dirix]);
+                droid.updateCurrent();
+            }
+        });
+          
     }
 
     function doNextCommand(that, droid, frame) {
