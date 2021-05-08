@@ -38,12 +38,18 @@
 </head>
 <body class="robotjes">
 <h1>There will be Dragons</h1>
-<table class='dashboard'>
-    <tr><td colspan="4"><div id='robotjesviewer' class='robotjesviewer' style="background-color:rgb(128, 153, 162);"></div></td></tr>
-    <tr><th rowspan="2">Server</th><th rowspan="2">Solution</th><th colspan="2">Viewer</th></tr>
-    <tr><th >Recording</th><th >Playback</th></tr>
-    <tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
-</table>
+
+<div class="rviewercontainer">
+    <div id='robotjesviewer' class='robotjesviewer' style="background-color:rgb(128, 153, 162);"></div>
+    <div class='rdashboard'>
+        <table class='rtable'>
+            <tr><td colspan="4"></td></tr>
+            <tr><th rowspan="2">Server</th><th rowspan="2">Solution</th><th colspan="2">Viewer</th></tr>
+            <tr><th >Recording</th><th >Playback</th></tr>
+            <tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+        </table>
+    </div>
+</div>
 
 <script>
     $(document).ready(function () {

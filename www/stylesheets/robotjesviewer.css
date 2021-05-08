@@ -3,7 +3,8 @@
     font-family: 'Roboto', sans-serif;    
 }
 
-.robotjesviewer {
+.rviewercontainer {
+    width: 76%;
 }
 
 .robotjesviewer .worldpane {
@@ -34,11 +35,17 @@
     text-align: left;
 }
 
-.dashboard {
+.rdashboard {
+    width: 100%;
     background-color: #e7a339;
 }
 
-.dashboard th {
+.rdashboard th {
     text-align: center;
     background-color: #e09730;
+}
+
+.rdashboard .rtable {
+    table-layout: fixed;
+    width: 100%;
 }
