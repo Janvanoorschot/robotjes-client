@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="js/robotjesviewer.js"></script>
@@ -36,26 +37,42 @@
     <meta charset="UTF-8">
     <title>Robotjes Viewer</title>
 </head>
+
 <body class="robotjes">
-<h1>There will be Dragons</h1>
+    <h1>There will be Dragons</h1>
 
-<div class="rviewercontainer">
-    <div id='robotjesviewer' class='robotjesviewer' style="background-color:rgb(128, 153, 162);"></div>
-    <div class='rdashboard'>
-        <table class='rtable'>
-            <tr><td colspan="4"></td></tr>
-            <tr><th rowspan="2">Server</th><th rowspan="2">Solution</th><th colspan="2">Viewer</th></tr>
-            <tr><th >Recording</th><th >Playback</th></tr>
-            <tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
-        </table>
+    <div class="rviewercontainer">
+        <div id='robotjesviewer' class='robotjesviewer' style="background-color:rgb(128, 153, 162);"></div>
+        <div class='rdashboard'>
+            <table class='rtable'>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <th rowspan="2">Server</th>
+                    <th rowspan="2">Solution</th>
+                    <th colspan="2">Viewer</th>
+                </tr>
+                <tr>
+                    <th>Recording</th>
+                    <th>Playback</th>
+                </tr>
+                <tr>
+                    <td name="server_tick">1</td>
+                    <td name="solution_tick">2</td>
+                    <td name="recording_tick">3</td>
+                    <td name="playback_tick">4</td>
+                </tr>
+            </table>
+        </div>
     </div>
-</div>
 
-<script>
-    $(document).ready(function () {
-        window.appContext = window.location.origin;
-        $.fn.robotjes.mainviewer = $.fn.robotjes.robotjesviewer($("#robotjesviewer"));
-    });
-</script>
+    <script>
+        $(document).ready(function () {
+            window.appContext = window.location.origin;
+            $.fn.robotjes.mainviewer = $.fn.robotjes.robotjesviewer($("#robotjesviewer"));
+        });
+    </script>
 </body>
+
 </html>

@@ -45,6 +45,10 @@
     background-color: #e09730;
 }
 
+.rdashboard td {
+    text-align: center;
+}
+
 .rdashboard .rtable {
     table-layout: fixed;
     width: 100%;
