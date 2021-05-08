@@ -1,3 +1,6 @@
+.robotjes {
+    background-color: #e09730;
+}
 
 .robotjesviewer {
 
@@ -31,3 +34,11 @@
     text-align: left;
 }
 
+.dashboard {
+    background-color: #e7a339;
+}
+
+.dashboard th {
+    text-align: center;
+    background-color: #e09730;
+}
