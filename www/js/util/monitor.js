@@ -33,7 +33,7 @@
 
     $.fn.genmon = function(type, msg) {
         if($.fn.monitor.singleton !== undefined) {
-            $.fn.monitor.singleton.genmon(type, msg, arguments.slice(2));
+            $.fn.monitor.singleton.genmon(type, msg, arguments);
         }
     };
 
