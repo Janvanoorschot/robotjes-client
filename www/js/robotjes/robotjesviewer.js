@@ -9,8 +9,6 @@
     /**
      * Functional constructor for robo.
      */
-    $.fn.rm = {}
-    $.fn.robotjes = {};
     $.fn.robotjes.robotjesviewer = function(node) {
         let that = {};
         for (let n in defaults) {

@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="js/robotjesviewer.js"></script>
 
-    <link rel="stylesheet" href="stylesheets/robotjesviewer.css">
+    <!-- monitor -->
+    <script src="js/util/namespace.js"></script>
+    <script src="js/util/monitor.js"></script>
+
+    <!-- main javascript object of this page -->
+    <script src="js/robotjes/robotjesviewer.js"></script>
+    <script src="js/robotjes/robotjesdashboard.js"></script>
 
     <!-- movieplayer and requirements -->
     <script src="js/movieplayer/movieplayer.js"></script>
@@ -33,6 +38,7 @@
     <script src="js/viewport/hammer.min.js"></script>
     <script src="js/viewport/mouse.js"></script>
 
+    <link rel="stylesheet" href="stylesheets/robotjesviewer.css">
     <meta charset="UTF-8">
     <title>Robotjes Viewer</title>
 </head>
@@ -54,7 +60,13 @@
 <script>
     $(document).ready(function () {
         window.appContext = window.location.origin;
+        /** start monitoring **/
+        $.fn.startmon();
+        $.fn.robotjes.rdashboard = $.fn.robotjes.robotjesdashboard($("#rdashboard"));
+        $.fn.registermon($.fn.robotjes.rdashboard);
+
         $.fn.robotjes.mainviewer = $.fn.robotjes.robotjesviewer($("#robotjesviewer"));
+        $.fn.genmon();
     });
 </script>
 </body>
