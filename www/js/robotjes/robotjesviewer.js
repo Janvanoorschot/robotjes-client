@@ -3,14 +3,12 @@
 
     var defaults = {
         'id':'0',
-        updateDuration:50
+        updateDuration:50       // timer tick every 50 ms (20 times per second)>
     };
 
     /**
      * Functional constructor for robo.
      */
-    $.fn.rm = {}
-    $.fn.robotjes = {};
     $.fn.robotjes.robotjesviewer = function(node) {
         let that = {};
         for (let n in defaults) {
@@ -24,7 +22,7 @@
         that.timer = null;
         that.timerListeners = [];
         that.timerTicks = 0
-        that.recordingDelta = (5*1000)/50;  // every 5 seconds (in sync with status_keeper)
+        that.recordingDelta = (5*1000)/50;  // get recording-delta every 5 seconds (in sync with status_keeper)
 
         that.recordingTimer = function(timerTick) {
             doRecordingTimer(that, timerTick);

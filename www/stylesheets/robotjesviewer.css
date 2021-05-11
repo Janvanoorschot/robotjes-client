@@ -1,0 +1,55 @@
+.robotjes {
+    background-color: #e7a339;
+    font-family: 'Roboto', sans-serif;    
+}
+
+.rviewercontainer {
+    width: 76%;
+}
+
+.robotjesviewer .worldpane {
+    position: relative;
+}
+
+.robotjesviewer .worldpane [name="runbuttonbar"]{
+    position: absolute;
+    top: auto;
+    bottom: 0;
+}
+
+.robotjesviewer .worldpane [name="speedbuttonbar"]{
+    top: 0;
+    position: absolute;
+    right: auto;
+    left: 0;
+}
+
+.robotjesviewer .worldpane [name="zoombuttonbar"]{
+    top: 0;
+    position: absolute;
+    right: 0;
+    left: auto;
+}
+
+.robotjesviewer .buttonbar {
+    text-align: left;
+}
+
+.rdashboard {
+    width: 100%;
+    background-color: #e7a339;
+}
+
+.rdashboard th {
+    text-align: center;
+    background-color: #e09730;
+}
+
+.rdashboard td {
+    text-align: center;
+}
+
+.rdashboard .rtable {
+    table-layout: fixed;
+    width: 100%;
+}

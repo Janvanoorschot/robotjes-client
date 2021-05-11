@@ -10,14 +10,13 @@ class RoboGame:
         self.map = Map.fromstring(mapstr)
         self.engine = Engine(self.map)
         self.engine.world.beacons.clear()
-        self.beacon_count = 3
+        self.beacon_count = 1
         self._update_beacons()
         self.engine.add_listener(self._world_event)
         self.game_tick = 0
         self.last_recording_delta = 0
         self.robo_counters = {}
         for evt in WorldEvent:
-            self.robo_counters[evt] = {}
             self.robo_counters[evt] = {}
         self.listeners = []
 
