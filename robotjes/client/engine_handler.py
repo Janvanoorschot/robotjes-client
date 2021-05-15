@@ -113,7 +113,7 @@ class RemoteEngineHandler:
         return [b, robo_status, player_result]
 
     async def game_timer(self, cur_tick):
-        status = await self.rest_client.status_player(self.game_id, self.player_id)
+        status = await self.rest_client.status_player(self.game_id, self.player_id, cur_tick)
         if status:
             game_tick = status['game_status']['status']['game_tick']
             self.game_tick = game_tick

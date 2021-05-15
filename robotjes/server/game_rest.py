@@ -65,10 +65,10 @@ async def get_game_recording(game_id: str, before_game_time: int):
     return result
 
 
-@app.get("/game/{game_id}/player/{player_id}/status")
-async def get_player_status(game_id: str, player_id: str):
+@app.get("/game/{game_id}/player/{player_id}/status/{game_tick}")
+async def get_player_status(game_id: str, player_id: str, game_tick: int):
     """Get the current player status"""
-    result = server.status_keeper.get_player_status(game_id, player_id)
+    result = server.status_keeper.get_player_status(game_id, player_id, game_tick)
     return result
 
 
