@@ -49,7 +49,7 @@
 
     <div class="rviewercontainer">
         <div id='robotjesviewer' class='robotjesviewer' style="background-color:rgb(128, 153, 162);"></div>
-        <div class='rdashboard'>
+        <div id='rdashboard' class='rdashboard'>
             <table class='rtable'>
                 <tr>
                     <td colspan="4"></td>
@@ -72,20 +72,23 @@
             </table>
         </div>
     </div>
-</div>
+    </div>
 
-<script>
-    $(document).ready(function () {
-        window.appContext = window.location.origin;
-        /** start monitoring **/
-        $.fn.startmon();
-        $.fn.robotjes.rdashboard = $.fn.robotjes.robotjesdashboard($("#rdashboard"));
-        $.fn.registermon($.fn.robotjes.rdashboard);
-
-        $.fn.robotjes.mainviewer = $.fn.robotjes.robotjesviewer($("#robotjesviewer"));
-        $.fn.genmon();
-    });
-</script>
+    <script>
+        $(document).ready(function () {
+            window.appContext = window.location.origin;
+            /** start monitoring **/
+            $.fn.startmon();
+            let dashboard = $.fn.robotjes.robotjesdashboard($("#rdashboard"));
+            if (typeof dashboard === 'function') {
+                console.log("its a boy!!!");
+            }
+            $.fn.registermon(dashboard.monitor_event);
+            $.fn.robotjes.rdashboard = dashboard;
+            $.fn.robotjes.mainviewer = $.fn.robotjes.robotjesviewer($("#robotjesviewer"), "eat_three");
+            $.fn.genmon();
+        });
+    </script>
 </body>
 
 </html>

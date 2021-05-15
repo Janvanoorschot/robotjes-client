@@ -77,9 +77,10 @@ class StatusKeeper(object):
         else:
             return []
 
-    def get_player_status(self, game_id, player_id):
+    def get_player_status(self, game_id, player_id, game_tick):
         if game_id in self.games:
             if player_id in self.games[game_id].players:
+                self.games[game_id].set_player_game_tick(player_id, game_tick)
                 return self.games[game_id].player_status(player_id)
             else:
                 return {}
@@ -123,6 +124,7 @@ class GameStatus(object):
         self.recording = []
         self.players = {}
         self.player_result = {}
+        self.player_game_tick = {}
         self.mapstatus = None
         self.data = {}
         self.gametick(now, delta)
@@ -199,6 +201,9 @@ class GameStatus(object):
             'success': False,
             'timestamp': now
         }
+    
+    def set_player_game_tick(self, player_id, game_tick):
+        self.player_game_tick[player_id] = game_tick
 
     def game_status(self):
         # short status of the game
@@ -236,6 +241,10 @@ class GameStatus(object):
                 player_result = self.player_result[player_id]
             else:
                 player_result = {}
+            if player_id in self.player_game_tick:
+                game_tick = self.player_game_tick[player_id]
+            else:
+                game_tick = -1
             return {
                 "game_status": {
                     'game_id': self.game_id,
@@ -248,7 +257,8 @@ class GameStatus(object):
                     }
                 },
                 "player_result": player_result,
-                "player_status": player_status
+                "player_status": player_status,
+                "game_tick": game_tick
             }
         else:
             return {}
