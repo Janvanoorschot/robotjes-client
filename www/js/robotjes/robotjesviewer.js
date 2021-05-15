@@ -126,6 +126,11 @@
 
     function update_game(that, status) {
         $.fn.genmon(MONTYPE_GAMETICK, MONMSG_SERVER, status["status"]["game_tick"]);
+        var player_game_tick = "";
+        for (var $player in status["players"]) {
+            player_game_tick = status["players"][$player]["game_tick"];
+        }
+        $.fn.genmon(MONTYPE_GAMETICK, MONMSG_SOLUTION, player_game_tick);
     }
 
     function exit_game(that) {

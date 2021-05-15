@@ -1,7 +1,8 @@
 'use strict';
 const MONTYPE_GAMETICK = 1;
 
-const MONMSG_SERVER = 2;
+const MONMSG_SERVER = 1;
+const MONMSG_SOLUTION = 2;
 
 /** initialise namespace */
 
