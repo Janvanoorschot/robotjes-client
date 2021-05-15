@@ -80,8 +80,8 @@ class StatusKeeper(object):
     def get_player_status(self, game_id, player_id, game_tick):
         if game_id in self.games:
             if player_id in self.games[game_id].players:
-                self.games[game_id].set_player_time_tick(player_id, game_tick)
-                return self.games[game_id].player_status(player_id, game_tick)
+                self.games[game_id].set_player_game_tick(player_id, game_tick)
+                return self.games[game_id].player_status(player_id)
             else:
                 return {}
         else:
@@ -202,7 +202,7 @@ class GameStatus(object):
             'timestamp': now
         }
     
-    def set_player_timer_tick(self, player_id, game_tick):
+    def set_player_game_tick(self, player_id, game_tick):
         self.player_game_tick[player_id] = game_tick
 
     def game_status(self):

@@ -68,9 +68,11 @@ async def get_game_recording(game_id: str, before_game_time: int):
 @app.get("/game/{game_id}/player/{player_id}/status/{game_tick}")
 async def get_player_status(game_id: str, player_id: str, game_tick: int):
     """Get the current player status"""
-    result = server.status_keeper.get_player_status(game_id, player_id, game_tick)
-    return result
-
+    try:
+        result = server.status_keeper.get_player_status(game_id, player_id, game_tick)
+        return result
+    except Exception as e:
+        print(f"error as {e}")
 
 @app.put("/game/{game_id}/player/{player_id}")
 async def player_move(game_id: str, player_id: str, specs: CommandSpec):
