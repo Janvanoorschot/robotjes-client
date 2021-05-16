@@ -80,9 +80,6 @@
             /** start monitoring **/
             $.fn.startmon();
             let dashboard = $.fn.robotjes.robotjesdashboard($("#rdashboard"));
-            if (typeof dashboard === 'function') {
-                console.log("its a boy!!!");
-            }
             $.fn.registermon(dashboard.monitor_event);
             $.fn.robotjes.rdashboard = dashboard;
             $.fn.robotjes.mainviewer = $.fn.robotjes.robotjesviewer($("#robotjesviewer"), "eat_three");
