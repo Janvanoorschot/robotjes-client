@@ -3,6 +3,8 @@ const MONTYPE_GAMETICK = 1;
 
 const MONMSG_SERVER = 1;
 const MONMSG_SOLUTION = 2;
+const MONMSG_PLAYBACK = 3;
+const MONMSG_RECORDING = 4;
 
 /** initialise namespace */
 
