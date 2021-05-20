@@ -103,12 +103,12 @@ class RemoteEngineHandler:
             await self.rest_client.deregister_player(self.game_id, self.player_id)
 
     async def execute(self, game_tick, robo_id, cmd):
-        rest_reply = await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
         robo_status = self.robo_status.get(robo_id, None)
         player_result = self.player_result
         if Robo.is_observation(cmd) and robo_status:
             b = Robo.observation(robo_status, cmd)
         else:
+            rest_reply = await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
             b = False
         return [b, robo_status, player_result]
 
