@@ -102,7 +102,11 @@
 
         that.getNext = function() {
             if(that.frames) {
-                return that.frames.getNext();
+                var nextFrame = that.frames.getNext();
+                if(nextFrame && nextFrame.length > 0) {
+                    $.fn.genmon(MONTYPE_GAMETICK, MONMSG_PLAYBACK, nextFrame[0]['tick']);
+                }
+                return nextFrame;
             } else {
                 throw new Error("frames not set");
             }
@@ -626,6 +630,7 @@
                         map = response;
                         if(map.length > 0) {
                             that.before_game_time = map[map.length-1].game_tick;
+                            $.fn.genmon(MONTYPE_GAMETICK, MONMSG_RECORDING, that.before_game_time);
                         }
                     },
                     error: function(jqXHR,type,e) {

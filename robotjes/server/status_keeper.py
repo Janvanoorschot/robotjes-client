@@ -1,22 +1,22 @@
 import datetime
 import logging
+
 logger = logging.getLogger(__name__)
 
 
 class StatusKeeper(object):
-
     def __init__(self):
-        self.games :dict(str, GameStatus) = {}
+        self.games: dict(str, GameStatus) = {}
         self.lastseen = {}
         self.now = None
         self.keep_alive = 10
         self.inactive_limit = 10
 
     def game_status_event(self, request):
-        game_id = request['game_id']
-        msg = request['msg']
+        game_id = request["game_id"]
+        msg = request["msg"]
         if game_id not in self.games:
-            if msg == 'CREATED':
+            if msg == "CREATED":
                 self.add_game(game_id, request)
             else:
                 logger.warning(f"unexpected message from game: {game_id}")
@@ -24,23 +24,23 @@ class StatusKeeper(object):
         now = datetime.datetime.now()
         self.lastseen[game_id] = now
         game_status = self.games[game_id]
-        if msg == 'STARTED':
+        if msg == "STARTED":
             game_status.started(self.now, request)
-        elif msg == 'GAMETICK':
+        elif msg == "GAMETICK":
             game_status.gametick(self.now, request)
-        elif msg == 'DELTAREC':
+        elif msg == "DELTAREC":
             game_status.deltarec(self.now, request)
-        elif msg == 'STOPPED':
+        elif msg == "STOPPED":
             game_status.stopped(self.now, request)
             self.remove_game(game_id)
-        elif msg == 'CREATED':
+        elif msg == "CREATED":
             # CREATED event is already handled
             pass
-        elif msg == 'PLAYER_SUCCESS':
+        elif msg == "PLAYER_SUCCESS":
             game_status.player_success(self.now, request)
-        elif msg == 'PLAYER_FAILURE':
+        elif msg == "PLAYER_FAILURE":
             game_status.player_failure(self.now, request)
-        elif msg == 'IDLE':
+        elif msg == "IDLE":
             pass
         else:
             logger.warning(f"unknown msg: {msg}")
@@ -103,18 +103,18 @@ class StatusKeeper(object):
 
 
 class GameStatus(object):
-    """ Contains three pieces of information about a game:
-        1. The current game status (from the latest received delta)
-        2. The current player status (from the latest received delta)
-        3. A list of deltas (a recording?)
+    """Contains three pieces of information about a game:
+    1. The current game status (from the latest received delta)
+    2. The current player status (from the latest received delta)
+    3. A list of deltas (a recording?)
     """
 
     def __init__(self, now, delta):
-        """ creation with an initial delta"""
-        self.bubble_id = delta['bubble_id']
-        self.game_id = delta['game_id']
-        self.game_name = delta['game_name']
-        self.maze_map = delta['data']['maze_map']
+        """creation with an initial delta"""
+        self.bubble_id = delta["bubble_id"]
+        self.game_id = delta["game_id"]
+        self.game_name = delta["game_name"]
+        self.maze_map = delta["data"]["maze_map"]
         self.starttime = now
         self.stoptime = None
         self.game_tick = 0
@@ -162,72 +162,79 @@ class GameStatus(object):
     # }
 
     def gametick(self, now, request):
-        self.game_tick = request['game_status']['game_tick']
-        self.isStarted = request['game_status']['isStarted']
-        self.isStopped = request['game_status']['isStopped']
-        self.isSuccess = request['game_status']['isSuccess']
+        self.game_tick = request["game_status"]["game_tick"]
+        self.isStarted = request["game_status"]["isStarted"]
+        self.isStopped = request["game_status"]["isStopped"]
+        self.isSuccess = request["game_status"]["isSuccess"]
         self.players.clear()
-        for player_id, player in request['players_status'].items():
+        for player_id, player in request["players_status"].items():
             self.players[player_id] = player
             if player_id not in self.player_result:
                 self.player_result[player_id] = {
-                    'player_id': player_id,
-                    'active': True,
-                    'success': False,
-                    'timestamp': now
+                    "player_id": player_id,
+                    "active": True,
+                    "success": False,
+                    "timestamp": now,
                 }
 
     def deltarec(self, now, request):
-        recording_delta = request['data']
+        recording_delta = request["data"]
         # print(f"status_keeper/deltarec[{recording_delta['game_tick']}]")
         self.recording.append(recording_delta)
         if len(self.recording) > 10:
             self.recording.pop(0)
 
     def player_success(self, now, request):
-        player_id = request['player_id']
+        player_id = request["player_id"]
         self.player_result[player_id] = {
-            'player_id': player_id,
-            'active': False,
-            'success': True,
-            'timestamp': now
+            "player_id": player_id,
+            "active": False,
+            "success": True,
+            "timestamp": now,
         }
 
     def player_failure(self, now, request):
-        player_id = request['data']['player_id']
+        player_id = request["data"]["player_id"]
         self.player_result[player_id] = {
-            'player_id': player_id,
-            'active': False,
-            'success': False,
-            'timestamp': now
+            "player_id": player_id,
+            "active": False,
+            "success": False,
+            "timestamp": now,
         }
-    
+
     def set_player_game_tick(self, player_id, game_tick):
         self.player_game_tick[player_id] = game_tick
 
     def game_status(self):
         # short status of the game
+        players = {}
+        for player_id, player in self.players.items():
+            players[player["player_name"]] = {}
+            players[player["player_name"]]["game_tick"] = self.player_game_tick[
+                player_id
+            ]
+
         return {
-            'game_id': self.game_id,
-            'game_name': self.game_name,
-            'status': {
-                'game_tick': self.game_tick,
-                'isStarted': self.isStarted,
-                'isStopped': self.isStopped,
-                'isSuccess': self.isSuccess
+            "game_id": self.game_id,
+            "game_name": self.game_name,
+            "status": {
+                "game_tick": self.game_tick,
+                "isStarted": self.isStarted,
+                "isStopped": self.isStopped,
+                "isSuccess": self.isSuccess,
             },
-            'players': self.players,
+            "players": players,
         }
 
     def game_map(self):
         reply = self.game_status()
-        reply['maze_map'] = self.maze_map
+        reply["maze_map"] = self.maze_map
         return reply
 
     def game_recording(self, before_game_time):
         result = []
         for rec in self.recording:
-            if rec['game_tick'] > before_game_time:
+            if rec["game_tick"] > before_game_time:
                 result.append(rec)
         return result
 
@@ -247,18 +254,18 @@ class GameStatus(object):
                 game_tick = -1
             return {
                 "game_status": {
-                    'game_id': self.game_id,
-                    'game_name': self.game_name,
-                    'status': {
-                        'game_tick': self.game_tick,
-                        'isStarted': self.isStarted,
-                        'isStopped': self.isStopped,
-                        'isSuccess': self.isSuccess
-                    }
+                    "game_id": self.game_id,
+                    "game_name": self.game_name,
+                    "status": {
+                        "game_tick": self.game_tick,
+                        "isStarted": self.isStarted,
+                        "isStopped": self.isStopped,
+                        "isSuccess": self.isSuccess,
+                    },
                 },
                 "player_result": player_result,
                 "player_status": player_status,
-                "game_tick": game_tick
+                "game_tick": game_tick,
             }
         else:
             return {}

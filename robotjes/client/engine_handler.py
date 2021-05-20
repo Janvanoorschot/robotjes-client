@@ -3,7 +3,6 @@ from robotjes.bot import Robo
 
 
 class LocalEngineHandler:
-
     def __init__(self, engine):
         self.engine = engine
         self.robos = {}
@@ -57,7 +56,6 @@ class LocalEngineHandler:
 
 
 class RemoteEngineHandler:
-
     def __init__(self, rest_client, player_name, game_name, password):
         self.rest_client = rest_client
         self.player_name = player_name
@@ -79,11 +77,13 @@ class RemoteEngineHandler:
             for id, name in list.items():
                 if self.game_name == name:
                     self.game_id = id
-                    result = await self.rest_client.register_player(self.player_name, self.game_id, self.password)
+                    result = await self.rest_client.register_player(
+                        self.player_name, self.game_id, self.password
+                    )
                     if not result:
                         raise Exception(f"can not join game {self.game_name}")
                     else:
-                        self.player_id = result['player_id']
+                        self.player_id = result["player_id"]
                     break
             else:
                 raise Exception(f"no such game {self.game_name}")
@@ -100,7 +100,7 @@ class RemoteEngineHandler:
             return None
 
     async def stop_player(self):
-            await self.rest_client.deregister_player(self.game_id, self.player_id)
+        await self.rest_client.deregister_player(self.game_id, self.player_id)
 
     async def execute(self, game_tick, robo_id, cmd):
         robo_status = self.robo_status.get(robo_id, None)
@@ -108,23 +108,31 @@ class RemoteEngineHandler:
         if Robo.is_observation(cmd) and robo_status:
             b = Robo.observation(robo_status, cmd)
         else:
-            rest_reply = await self.rest_client.issue_command(self.game_id, self.player_id, cmd)
+            rest_reply = await self.rest_client.issue_command(
+                self.game_id, self.player_id, cmd
+            )
             b = False
         return [b, robo_status, player_result]
 
     async def game_timer(self, cur_tick):
-        status = await self.rest_client.status_player(self.game_id, self.player_id, cur_tick)
+        status = await self.rest_client.status_player(
+            self.game_id, self.player_id, cur_tick
+        )
         if status:
-            game_tick = status['game_status']['status']['game_tick']
+            game_tick = status["game_status"]["status"]["game_tick"]
             self.game_tick = game_tick
             if self.robo_id is None:
-                for robo_id, robo_status in status['player_status']['robos'].items():
+                for robo_id, robo_status in status["player_status"]["robos"].items():
                     self.robo_id = robo_id
                     self.register_lock.release()
-            for robo_id, robo_status in status['player_status']['robos'].items():
+            for robo_id, robo_status in status["player_status"]["robos"].items():
                 self.robo_status[robo_id] = robo_status
-            self.player_result = status['player_result']
-            if self.started and not self.is_stopped and not status['player_result']['active']:
+            self.player_result = status["player_result"]
+            if (
+                self.started
+                and not self.is_stopped
+                and not status["player_result"]["active"]
+            ):
                 # we are done
                 self.is_stopped = True
                 await self.stop_player()

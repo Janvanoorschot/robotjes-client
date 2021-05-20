@@ -12,9 +12,7 @@ from robotjes.client import config
 from robotjes import client, Timer
 
 
-
 class PlayerClient:
-
     def __init__(self):
         pass
 

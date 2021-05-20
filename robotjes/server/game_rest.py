@@ -5,7 +5,6 @@ import robotjes.server as server
 from robotjes.server.model import RegistrationSpec, CommandSpec
 
 
-
 @app.post("/game/{game_id}/player")
 async def register_with_game(game_id: str, specs: RegistrationSpec):
     """Register with a game"""
@@ -15,14 +14,10 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
         "game_id": game_id,
         "player_id": player_id,
         "player_name": specs.player_name,
-        "password": specs.game_password
+        "password": specs.game_password,
     }
     server.robotjes_engine.register_with_game(data)
-    return {
-        "player_id": player_id
-    }
-
-
+    return {"player_id": player_id}
 
 
 @app.delete("/game/{game_id}/player/{player_id}")
@@ -74,6 +69,7 @@ async def get_player_status(game_id: str, player_id: str, game_tick: int):
     except Exception as e:
         print(f"error as {e}")
 
+
 @app.put("/game/{game_id}/player/{player_id}")
 async def player_move(game_id: str, player_id: str, specs: CommandSpec):
     """Move within a game"""
@@ -81,14 +77,13 @@ async def player_move(game_id: str, player_id: str, specs: CommandSpec):
         "cmd": "move",
         "game_id": game_id,
         "player_id": player_id,
-        "move": specs.move
+        "move": specs.move,
     }
     server.robotjes_engine.move_in_game(data)
 
+
 @app.get("/field/gamerecording")
-async def game_recording(game_id:str, before_game_time:int):
+async def game_recording(game_id: str, before_game_time: int):
     """Move within a game"""
     result = server.status_keeper.get_game_recording(game_id, before_game_time)
     return result
-
-

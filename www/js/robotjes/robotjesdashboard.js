@@ -19,7 +19,17 @@
         switch (counter) {
             case MONMSG_SERVER:
                 $('[name=server_tick]', that.node).html(counter_value);
-        }
+                break;
+            case MONMSG_SOLUTION:
+                $('[name=solution_tick]', that.node).html(counter_value);
+                break;
+            case MONMSG_RECORDING:
+                $('[name=recording_tick]', that.node).html(counter_value);
+                break;
+            case MONMSG_PLAYBACK:
+                $('[name=playback_tick]', that.node).html(counter_value);
+                break;
+            }
     }
 
 })(jQuery);
