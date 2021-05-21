@@ -4,7 +4,8 @@ from . import FieldEvent
 
 
 class RoboGame:
-    """ Robotjes specific game behaviour. """
+    """Robotjes specific game behaviour."""
+
     def __init__(self, mapstr, counters={}):
         self.robos = {}
         self.counters = counters
@@ -40,7 +41,7 @@ class RoboGame:
         if evt == WorldEvent.WORLD_EVT_BEACON_EATEN:
             self._update_beacons()
 
-    def _test_counters(self, robo_id:str, data: dict):
+    def _test_counters(self, robo_id: str, data: dict):
         # first check
         for evt in WorldEvent:
             if "max" in self.counters and evt in self.counters["max"]:
@@ -66,18 +67,16 @@ class RoboGame:
             attempts = 0
             while not found and attempts < 10:
                 attempts = attempts + 1
-                ix = random.randint(0, len(possibles))
+                ix = random.randint(0, len(possibles) - 1)
                 pos = possibles[ix]
-                if(self.engine.world.available_pos(pos)):
+                if self.engine.world.available_pos(pos):
                     self.engine.world.beacons.add(pos)
                     found = True
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
         if robo_id:
-            self.robos[robo_id] = {
-                'player': player_id
-            }
+            self.robos[robo_id] = {"player": player_id}
             for evt in WorldEvent:
                 self.robo_counters[evt][robo_id] = 0
             return robo_id
@@ -112,15 +111,15 @@ class RoboGame:
         ix = 0
         while ix < len(frames):
             frame = []
-            cur_tick = frames[ix]['tick']
-            while ix < len(frames) and frames[ix]['tick'] == cur_tick:
+            cur_tick = frames[ix]["tick"]
+            while ix < len(frames) and frames[ix]["tick"] == cur_tick:
                 frame.append(frames[ix])
                 ix = ix + 1
             combined_frames.append(frame)
         return {
             "game_tick": self.game_tick,
             "frames": combined_frames,
-            "map_status": map_status
+            "map_status": map_status,
         }
 
     def maze_map(self):

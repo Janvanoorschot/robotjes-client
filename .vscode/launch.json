@@ -20,11 +20,29 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "cli_remote_player",
+            "name": "player_1",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/bin/cli_remote_player",
-            "args": ["--module",  "sample.player.player102"],
+            "args": [
+                "--module",
+                "sample.player.player102",
+                "--player",
+                "player1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "player_2",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/cli_remote_player",
+            "args": [
+                "--module",
+                "sample.player.player102",
+                "--player",
+                "player2"
+            ],
             "console": "integratedTerminal"
         },
     ]

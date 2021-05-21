@@ -6,7 +6,6 @@ from robotjes.server import Field, StatusKeeper
 
 
 class RobotjesEngine(object):
-
     def __init__(self, status_keeper: StatusKeeper, mazes: Mazes, init_spec: GameSpec):
         self.status_keeper = status_keeper
         self.mazes = mazes
@@ -70,14 +69,14 @@ class RobotjesEngine(object):
         request = self._create_request(type, data)
         self.status_keeper.game_status_event(request)
 
-    def _create_request(self, msg:GameStatus, data):
+    def _create_request(self, msg: GameStatus, data):
         players_status = {}
         for player_id, dummy in self.players.items():
             players_status[player_id] = self.field.get_player_status(player_id)
         request = {
             "bubble_id": self.bubble_id,
-            "game_id":  self.game_id,
-            "game_name":  self.game_name,
+            "game_id": self.game_id,
+            "game_name": self.game_name,
             "msg": msg.name,
             "game_status": {
                 "game_tick": self.game_tick,
@@ -86,7 +85,7 @@ class RobotjesEngine(object):
                 "isSuccess": self.is_success,
             },
             "players_status": players_status,
-            "data": data
+            "data": data,
         }
         return request
 
@@ -97,11 +96,14 @@ class RobotjesEngine(object):
             self.tick = self.tick + 1
         else:
             self.tick = 0
-        if self.game_state == GameStatus.CREATED or self.game_state == GameStatus.STARTED:
+        if (
+            self.game_state == GameStatus.CREATED
+            or self.game_state == GameStatus.STARTED
+        ):
             self.field.timer(self.tick)
             if self.game_state == GameStatus.STARTED:
                 if self.tick % self.resolution == 0:
-                    self.game_tick = int(self.tick/self.resolution)
+                    self.game_tick = int(self.tick / self.resolution)
                     # do moves
                     self.field.game_timer(self.game_tick, self.moves)
                     self.moves.clear()
@@ -114,8 +116,3 @@ class RobotjesEngine(object):
                         self.deregister_with_game(player_id)
             if self.field.is_stopped():
                 self.stop_game()
-
-
-
-
-
