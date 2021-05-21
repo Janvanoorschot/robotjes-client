@@ -1,3 +1,4 @@
+import random
 from robotjes.sim import Engine, Map, WorldEvent
 from . import FieldEvent
 
@@ -57,10 +58,19 @@ class RoboGame:
     def _update_beacons(self):
         while len(self.engine.world.beacons) < self.beacon_count:
             # find a next position
+            possibles = []
             for pos in self.engine.world.map.beacons:
                 if self.engine.world.available_pos(pos):
+                    possibles.append(pos)
+            found = False
+            attempts = 0
+            while not found and attempts < 10:
+                attempts = attempts + 1
+                ix = random.randint(0, len(possibles))
+                pos = possibles[ix]
+                if(self.engine.world.available_pos(pos)):
                     self.engine.world.beacons.add(pos)
-                    break
+                    found = True
 
     def create_robo(self, player_id):
         robo_id = self.engine.create_robo()
