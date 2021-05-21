@@ -46,7 +46,8 @@ async def get_map():
 
 @app.post("/game/stopped2running")
 async def stopped2running():
-    server.robotjes_engine.start_game()
+    if not server.robotjes_engine.isRunning():
+        server.robotjes_engine.start_game()
 
 @app.post("/game/running2stopped")
 async def running2stopped():

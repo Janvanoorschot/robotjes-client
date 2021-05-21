@@ -30,6 +30,9 @@ def main(args: map):
     import robotjes.server.bubble_hub_rest
     import robotjes.server.game_rest
 
+    # start the server immediately
+    server.robotjes_engine.start_game()
+
     # start the webserver (note the logging configuration)
     import uvicorn
     server.app.mount("/", StaticFiles(directory=os.path.join(rootdir, "www")), name="www")
