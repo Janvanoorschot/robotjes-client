@@ -22,7 +22,7 @@ class RobotjesEngine(object):
         self.field = Field(self, init_spec)
         self.field.created()
         self.game_state = GameStatus.CREATED
-        self.resolution = 10
+        self.resolution = 5
         self.inactive_limit = 10
         self.starttime = None
         self.tick = -1

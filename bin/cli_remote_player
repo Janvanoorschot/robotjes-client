@@ -20,10 +20,12 @@ class PlayerClient:
         pass
 
     def issue_command(self, game_tick, robo_id, cmd, reply):
-        if not reply[2]['active']:
-            print(f"last command: {game_tick}/{robo_id}/{cmd}/{reply}")
-        else:
-            print(f"command: {game_tick}/{robo_id}/{cmd}/{reply}")
+        # if not reply[2]['active']:
+        #     print(f"last command: {game_tick}/{robo_id}/{cmd}/{reply}")
+        # else:
+        #     print(f"command: {game_tick}/{robo_id}/{cmd}/{reply}")
+        # print(game_tick)
+        pass
 
 
 def load_client(module_name):
@@ -44,7 +46,7 @@ async def main(args, script, loop):
     rest_client = client.RestClient(loop, args.url)
     handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password)
     player = client.Player(handler, loop, clnt)
-    timer = Timer(1, player.timer, True)
+    timer = Timer(0.1, player.timer, True)
     await player.start_player(script)
     success = await player.run_game()
     timer.cancel()
