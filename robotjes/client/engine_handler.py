@@ -38,7 +38,7 @@ class LocalEngineHandler:
         # ]
         b = reply[1][0][0][0]
         status = reply[1][0][1]
-        return [b, status, {}]
+        return [b, status, {'active': True}]
 
     async def game_timer(self, cur_tick):
         next_tick = cur_tick + 1
