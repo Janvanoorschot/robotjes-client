@@ -12,7 +12,7 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='robotjes-client',
-    version='0.0.1a4',
+    version='0.0.1a5',
     description='Client package for the Robomind Academy Python course',
     long_description=long_description,
     long_description_content_type='text/markdown',
