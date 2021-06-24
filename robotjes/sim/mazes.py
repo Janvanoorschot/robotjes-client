@@ -14,6 +14,7 @@ class Mazes(object):
                 "name": id
             }
 
+
     def list_mazes(self):
         return self.mazes
 
