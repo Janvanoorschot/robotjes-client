@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+from pprint import pprint
+
 def execute(robo):
 
     while True:
-        print("eikel")
-        robo.right()
+        status = robo.right()
+        pprint(status)
 
