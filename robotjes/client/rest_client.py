@@ -2,6 +2,7 @@ import os
 import requests
 import functools
 
+
 class RestClient:
 
     def __init__(self, loop, url):
