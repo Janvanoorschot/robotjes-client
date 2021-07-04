@@ -17,3 +17,8 @@ build
 
 # documentation
 mkdocs
+
+# development
+black
+pylint
+flake8
