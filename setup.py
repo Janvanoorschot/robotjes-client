@@ -7,12 +7,14 @@ https://github.com/pypa/sampleproject
 
 from setuptools import setup
 import pathlib
+from robotjes import version as robotjes_client_version
+from robotjes import name as robotjes_client_name
 
 here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
-    name='robotjes-client',
-    version='0.0.1a5',
+    name=f"{robotjes_client_name}",
+    version=f"{robotjes_client_version}",
     description='Client package for the Robomind Academy Python course',
     long_description=long_description,
     long_description_content_type='text/markdown',

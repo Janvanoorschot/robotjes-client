@@ -1,3 +1,5 @@
+name = "robotjes-client"
+version = "0.0.1a6"
 from .bot.robo import Robo
 
 import asyncio
