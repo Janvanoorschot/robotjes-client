@@ -45,14 +45,14 @@ class RestClient:
         else:
             raise Exception(f"failed rest call delete_game:{reply.text}")
 
-    async def confirm_player(self, game_id, uuid):
+    async def confirm_player(self, uuid):
         reply = await self.loop.run_in_executor(
-            None, functools.partial(requests.post, self.create_url(f'game/{game_id}/player/{uuid}')))
+            None, functools.partial(requests.post, self.create_url(f'confirm/{uuid}')))
         if reply.status_code == 200:
             result = reply.json()
             return result
         else:
-            raise Exception(f"failed rest call register_player:{reply.text}")
+            raise Exception(f"failed rest call confirm_player:{reply.text}")
 
     async def register_player(self, player_name, game_id, password):
         spec = {

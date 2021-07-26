@@ -15,8 +15,18 @@ class StatusKeeper(object):
 
     def set_reservation(self, request):
         if "uuid" in request and not request["uuid"] in self.reservations:
+            game_name = request.get("game_name", "unknown")
+            for game_id, game in self.games.items():
+                if game_name == game.game_name:
+                    request["game_id"] = game_id
+                    break
+            else:
+                # game_name not found
+                raise Exception(f"unknown game: {game_name}")
             request["timestamp"] = datetime.datetime.now()
             self.reservations[request["uuid"]] = request
+        else:
+            raise Exception(f"illegal reservation request")
 
     def get_reservation(self, uuid):
         return self.reservations.get(uuid, None)

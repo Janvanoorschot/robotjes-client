@@ -79,9 +79,7 @@ class RemoteEngineHandler:
                 if self.game_name == name:
                     self.game_id = id
                     if self.uuid:
-                        result = await self.rest_client.confirm_player(
-                            self.player_name, self.game_id, self.uuid
-                        )
+                        result = await self.rest_client.confirm_player(self.uuid)
                         if not result:
                             raise Exception(f"can not join game {self.game_name}")
                         else:
