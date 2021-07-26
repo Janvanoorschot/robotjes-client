@@ -6,11 +6,20 @@ logger = logging.getLogger(__name__)
 
 class StatusKeeper(object):
     def __init__(self):
+        self.reservations: dict(str, map) = {}
         self.games: dict(str, GameStatus) = {}
         self.lastseen = {}
         self.now = None
         self.keep_alive = 10
         self.inactive_limit = 10
+
+    def set_reservation(self, request):
+        if "uuid" in request and not request["uuid"] in self.reservations:
+            request["timestamp"] = datetime.datetime.now()
+            self.reservations[request["uuid"]] = request
+
+    def get_reservation(self, uuid):
+        return self.reservations.get(uuid, None)
 
     def game_status_event(self, request):
         game_id = request["game_id"]

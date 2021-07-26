@@ -56,11 +56,12 @@ class LocalEngineHandler:
 
 
 class RemoteEngineHandler:
-    def __init__(self, rest_client, player_name, game_name, password):
+    def __init__(self, rest_client, player_name, game_name, password, uuid):
         self.rest_client = rest_client
         self.player_name = player_name
         self.game_name = game_name
         self.password = password
+        self.uuid = uuid
         self.game_id = None
         self.player_id = None
         self.is_started = False
@@ -77,13 +78,22 @@ class RemoteEngineHandler:
             for id, name in list.items():
                 if self.game_name == name:
                     self.game_id = id
-                    result = await self.rest_client.register_player(
-                        self.player_name, self.game_id, self.password
-                    )
-                    if not result:
-                        raise Exception(f"can not join game {self.game_name}")
+                    if self.uuid:
+                        result = await self.rest_client.confirm_player(
+                            self.player_name, self.game_id, self.uuid
+                        )
+                        if not result:
+                            raise Exception(f"can not join game {self.game_name}")
+                        else:
+                            self.player_id = result["player_id"]
                     else:
-                        self.player_id = result["player_id"]
+                        result = await self.rest_client.register_player(
+                            self.player_name, self.game_id, self.password
+                        )
+                        if not result:
+                            raise Exception(f"can not join game {self.game_name}")
+                        else:
+                            self.player_id = result["player_id"]
                     break
             else:
                 raise Exception(f"no such game {self.game_name}")

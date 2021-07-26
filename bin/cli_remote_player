@@ -44,7 +44,7 @@ def load_client(module_name):
 async def main(args, script, loop):
     clnt = PlayerClient()
     rest_client = client.RestClient(loop, args.url)
-    handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password)
+    handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password, args.uuid)
     player = client.Player(handler, loop, clnt)
     timer = Timer(0.1, player.timer, True)
     await player.start_player(script)
@@ -60,6 +60,7 @@ if __name__ == "__main__":
     parser.add_argument('--name', type=str, default="eat_three", help='name of the game to join')
     parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
     parser.add_argument('--module', type=str, default="sample.player.player102", help='module containing the player logic')
+    parser.add_argument('--uuid', default=None, help='pre-registration uuid')
     args = parser.parse_args()
 
     script = load_client(args.module)
