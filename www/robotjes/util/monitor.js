@@ -44,6 +44,7 @@ const MONMSG_RECORDING = 4;
         }
     };
 
+    $.fn.monitor = {};
     $.fn.monitor.handler = function () {
         let that = {};
 
