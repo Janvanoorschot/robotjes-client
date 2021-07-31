@@ -7,7 +7,7 @@
 
     let defaults = {
         'id':'0',
-        updateDuration:500
+        updateDuration:1000
     };
 
     $.fn.robotjes.fieldview = function(node, uuid) {
@@ -29,7 +29,7 @@
 
 
         that.someTimer = function(timerTick) {
-            console.log("a timer: " + timerTick);
+            playerStyatus(that);
         };
 
         populate(that);
@@ -70,6 +70,34 @@
     function tickTimer(that, timerTick) {
         that.timerListeners.forEach( function(listener) {
             listener(timerTick);
+        });
+    }
+
+    function playerStyatus(that) {
+        let url = '/bubble/info/'+that.uuid;
+        $.ajax({
+            method: "GET",
+            url: url,
+            async: true,
+            dataType: 'json'
+        })
+        .done(function(data){
+        })
+        .error(function(data) {
+            console.log("error");
+        })
+        .success(function(data){
+        });
+
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: 'json',
+            success: function (response) {
+            },
+            error: function(jqXHR,type,e) {
+                console.error("rest call failed");
+            }
         });
     }
 
