@@ -4,7 +4,7 @@
     /** initialise namespace */
 
     $.fn.rm = {};
-    $.fn.robotjes = {};
-    $.fn.monitor = {};
+    // $.fn.robotjes = {};
+    // $.fn.monitor = {};
 
 })(jQuery);
