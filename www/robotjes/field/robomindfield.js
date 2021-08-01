@@ -27,13 +27,17 @@
         that.timerTicks = 0;
         that.recordingDelta = (5*1000)/50;  // every 5 seconds (in sync with status_keeper)
 
+        that.state = "state_ids_unknown";
+
+        that.game_id = null;
+        that.player_id = null;
+        that.game_tick = 0;
 
         that.someTimer = function(timerTick) {
-            playerStyatus(that);
         };
 
         populate(that);
-        that.timerListeners.push(that.someTimer);
+        that.timerListeners.push(timerHandler);
         startTimer(that);
 
         return that;
@@ -42,6 +46,56 @@
     function populate(that) {
         // create challenge node
         //that.node.append($('<div class="challengepane"></div>'));
+    }
+
+    function timerHandler(that, timerTick) {
+        switch(that.state) {
+            case 'state_ids_unknown':
+                handleIdsUnkown(that);
+                break;
+            case 'state_running':
+                handleRunning(that);
+                break;
+            default:
+                break;
+        }
+    }
+
+    function handleIdsUnkown(that) {
+        let url = '/bubble/info/'+that.uuid;
+        $.ajax({
+            method: "GET",
+            url: url,
+            async: true,
+            dataType: 'json'
+        })
+            .done(function(data){
+                if("player_id" in data) {
+                    console.log("1");
+                    that.player_id = data["player_id"];
+                    that.game_id = data["game_id"];
+                    that.state = "state_running";
+                }
+            })
+            .fail(function(data) {
+                console.log(".error");
+            });
+    }
+
+    function handleRunning(that) {
+        let url = `/bubble/game/${that.game_id}/player/${that.player_id}/status/${that.game_tick}`;
+        $.ajax({
+            method: "GET",
+            url: url,
+            async: true,
+            dataType: 'json'
+        })
+            .done(function(data){
+                console.log(`2.5:${that.state}`);
+            })
+            .fail(function(data) {
+                console.log(".error");
+            });
     }
 
     function startTimer(that) {
@@ -69,25 +123,7 @@
 
     function tickTimer(that, timerTick) {
         that.timerListeners.forEach( function(listener) {
-            listener(timerTick);
-        });
-    }
-
-    function playerStyatus(that) {
-        let url = '/bubble/info/'+that.uuid;
-        $.ajax({
-            method: "GET",
-            url: url,
-            async: true,
-            dataType: 'json'
-        })
-        .done(function(data){
-            console.log(".done: ", data);
-        })
-        .error(function(data) {
-            console.log(".error");
-        })
-        .success(function(data){
+            listener(that, timerTick);
         });
     }
 
