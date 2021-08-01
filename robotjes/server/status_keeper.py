@@ -1,5 +1,6 @@
 import datetime
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ class StatusKeeper(object):
                 # game_name not found
                 raise Exception(f"unknown game: {game_name}")
             request["timestamp"] = datetime.datetime.now()
+            request["player_id"] = str(uuid.uuid4())
             self.reservations[request["uuid"]] = request
         else:
             raise Exception(f"illegal reservation request")

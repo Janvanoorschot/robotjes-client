@@ -82,22 +82,12 @@
             dataType: 'json'
         })
         .done(function(data){
+            console.log(".done: ", data);
         })
         .error(function(data) {
-            console.log("error");
+            console.log(".error");
         })
         .success(function(data){
-        });
-
-        $.ajax({
-            url: url,
-            async: true,
-            dataType: 'json',
-            success: function (response) {
-            },
-            error: function(jqXHR,type,e) {
-                console.error("rest call failed");
-            }
         });
     }
 
