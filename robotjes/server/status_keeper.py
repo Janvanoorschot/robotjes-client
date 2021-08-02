@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 class StatusKeeper(object):
     def __init__(self):
         self.reservations: dict(str, map) = {}
+        self.player2reservation: dict(str, str) = {}
         self.games: dict(str, GameStatus) = {}
         self.lastseen = {}
         self.now = None
@@ -26,12 +27,20 @@ class StatusKeeper(object):
                 raise Exception(f"unknown game: {game_name}")
             request["timestamp"] = datetime.datetime.now()
             request["player_id"] = str(uuid.uuid4())
+            request["status"] = "registered"
             self.reservations[request["uuid"]] = request
+            self.player2reservation[request["player_id"]] = request["uuid"]
         else:
             raise Exception(f"illegal reservation request")
 
     def get_reservation(self, uuid):
         return self.reservations.get(uuid, None)
+
+    def update_reservation(self, uuid, status):
+        request = self.reservations.get(uuid, None)
+        request["status"] = status
+        self.reservations[request["uuid"]] = request
+        return request
 
     def game_status_event(self, request):
         game_id = request["game_id"]
@@ -58,8 +67,16 @@ class StatusKeeper(object):
             # CREATED event is already handled
             pass
         elif msg == "PLAYER_SUCCESS":
+            player_id = request["player_id"]
+            if player_id in self.player2reservation:
+                uid = self.player2reservation[player_id]
+                self.update_reservation(uid, "stopped")
             game_status.player_success(self.now, request)
         elif msg == "PLAYER_FAILURE":
+            player_id = request["player_id"]
+            if player_id in self.player2reservation:
+                uid = self.player2reservation[player_id]
+                self.update_reservation(uid, "stopped")
             game_status.player_failure(self.now, request)
         elif msg == "IDLE":
             pass
@@ -71,8 +88,13 @@ class StatusKeeper(object):
         self.games[game_id] = game_status
 
     def remove_game(self, game_id):
-        del self.games[game_id]
-        del self.lastseen[game_id]
+        # when removing a game, update the status of all reservations
+        if game_id in self.games:
+            for player_id in self.games[game_id].players:
+                uid = self.player2reservation[player_id]
+                self.update_reservation(uid, "stopped")
+            del self.games[game_id]
+            del self.lastseen[game_id]
 
     def list_games(self):
         result = {}
@@ -109,18 +131,27 @@ class StatusKeeper(object):
             return {}
 
     def timer(self, now):
-        self.now = now
-        for game_id, game in self.games.copy().items():
-            # check for 'stopped for long enough'
-            if game.is_stopped():
-                if (now - game.stoptime).total_seconds() > self.keep_alive:
-                    logger.warning(f"old game: {game_id}")
-                    self.remove_game(game_id)
-            # check for 'inactive'
-            if game_id in self.lastseen and self.games[game_id].isStarted:
-                if (now - self.lastseen[game_id]).total_seconds() > self.inactive_limit:
-                    logger.warning(f"inactive game: {game_id}")
-                    self.remove_game(game_id)
+        if not self.now or (now - self.now).total_seconds() > 10:
+            self.now = now
+            # check for game timeouts
+            for game_id, game in self.games.copy().items():
+                # check for 'stopped for long enough'
+                if game.is_stopped():
+                    if (now - game.stoptime).total_seconds() > self.keep_alive:
+                        logger.warning(f"old game: {game_id}")
+                        self.remove_game(game_id)
+                # check for 'inactive'
+                if game_id in self.lastseen and self.games[game_id].isStarted:
+                    if (now - self.lastseen[game_id]).total_seconds() > self.inactive_limit:
+                        logger.warning(f"inactive game: {game_id}")
+                        self.remove_game(game_id)
+            # check for reservation timeouts
+            for uid, request in self.reservations.copy.items():
+                if request["status"] == "registered" and (now - request["regtime"] > self.inactive_limit):
+                    player_id = request["player_id"]
+                    del self.reservations[uid]
+                    del self.player2reservation[player_id]
+
 
 
 class GameStatus(object):
