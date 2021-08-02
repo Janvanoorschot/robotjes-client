@@ -69,11 +69,12 @@
             async: true,
             dataType: 'json'
         })
-            .done(function(data){
-                if("player_id" in data) {
+            .done(function(infodata){
+                console.log(`handlerRunning[${infodata["status"]}]`)
+                if("player_id" in infodata) {
                     console.log("1");
-                    that.player_id = data["player_id"];
-                    that.game_id = data["game_id"];
+                    that.player_id = infodata["player_id"];
+                    that.game_id = infodata["game_id"];
                     that.state = "state_running";
                 }
             })
@@ -83,17 +84,29 @@
     }
 
     function handleRunning(that) {
-        let url = `/bubble/game/${that.game_id}/player/${that.player_id}/status/${that.game_tick}`;
+        let url = '/bubble/info/'+that.uuid;
         $.ajax({
             method: "GET",
             url: url,
             async: true,
             dataType: 'json'
         })
-            .done(function(data){
-                console.log(`2.5:${that.state}`);
+            .done(function(infodata){
+                let url = `/bubble/game/${that.game_id}/player/${that.player_id}/status/${that.game_tick}`;
+                $.ajax({
+                    method: "GET",
+                    url: url,
+                    async: true,
+                    dataType: 'json'
+                })
+                    .done(function(playerdata){
+                        console.log(`handlerRunning[${infodata["status"]}]`)
+                    })
+                    .fail(function(errordata) {
+                        console.log(".error");
+                    });
             })
-            .fail(function(data) {
+            .fail(function(errordata) {
                 console.log(".error");
             });
     }
