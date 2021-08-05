@@ -46,19 +46,103 @@
     function populate(that) {
         // create challenge node
         //that.node.append($('<div class="challengepane"></div>'));
+        toStateRegistered(that);
     }
 
     function timerHandler(that, timerTick) {
-        switch(that.state) {
-            case 'state_ids_unknown':
-                handleIdsUnkown(that);
-                break;
-            case 'state_running':
-                handleRunning(that);
-                break;
-            default:
-                break;
-        }
+        // collect info about the UUID we are tracing
+        let url = '/bubble/info/'+that.uuid;
+        $.ajax({
+            method: "GET",
+            url: url,
+            async: true,
+            dataType: 'json'
+        })
+            .done(function(data) {
+                switch(that.state) {
+                    case 'state_registered':
+                        switch(data.status) {
+                            case 'unknown':
+                                toStateError(that, data);
+                                break;
+                            case 'registered':
+                                keepStateRegistered(that, data);
+                                break;
+                            case 'confirmed':
+                                toStateRunning(that, data);
+                                break;
+                            case 'stopped':
+                                toStateStopped(that, data);
+                                break;
+                        }
+                        break;
+                    case 'state_running':
+                        switch(data.status) {
+                            case 'unknown':
+                                toStateError(that, data);
+                                break;
+                            case 'registered':
+                                toStateError(that, data);
+                                break;
+                            case 'confirmed':
+                                keepStateRunning(that, data);
+                                break;
+                            case 'stopped':
+                                toStateStopped(that, data);
+                                break;
+                        }
+                        break;
+                    case 'state_stopped':
+                        keepStateStopped(that, data);
+                        break;
+                    case 'state_error':
+                        keepStateError(that, data);
+                        break;
+                }
+                if("player_id" in data) {
+                    console.log("1");
+                    that.player_id = data["player_id"];
+                    that.game_id = data["game_id"];
+                    that.state = "state_running";
+                }
+            })
+            .fail(function(data) {
+                toStateError(that, data);
+            });
+    }
+
+    function toStateRegistered(that) {
+        that.node.empty();
+        that.node.append($("<h1>Start your game with the UUID</h1>"));
+        that.state = 'state_registered';
+    }
+
+    function keepStateRegistered(that, data) {
+
+    }
+
+    function toStateRunning(that, data) {
+        that.state = 'state_running';
+    }
+
+    function keepStateRunning(that, data) {
+
+    }
+
+    function toStateStopped(that, data) {
+        that.state = 'state_stopped';
+    }
+
+    function keepStateStopped(that, data) {
+
+    }
+
+    function toStateError(that, data) {
+        that.state = 'state_error';
+    }
+
+    function keepStateError(that, data) {
+
     }
 
     function handleIdsUnkown(that) {
@@ -151,6 +235,5 @@
         let that = {};
         return that;
     };
-
 
 })(jQuery);
