@@ -27,8 +27,14 @@
         that.timerTicks = 0;
         that.recordingDelta = (5*1000)/50;  // every 5 seconds (in sync with status_keeper)
 
+        // screen components
+        that.state = null;
+        that.viewer = null;
+
+        // state
         that.state = "state_ids_unknown";
 
+        // collected data
         that.game_id = null;
         that.player_id = null;
         that.game_tick = 0;
@@ -44,8 +50,16 @@
     };
 
     function populate(that) {
-        // create challenge node
-        //that.node.append($('<div class="challengepane"></div>'));
+        // create the panes that are used in the different states
+        var fieldnode = $(`
+            <div class="field">
+                <div class="fieldbanner"></div>
+                <div class="fieldstatus"></div>
+                <div class="fieldviewer"></div>
+            </div>
+        `);
+        that.node.append(fieldnode);
+        that.node.resize();
         toStateRegistered(that);
     }
 
@@ -63,12 +77,15 @@
                     case 'state_registered':
                         switch(data.status) {
                             case 'unknown':
+                                console.log("a");
                                 toStateError(that, data);
                                 break;
                             case 'registered':
+                                console.log("b");
                                 keepStateRegistered(that, data);
                                 break;
                             case 'confirmed':
+                                console.log("c");
                                 toStateRunning(that, data);
                                 break;
                             case 'stopped':
@@ -99,12 +116,6 @@
                         keepStateError(that, data);
                         break;
                 }
-                if("player_id" in data) {
-                    console.log("1");
-                    that.player_id = data["player_id"];
-                    that.game_id = data["game_id"];
-                    that.state = "state_running";
-                }
             })
             .fail(function(data) {
                 toStateError(that, data);
@@ -112,16 +123,32 @@
     }
 
     function toStateRegistered(that) {
-        that.node.empty();
-        that.node.append($("<h1>Start your game with the UUID</h1>"));
+        var bannernode = that.node.find('.field .fieldbanner');
+        bannernode.append(`<p>Waiting to enter the Game.</p>`);
+        bannernode.append(`<p>UUID: ${that.uuid}</p>`);
+        var statusnode = that.node.find('.field .fieldstatus');
+        statusnode.empty();
+        var viewnode = that.node.find('.field .fieldviewer');
+        statusnode.empty();
         that.state = 'state_registered';
     }
 
     function keepStateRegistered(that, data) {
-
+        // do nothing (maybe spinner?)
     }
 
     function toStateRunning(that, data) {
+        that.game_id = data.game_id;
+        that.player_id = data.player_id;
+        var bannernode = that.node.find('.field .fieldbanner');
+        bannernode.empty();
+        bannernode.append(`<p>Game Running.</p>`);
+        var statusnode = that.node.find('.field .fieldstatus');
+        statusnode.empty();
+        that.status = $.fn.robotjes.robotjesstatus(statusnode, data);
+        var viewernode = that.node.find('.field .fieldviewer');
+        statusnode.empty();
+        that.viewer = $.fn.robotjes.robotjesviewer(viewernode, that.game_id, that.player_id);
         that.state = 'state_running';
     }
 
@@ -143,56 +170,6 @@
 
     function keepStateError(that, data) {
 
-    }
-
-    function handleIdsUnkown(that) {
-        let url = '/bubble/info/'+that.uuid;
-        $.ajax({
-            method: "GET",
-            url: url,
-            async: true,
-            dataType: 'json'
-        })
-            .done(function(infodata){
-                console.log(`handlerRunning[${infodata["status"]}]`)
-                if("player_id" in infodata) {
-                    console.log("1");
-                    that.player_id = infodata["player_id"];
-                    that.game_id = infodata["game_id"];
-                    that.state = "state_running";
-                }
-            })
-            .fail(function(data) {
-                console.log(".error");
-            });
-    }
-
-    function handleRunning(that) {
-        let url = '/bubble/info/'+that.uuid;
-        $.ajax({
-            method: "GET",
-            url: url,
-            async: true,
-            dataType: 'json'
-        })
-            .done(function(infodata){
-                let url = `/bubble/game/${that.game_id}/player/${that.player_id}/status/${that.game_tick}`;
-                $.ajax({
-                    method: "GET",
-                    url: url,
-                    async: true,
-                    dataType: 'json'
-                })
-                    .done(function(playerdata){
-                        console.log(`handlerRunning[${infodata["status"]}]`)
-                    })
-                    .fail(function(errordata) {
-                        console.log(".error");
-                    });
-            })
-            .fail(function(errordata) {
-                console.log(".error");
-            });
     }
 
     function startTimer(that) {
@@ -223,17 +200,5 @@
             listener(that, timerTick);
         });
     }
-
-    $.fn.rm.robomindfieldPhase2 = function(node) {
-        let that = {};
-        that.node = node;
-        that.node.append($("<h1>asdasd</h1>"));
-        return that;
-    };
-
-    $.fn.rm.robomindfieldPhase3 = function(node) {
-        let that = {};
-        return that;
-    };
 
 })(jQuery);

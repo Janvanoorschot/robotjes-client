@@ -9,22 +9,22 @@
     /**
      * Functional constructor for robo.
      */
-    $.fn.robotjes.robotjesviewer = function (node, game_name) {
+    $.fn.robotjes.robotjesviewer = function (node, game_id, player_id) {
         let that = {};
         for (let n in defaults) {
             that[n] = defaults[n];
         }
         that.node = node;
-        that.game_name = game_name;
+        that.game_id = game_id;
+        that.player_id = player_id;
 
-        that.game_id = null;
         that.skin = null;
         that.map = null;
-        that.images = {}
+        that.images = {};
         that.movieplayer = null;
         that.timer = null;
         that.timerListeners = [];
-        that.timerTicks = 0
+        that.timerTicks = 0;
         that.recordingDelta = (5 * 1000) / 50;  // get recording-delta every 5 seconds (in sync with status_keeper)
 
         that.recordingTimer = function (timerTick) {
@@ -32,11 +32,7 @@
         };
 
         that.statusTimer = function (timerTick) {
-            if (!that.game_id) {
-                doWaitForGameCreation(that, timerTick, that.game_name);
-            } else {
-                doWaitForGameDestruction(that, timerTick, that.game_id);
-            }
+            doWaitForGameDestruction(that, timerTick, that.game_id);
         }
 
         that.movieplayerTimer = function (timerTick) {
@@ -46,8 +42,10 @@
         }
 
         populate(that);
+        init_game(that, that.game_id);
+
         return that;
-    }
+    };
 
     function populate(that) {
         that.node.on('runmodechanged', function (event, data) {
@@ -76,7 +74,7 @@
         that.timerListeners.push(that.recordingTimer);
         that.timerListeners.push(that.statusTimer);
         that.timerListeners.push(that.movieplayerTimer);
-        startTimer(that)
+        startTimer(that);
         return that;
     }
 
@@ -125,36 +123,21 @@
     }
 
     function update_game(that, status) {
-        $.fn.genmon(MONTYPE_GAMETICK, MONMSG_SERVER, status["status"]["game_tick"]);
+        // $.fn.genmon(MONTYPE_GAMETICK, MONMSG_SERVER, status["status"]["game_tick"]);
         var player_game_tick = "";
         for (var $player in status["players"]) {
             player_game_tick = status["players"][$player]["game_tick"];
         }
-        $.fn.genmon(MONTYPE_GAMETICK, MONMSG_SOLUTION, player_game_tick);
+        // $.fn.genmon(MONTYPE_GAMETICK, MONMSG_SOLUTION, player_game_tick);
     }
 
     function exit_game(that) {
         that.node.empty();
     }
 
-    function doWaitForGameCreation(that, timerTick, game_name) {
-        if ((timerTick % 100) == 0) {
-            $.getJSON("/games")
-                .then(function (result) {
-                    for (const [key, value] of Object.entries(result)) {
-                        if (value === game_name) {
-                            that.game_id = key;
-                            init_game(that, that.game_id);
-                            break;
-                        }
-                    }
-                })
-        }
-    }
-
     function doWaitForGameDestruction(that, timerTick, game_id) {
         if ((timerTick % 100) == 0) {
-            $.getJSON(`/game/${that.game_id}/status`)
+            $.getJSON(`/bubble/game/${that.game_id}/status`)
                 .then(function (result) {
                     update_game(that, result);
                 }, error => {
