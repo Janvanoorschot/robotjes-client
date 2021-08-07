@@ -9,7 +9,7 @@
     /**
      * Functional constructor for robo.
      */
-    $.fn.robotjes.robotjesviewer = function (node, game_id, player_id) {
+    $.fn.robotjes.robotjesviewer = function (node, game_id, player_id, url="") {
         let that = {};
         for (let n in defaults) {
             that[n] = defaults[n];
@@ -17,6 +17,7 @@
         that.node = node;
         that.game_id = game_id;
         that.player_id = player_id;
+        that.url = url;
 
         that.skin = null;
         that.map = null;
@@ -52,19 +53,19 @@
             var newmode = data.newmode;
             // console.log("old: " +data.oldmode + "->" + "new: " + data.newmode + "\n");
             if (data.oldmode === "stopped" && data.newmode === "running") {
-                $.post("/game/stopped2running")
+                $.post(`${that.url}/game/stopped2running`)
                     .then(function () {
                     })
             } else if (data.oldmode === "running" && data.newmode === "stopped") {
-                $.post("/game/running2stopped")
+                $.post(`${that.url}/game/running2stopped`)
                     .then(function () {
                     })
             } else if (data.oldmode === "running" && data.newmode === "paused") {
-                $.post("/game/running2paused")
+                $.post(`${that.url}/game/running2paused`)
                     .then(function () {
                     })
             } else if (data.oldmode === "paused" && data.newmode === "running") {
-                $.post("/game/paused2running")
+                $.post(`${that.url}/game/paused2running`)
                     .then(function () {
                     })
             }
@@ -82,7 +83,7 @@
         $.getJSON("/challenge/skin")
             .then(function (skin) {
                 that.skin = skin;
-                let url = `/game/${game_id}/map`;
+                let url = `${that.url}/game/${game_id}/map`;
                 return $.getJSON(url)
                     .done(function (result) {
                         that.map = result['maze_map'];
@@ -106,7 +107,7 @@
                                 reject(that.images);
                             }
                         }
-                        that.images[key] = image
+                        that.images[key] = image;
                         image.src = path;
                     }
                 });
@@ -117,7 +118,7 @@
                 that.node.append(moviePlayerNode);
                 that.node.resize();
                 that.recording = $.fn.rm.recording(that.map, that.skin, that.images);
-                that.recording.setDeltaFrames(game_id);
+                that.recording.setDeltaFrames(game_id, that.url);
                 that.movieplayer.start(that.recording, false, false);
             })
     }
@@ -137,13 +138,13 @@
 
     function doWaitForGameDestruction(that, timerTick, game_id) {
         if ((timerTick % 100) == 0) {
-            $.getJSON(`/bubble/game/${that.game_id}/status`)
+            $.getJSON(`${that.url}/game/${that.game_id}/status`)
                 .then(function (result) {
                     update_game(that, result);
                 }, error => {
                     // game disappeared 
                     exit_game(that, that.game_id);
-                })
+                });
         }
     }
 

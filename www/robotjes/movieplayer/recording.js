@@ -48,8 +48,9 @@
             that.frames = $.fn.rm.classicframeholder(that.map, frames, init_x, init_y, init_dir, that.success);
         };
 
-        that.setDeltaFrames = function(game_id) {
-            that.frames = $.fn.rm.fieldframeholder(game_id);
+        that.setDeltaFrames = function(game_id, url="") {
+            that.frames = $.fn.rm.fieldframeholder(game_id, url);
+            that.url = url;
         };
 
         that.dump = function(sprite_id) {
@@ -103,9 +104,6 @@
         that.getNext = function() {
             if(that.frames) {
                 var nextFrame = that.frames.getNext();
-                if(nextFrame && nextFrame.length > 0) {
-                    $.fn.genmon(MONTYPE_GAMETICK, MONMSG_PLAYBACK, nextFrame[0]['tick']);
-                }
                 return nextFrame;
             } else {
                 throw new Error("frames not set");
@@ -433,9 +431,11 @@
     //    },
     //    ...
     // ]
-    $.fn.rm.fieldframeholder = function(game_id) {
+    $.fn.rm.fieldframeholder = function(game_id, url="") {
         let that = {};
         that.game_id = game_id;
+        that.url = url;
+
         // the following state is maintained during creation/appendDelta
         that.before_game_time = 0;           // the game_time of the last delta added
         that.deltas = [];                    // ordered list of deltas
@@ -621,7 +621,7 @@
         function doGetDeltas(that) {
             if(that.game_id) {
                 let map = null;
-                let url = '/field/gamerecording?game_id=' + that.game_id+"&before_game_time="+that.before_game_time;
+                let url = `${that.url}/field/gamerecording?game_id=${that.game_id}&before_game_time=${that.before_game_time}`;
                 $.ajax({
                     url: url,
                     async: false,
@@ -630,7 +630,6 @@
                         map = response;
                         if(map.length > 0) {
                             that.before_game_time = map[map.length-1].game_tick;
-                            $.fn.genmon(MONTYPE_GAMETICK, MONMSG_RECORDING, that.before_game_time);
                         }
                     },
                     error: function(jqXHR,type,e) {
