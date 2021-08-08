@@ -88,6 +88,9 @@
                     .done(function (result) {
                         that.map = result['maze_map'];
                     })
+                    .fail(function (result) {
+                        console.log(`error: ${result}`);
+                    })
             })
             .then(function () {
                 return new Promise((resolve, reject) => {

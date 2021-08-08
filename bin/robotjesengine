@@ -26,9 +26,9 @@ def main(args: map):
     server.app = fastapi.FastAPI()
 
     # import the files with REST calls (do not remove!!!)
-    import robotjes.server.sys_rest
-    import robotjes.server.bubble_hub_rest
-    import robotjes.server.game_rest
+    import robotjes.server.local_sys_rest
+    import robotjes.server.local_bubble_hub_rest
+    import robotjes.server.local_game_rest
 
     # start the server immediately
     server.robotjes_engine.start_game()

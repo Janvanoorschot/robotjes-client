@@ -19,6 +19,14 @@ async def list_games():
     lst = server.status_keeper.list_games()
     return lst
 
+@app.get("/localgame")
+async def local_game():
+    """ Return the one local game that is automatically """
+    games = server.status_keeper.list_games()
+    game_id  = list(games.keys())[0]
+    game_status = server.status_keeper.get_game_status(game_id)
+    player_id = None
+    return {"game_id": game_id, "player_id": player_id}
 
 @app.get("/challenge/skin")
 async def get_skin():
