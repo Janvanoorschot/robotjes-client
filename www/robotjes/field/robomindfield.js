@@ -29,7 +29,7 @@
         that.recordingDelta = (5*1000)/50;  // every 5 seconds (in sync with status_keeper)
 
         // screen components
-        that.state = null;
+        that.status = null;
         that.viewer = null;
 
         // state
@@ -78,15 +78,12 @@
                     case 'state_registered':
                         switch(data.status) {
                             case 'unknown':
-                                console.log("a");
                                 toStateError(that, data);
                                 break;
                             case 'registered':
-                                console.log("b");
                                 keepStateRegistered(that, data);
                                 break;
                             case 'confirmed':
-                                console.log("c");
                                 toStateRunning(that, data);
                                 break;
                             case 'stopped':
@@ -119,6 +116,7 @@
                 }
             })
             .fail(function(data) {
+                console.log("e1");
                 toStateError(that, data);
             });
     }
@@ -148,13 +146,13 @@
         statusnode.empty();
         that.status = $.fn.robotjes.robotjesstatus(statusnode, data);
         var viewernode = that.node.find('.field .fieldviewer');
-        statusnode.empty();
+        viewernode.empty();
         that.viewer = $.fn.robotjes.robotjesviewer(viewernode, that.game_id, that.player_id, that.url);
+        viewernode.resize();
         that.state = 'state_running';
     }
 
     function keepStateRunning(that, data) {
-
     }
 
     function toStateStopped(that, data) {

@@ -242,6 +242,7 @@
         // in the future we should read the file 'skin.properties' in the skin, for now we use the width of tile-@
         var defaultImage = that.images["tile-@"];
         that.tileSize = defaultImage.width;
+        // that.tileSize = 200;  //ToDo: REMOVE!!!!
     }
 
     $.fn.rm.classicframeholder = function(map, recframes, init_x, init_y, init_dir, success) {
@@ -618,7 +619,7 @@
             doAddDeltas(that, lst, false);
         }
 
-        function doGetDeltas(that) {
+        function doGetDeltas(that) {1
             if(that.game_id) {
                 let map = null;
                 // let url = `${that.url}/field/gamerecording?game_id=${that.game_id}&before_game_time=${that.before_game_time}`;

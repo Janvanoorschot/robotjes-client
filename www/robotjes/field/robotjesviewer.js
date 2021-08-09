@@ -34,13 +34,13 @@
 
         that.statusTimer = function (timerTick) {
             doWaitForGameDestruction(that, timerTick, that.game_id);
-        }
+        };
 
         that.movieplayerTimer = function (timerTick) {
             if (that.movieplayer) {
                 that.movieplayer.timerTick(timerTick);
             }
-        }
+        };
 
         populate(that);
         init_game(that, that.game_id);
@@ -51,7 +51,6 @@
     function populate(that) {
         that.node.on('runmodechanged', function (event, data) {
             var newmode = data.newmode;
-            // console.log("old: " +data.oldmode + "->" + "new: " + data.newmode + "\n");
             if (data.oldmode === "stopped" && data.newmode === "running") {
                 $.post(`${that.url}/game/stopped2running`)
                     .then(function () {
@@ -81,19 +80,20 @@
 
     function init_game(that, game_id) {
         $.getJSON("/challenge/skin")
-            .then(function (skin) {
+            .then((skin) => {
                 that.skin = skin;
                 let url = `${that.url}/game/${game_id}/map`;
                 return $.getJSON(url)
-                    .done(function (result) {
+                    .done((result) => {
                         that.map = result['maze_map'];
                     })
-                    .fail(function (result) {
+                    .fail((result) => {
                         console.log(`error: ${result}`);
-                    })
+                    });
             })
             .then(function () {
-                return new Promise((resolve, reject) => {
+                // return new Promise((resolve, reject) => {
+                new Promise((resolve, reject) => {
                     var count = 0;
                     for (const [key, path] of Object.entries(that.skin)) {
                         count++;
@@ -109,20 +109,21 @@
                             if (count <= 0) {
                                 reject(that.images);
                             }
-                        }
+                        };
                         that.images[key] = image;
                         image.src = path;
                     }
-                });
-            })
-            .then(function (images) {
-                var moviePlayerNode = $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" style="height: 100%; width: 100%;" class="animation"></div></div>');
-                that.movieplayer = $.fn.rm.movieplayer('movieplayer1', moviePlayerNode.find('#worldsubpane'), that.node, that.skin, that.images);
-                that.node.append(moviePlayerNode);
-                that.node.resize();
-                that.recording = $.fn.rm.recording(that.map, that.skin, that.images);
-                that.recording.setDeltaFrames(game_id, that.url);
-                that.movieplayer.start(that.recording, false, false);
+                })
+                    .then((images) => {
+                        var moviePlayerNode = $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" style="height: 100%; width: 100%;" class="animation"></div></div>');
+                        that.movieplayer = $.fn.rm.movieplayer('movieplayer1', moviePlayerNode.find('#worldsubpane'), that.node, that.skin, that.images);
+                        that.node.append(moviePlayerNode);
+                        that.node.resize();
+                        that.recording = $.fn.rm.recording(that.map, that.skin, that.images);
+                        that.recording.setDeltaFrames(game_id, that.url);
+                        that.movieplayer.start(that.recording, false, false);
+                        return images;
+                    });
             })
     }
 
