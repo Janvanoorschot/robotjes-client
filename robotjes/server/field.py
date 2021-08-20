@@ -71,7 +71,7 @@ class Field:
             "maze_map": self.game.maze_map()
         })
         # we start the game immediatly after it is created
-        # self.owner.start_game()
+        self.owner.start_game()
 
     def started(self):
         self.game_tick = 0

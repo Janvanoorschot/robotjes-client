@@ -97,7 +97,7 @@ class RoboGame:
 
     def end_moves(self, game_tick):
         # generate a timerevent for every active robo
-        for robo_id in self.robo_counters.keys():
+        for robo_id in self.robo_counters[WorldEvent.WORLD_EVT_TIMER].keys():
             data = {
                 "robo_id": robo_id
             }
