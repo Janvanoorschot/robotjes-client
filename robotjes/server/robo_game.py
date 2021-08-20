@@ -35,6 +35,7 @@ class RoboGame:
             listener(event, data)
 
     def _world_event(self, evt: WorldEvent, data: map):
+        # The Engine/World has issued an event
         robo_id = data["robo_id"]
         self.robo_counters[evt][robo_id] += 1
         self._test_counters(robo_id, data)
@@ -42,7 +43,6 @@ class RoboGame:
             self._update_beacons()
 
     def _test_counters(self, robo_id: str, data: dict):
-        # first check
         for evt in WorldEvent:
             if "max" in self.counters and evt in self.counters["max"]:
                 if self.robo_counters[evt][robo_id] >= self.counters["max"][evt]:
@@ -96,7 +96,12 @@ class RoboGame:
         self.engine.execute(game_tick, robo_id, move)
 
     def end_moves(self, game_tick):
-        pass
+        # generate a timerevent for every active robo
+        for robo_id in self.robo_counters.keys():
+            data = {
+                "robo_id": robo_id
+            }
+            self._world_event(WorldEvent.WORLD_EVT_TIMER, data)
 
     def get_status(self, robo_id):
         return self.engine.get_status(robo_id)

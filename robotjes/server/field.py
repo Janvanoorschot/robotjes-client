@@ -44,7 +44,8 @@ class Field:
                     WorldEvent.WORLD_EVT_BEACON_EATEN: 3
                 },
                 "max": {
-                    WorldEvent.WORLD_EVT_BUMP: 1
+                    WorldEvent.WORLD_EVT_BUMP: 1,
+                    WorldEvent.WORLD_EVT_TIMER: 60
                 }
             }
         elif spec.game_name == 'hit_three':
@@ -53,7 +54,8 @@ class Field:
                     WorldEvent.WORLD_EVT_HIT_BOT: 3
                 },
                 "max": {
-                    WorldEvent.WORLD_EVT_BUMP: 1
+                    WorldEvent.WORLD_EVT_BUMP: 1,
+                    WorldEvent.WORLD_EVT_TIMER: 60
                 }
             }
         else:
