@@ -67,13 +67,13 @@ class StatusKeeper(object):
             # CREATED event is already handled
             pass
         elif msg == "PLAYER_SUCCESS":
-            player_id = request["player_id"]
+            player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
                 self.update_reservation(uid, "stopped")
             game_status.player_success(self.now, request)
         elif msg == "PLAYER_FAILURE":
-            player_id = request["player_id"]
+            player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
                 self.update_reservation(uid, "stopped")
