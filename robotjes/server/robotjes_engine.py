@@ -19,14 +19,14 @@ class RobotjesEngine(object):
         self.players = {}
         self.lastseen = {}
         self.moves = {}
-        self.field = Field(self, init_spec)
-        self.field.created()
         self.game_state = GameStatus.CREATED
         self.resolution = 5
         self.inactive_limit = 10
         self.starttime = None
         self.tick = -1
         self.now = datetime.datetime.now()
+        self.field = Field(self, init_spec)
+        self.field.created()
 
     ####### Requests from robotjes_viewer via REST
     def start_game(self):
