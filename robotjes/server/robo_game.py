@@ -7,9 +7,12 @@ class RoboGame:
     """Robotjes specific game behaviour."""
 
     def __init__(self, mapstr, counters={}):
-        self.robos = {}
-        self.counters = counters
         self.map = Map.fromstring(mapstr)
+        self.counters = counters
+        self.robos = {}
+        self.robo_counters = {}
+        for evt in WorldEvent:
+            self.robo_counters[evt] = {}
         self.engine = Engine(self.map)
         self.engine.world.beacons.clear()
         self.beacon_count = 1
@@ -17,9 +20,6 @@ class RoboGame:
         self.engine.add_listener(self._world_event)
         self.game_tick = 0
         self.last_recording_delta = 0
-        self.robo_counters = {}
-        for evt in WorldEvent:
-            self.robo_counters[evt] = {}
         self.listeners = []
 
     def add_listener(self, listener):
