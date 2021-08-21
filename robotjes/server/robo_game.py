@@ -86,6 +86,8 @@ class RoboGame:
     def destroy_robo(self, robo_id):
         self.engine.destroy_robo(robo_id)
         del self.robos[robo_id]
+        for evt in WorldEvent:
+            del self.robo_counters[evt][robo_id]
 
     def start_moves(self, game_tick):
         self.game_tick = game_tick
