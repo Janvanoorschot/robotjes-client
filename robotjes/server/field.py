@@ -24,15 +24,15 @@ class Field:
         self.players = {}
         self.resolution = 5
 
-    def event(self, evt: FieldEvent, data: dict):
+    def event(self, evt: FieldEvent, player_id: str, data: dict):
         # handler world even and turn it into owner-publish
         if evt == FieldEvent.FIELD_EVT_TASK_DONE:
             self.owner.publish(GameStatus.PLAYER_SUCCESS, {
-                "player_id": self.owned_by(data['robo_id'])
+                "player_id": player_id
             })
         elif evt == FieldEvent.FIELD_EVT_LIMIT_REACHED:
             self.owner.publish(GameStatus.PLAYER_FAILURE, {
-                "player_id": self.owned_by(data['robo_id'])
+                "player_id": player_id
             })
         else:
             pass
@@ -85,6 +85,7 @@ class Field:
 
     def registered(self, player_id, player_name):
         player = Player(player_id, player_name)
+        self.game.registered(player_id)
         robo_id = self.game.create_robo(player.player_id)
         if robo_id:
             player.robos.append(robo_id)
@@ -98,6 +99,7 @@ class Field:
             player = self.players[player_id]
             for robo_id in player.robos:
                 self.game.destroy_robo(robo_id)
+            self.game.deregistered(player_id)
             del self.players[player_id]
 
     def is_stopped(self):
