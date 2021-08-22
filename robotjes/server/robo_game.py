@@ -85,7 +85,7 @@ class RoboGame:
             self.player_counters[player_id][evt] = 0
 
     def deregistered(self, player_id):
-        if player_id in self.players and self.players[player_id].len() == 0:
+        if player_id in self.players and len(self.players[player_id]) == 0:
             del self.players[player_id]
             del self.player_counters[player_id]
 
