@@ -4,7 +4,10 @@ from pprint import pprint
 
 def execute(robo):
 
-    while True:
+    while robo.active():
+        print("<<<")
         status = robo.right()
-        pprint(status)
+        print(">>>")
+        # pprint(status)
+    print("client script done")
 

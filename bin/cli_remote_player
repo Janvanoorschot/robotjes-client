@@ -18,10 +18,10 @@ class PlayerClient:
         pass
 
     def robo_status(self, game_tick, robo_id, robo_status):
-        pass
+        print(f"status[{robo_status}]")
 
     def issue_command(self, game_tick, robo_id, cmd, reply):
-        pprint(cmd)
+        print(f"cmd[{game_tick}]")
 
     def game_tick(self, game_tick):
         pprint(game_tick)
@@ -71,3 +71,4 @@ if __name__ == "__main__":
         aloop.stop()
     else:
         print(f"no valid user module: {args.module if args.module else 'ABSENT'}")
+    print("done")
