@@ -203,8 +203,7 @@ class Robo(object):
         self.requestor.execute([self.id, 'error', message])
 
     def stop(self):
-        # self.requestor.execute([])
-        sys.exit("robo break")
+        self.requestor.close()
 
     def active(self):
         return self.is_running
