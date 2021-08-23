@@ -18,14 +18,12 @@ class PlayerClient:
         pass
 
     def robo_status(self, game_tick, robo_id, robo_status):
-        print(f"status[{robo_status}]")
+        # print(f"status[{robo_status}]")
+        pass
 
     def issue_command(self, game_tick, robo_id, cmd, reply):
-        print(f"cmd[{game_tick}]")
-
-    def game_tick(self, game_tick):
-        pprint(game_tick)
-
+        # print(f"cmd[{game_tick}]")
+        pass
 
 
 def load_client(module_name):
@@ -47,8 +45,9 @@ async def main(args, script, loop):
     handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password, args.uuid)
     player = client.Player(handler, loop, clnt)
     timer = Timer(0.1, player.timer, True)
-    await player.start_player(script)
-    success = await player.run_game()
+    f1 = loop.create_task(player.run_one_robo(script))
+    f2 = loop.create_task(player.run_runtime())
+    await asyncio.wait([f1, f2])
     timer.cancel()
 
 
@@ -68,7 +67,6 @@ if __name__ == "__main__":
     if script:
         aloop = asyncio.get_event_loop()
         aloop.run_until_complete(main(args, script, aloop))
-        aloop.stop()
+        aloop.close()
     else:
         print(f"no valid user module: {args.module if args.module else 'ABSENT'}")
-    print("done")

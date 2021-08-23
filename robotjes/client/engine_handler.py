@@ -96,11 +96,8 @@ class RemoteEngineHandler:
             else:
                 raise Exception(f"no such game {self.game_name}")
             # now wait for the registration info to come in (during timer)
-            print("1")
             await self.register_lock.acquire()
-            print("2")
             await self.register_lock.acquire()
-            print("3")
             if self.robo_id:
                 self.is_started = True
                 self.is_stopped = False

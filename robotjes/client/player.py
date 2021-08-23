@@ -1,8 +1,8 @@
 import asyncio
-from robotjes.bot import RoboThread, Robo
-import sys
+from robotjes.bot import Robo
 
 import concurrent
+import concurrent.futures
 
 from robotjes.local import LocalRequestor
 
@@ -24,22 +24,19 @@ class Player:
         self.robo_status = {}
         self.game_tick = 0
 
-    async def start_player(self, execute):
+    async def run_one_robo(self, execute):
         robo_id = await self.handler.start_player()
         self.callback('create_robo', self.game_tick, robo_id)
         if(robo_id):
             requestor = LocalRequestor(self.loop)
             robo = Robo(requestor, id=robo_id)
-            client_code = RoboThread(robo, execute)
-            self.robo_coroutines[robo_id] = self.loop.run_in_executor(
-                self.executor,
-                client_code.run)
             self.robos[robo.id] = robo
-            return robo
+            # switch from async python mode to sync mode (in thread)
+            await self.loop.run_in_executor(self.executor, execute, robo)
         else:
             raise Exception("Failed to create Robo")
 
-    async def run_game(self):
+    async def run_runtime(self):
         await self.timer_lock.acquire()
         while not self.stopped:
             await self.timer_lock.acquire()
@@ -71,13 +68,7 @@ class Player:
 
     async def stop(self):
         for robo_id, robo in self.robos.items():
-           self.robo_coroutines[robo_id].cancel()
            await robo.requestor.close()
-        # the hard way to kill tasks in the executor.
-        # self.executor._threads.clear()
-        # concurrent.futures.thread._threads_queues.clear()
-        # the soft way to kill the executor does not work
-        # self.executor.shutdown(wait=False)
         self.stopped = True
 
     async def timer(self):
