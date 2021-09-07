@@ -38,11 +38,13 @@ class StatusKeeper(object):
 
     def update_reservation(self, uuid, status):
         request = self.reservations.get(uuid, None)
-        request["status"] = status
-        self.reservations[request["uuid"]] = request
+        if request:
+            request["status"] = status
+            self.reservations[request["uuid"]] = request
         return request
 
     def game_status_event(self, request):
+        events = []
         game_id = request["game_id"]
         msg = request["msg"]
         if game_id not in self.games:
@@ -70,18 +72,55 @@ class StatusKeeper(object):
             player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
-                self.update_reservation(uid, "stopped")
-            game_status.player_success(self.now, request)
+                reservation = self.get_reservation(uid)
+                if reservation["status"] != "stopped":
+                    events.append({
+                        "msg": "PLAYER_SUCCESS",
+                        "player_id": player_id,
+                        "uuid": uid,
+                        "reservation": reservation})
+                    self.update_reservation(uid, "stopped")
+                    game_status.player_success(self.now, request)
         elif msg == "PLAYER_FAILURE":
+            # {'bubble_id': '8033cc90-4ebb-49d4-8296-202c4142e9b6',
+            # 'game_id': '3981308b-a4b8-4b03-bc2a-63b5bd258e64',
+            # 'game_name': 'eat_three',
+            # 'msg': 'PLAYER_FAILURE',
+            # 'game_status': {'game_tick': 110, 'isStarted': True, 'isStopped': False, 'isSuccess': True},
+            # 'players_status': {
+            #   'bc0c8705-8375-4bc3-a4ff-15f3a641f441': {
+            #       'player_id': 'bc0c8705-8375-4bc3-a4ff-15f3a641f441',
+            #       'player_name': 'Jan Admin',
+            #       'robos': {
+            #           'dcaa924d-a4e5-40d5-b354-cf0855ae489f': {
+            #               'pos': [7, 11],
+            #               'load': 0,
+            #               'dir': 270,
+            #               'recording': [[108, 'right', [1], True], [109, 'right', [1], True], [110, 'right', [1], True]],
+            #               'fog_of_war': {'left': [None, None, None, None],
+            #               'front': [None, None, None, None], 'right': [None, None, None, None]
+            #            }
+            #        }
+            #    }
+            # }},
+            # 'data': {'player_id': 'bc0c8705-8375-4bc3-a4ff-15f3a641f441'}}
             player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
-                self.update_reservation(uid, "stopped")
-            game_status.player_failure(self.now, request)
+                reservation = self.get_reservation(uid)
+                if reservation["status"] != "stopped":
+                    events.append({
+                        "msg": "PLAYER_FAILURE",
+                        "player_id": player_id,
+                        "uuid": uid,
+                        "reservation": reservation})
+                    self.update_reservation(uid, "stopped")
+                    game_status.player_failure(self.now, request)
         elif msg == "IDLE":
             pass
         else:
             logger.warning(f"unknown msg: {msg}")
+        return events
 
     def add_game(self, game_id, request):
         game_status = GameStatus(self.now, request)

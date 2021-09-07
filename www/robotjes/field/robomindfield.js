@@ -10,7 +10,7 @@
         updateDuration:1000
     };
 
-    $.fn.robotjes.fieldview = function(node, uuid, url="") {
+    $.fn.robotjes.fieldview = function(node, url="") {
         let that = {};
 
         // set that 'fixed' data
@@ -19,7 +19,6 @@
         }
 
         that.node = node;
-        that.uuid = uuid;
         that.url = url;
 
         // timer state
@@ -33,12 +32,18 @@
         that.viewer = null;
 
         // state
-        that.state = "state_ids_unknown";
+        that.uuid = null;
+        that.state = "state_uuid_unknown";
 
         // collected data
         that.game_id = null;
         that.player_id = null;
         that.game_tick = 0;
+
+        that.assignUUID = function(uuid) {
+            that.uuid = uuid
+            toStateRegistered(that)
+        }
 
         that.someTimer = function(timerTick) {
         };
@@ -61,64 +66,86 @@
         `);
         that.node.append(fieldnode);
         that.node.resize();
-        toStateRegistered(that);
     }
 
     function timerHandler(that, timerTick) {
-        // collect info about the UUID we are tracing
-        let url = '/bubble/info/'+that.uuid;
-        $.ajax({
-            method: "GET",
-            url: url,
-            async: true,
-            dataType: 'json'
-        })
-            .done(function(data) {
-                switch(that.state) {
-                    case 'state_registered':
-                        switch(data.status) {
-                            case 'unknown':
-                                toStateError(that, data);
-                                break;
-                            case 'registered':
-                                keepStateRegistered(that, data);
-                                break;
-                            case 'confirmed':
-                                toStateRunning(that, data);
-                                break;
-                            case 'stopped':
-                                toStateStopped(that, data);
-                                break;
-                        }
-                        break;
-                    case 'state_running':
-                        switch(data.status) {
-                            case 'unknown':
-                                toStateError(that, data);
-                                break;
-                            case 'registered':
-                                toStateError(that, data);
-                                break;
-                            case 'confirmed':
-                                keepStateRunning(that, data);
-                                break;
-                            case 'stopped':
-                                toStateStopped(that, data);
-                                break;
-                        }
-                        break;
-                    case 'state_stopped':
-                        keepStateStopped(that, data);
-                        break;
-                    case 'state_error':
-                        keepStateError(that, data);
-                        break;
-                }
+        // given a uuid, get the Academy status of our Challenge
+        if(that.uuid) {
+            // collect Bubble info about the UUID we are tracing
+            let url ="/field/status";
+            $.ajax({
+                method: "GET",
+                url: url,
+                async: true,
+                dataType: 'json'
             })
-            .fail(function(data) {
-                console.log("e1");
-                toStateError(that, data);
-            });
+                .done(function(data) {
+                    if(data.done) {
+                        toStateStopped(that, data);
+                        that.uuid = null;
+                    }
+                })
+                .fail(function(data) {
+                    toStateError(that, data);
+                });
+        }
+        // given a uuid, get the Bubble status of our Challenge
+        if(that.uuid) {
+            // collect Bubble info about the UUID we are tracing
+            let url = that.url + '/info/'+that.uuid;
+            $.ajax({
+                method: "GET",
+                url: url,
+                async: true,
+                dataType: 'json'
+            })
+                .done(function(data) {
+                    switch(that.state) {
+                        case 'state_registered':
+                            switch(data.status) {
+                                case 'unknown':
+                                    toStateError(that, data);
+                                    break;
+                                case 'registered':
+                                    keepStateRegistered(that, data);
+                                    break;
+                                case 'confirmed':
+                                    toStateRunning(that, data);
+                                    break;
+                                case 'stopped':
+                                    toStateStopped(that, data);
+                                    break;
+                            }
+                            break;
+                        case 'state_running':
+                            switch(data.status) {
+                                case 'unknown':
+                                    toStateError(that, data);
+                                    break;
+                                case 'registered':
+                                    toStateError(that, data);
+                                    break;
+                                case 'confirmed':
+                                    keepStateRunning(that, data);
+                                    break;
+                                case 'stopped':
+                                    toStateStopped(that, data);
+                                    break;
+                            }
+                            break;
+                        case 'state_stopped':
+                            keepStateStopped(that, data);
+                            break;
+                        case 'state_error':
+                            keepStateError(that, data);
+                            break;
+                    }
+                })
+                .fail(function(data) {
+                    console.log("e1");
+                    toStateError(that, data);
+                });
+        }
     }
 
     function toStateRegistered(that) {
@@ -156,6 +183,91 @@
     }
 
     function toStateStopped(that, data) {
+        //  data layout:
+        //  {
+        //     "status": "stopped",
+        //         "player_id": "cd2afde5-1889-4d5a-801e-dc7d6bdd86cc",
+        //         "game_id": "15b5ee62-0909-4f05-83fc-2cd54248696a",
+        //         "player_status": {
+        //         "game_status": {
+        //             "game_id": "15b5ee62-0909-4f05-83fc-2cd54248696a",
+        //                 "game_name": "eat_three",
+        //                 "status": {
+        //                 "game_tick": 761,
+        //                     "isStarted": true,
+        //                     "isStopped": false,
+        //                     "isSuccess": true
+        //             }
+        //         },
+        //         "player_result": {
+        //             "player_id": "cd2afde5-1889-4d5a-801e-dc7d6bdd86cc",
+        //                 "active": false,
+        //                 "success": false,
+        //                 "timestamp": "2021-08-29T12:29:37.405350"
+        //         },
+        //         "player_status": {
+        //             "player_id": "cd2afde5-1889-4d5a-801e-dc7d6bdd86cc",
+        //                 "player_name": "Jan Admin",
+        //                 "robos": {
+        //                 "f674fd01-f925-4b68-b5c9-c77b1cb2a665": {
+        //                     "pos": [
+        //                         7,
+        //                         11
+        //                     ],
+        //                         "load": 0,
+        //                         "dir": 270,
+        //                         "recording": [
+        //                         [
+        //                             759,
+        //                             "right",
+        //                             [
+        //                                 1
+        //                             ],
+        //                             true
+        //                         ],
+        //                         [
+        //                             760,
+        //                             "right",
+        //                             [
+        //                                 1
+        //                             ],
+        //                             true
+        //                         ],
+        //                         [
+        //                             761,
+        //                             "right",
+        //                             [
+        //                                 1
+        //                             ],
+        //                             true
+        //                         ]
+        //                     ],
+        //                         "fog_of_war": {
+        //                         "left": [
+        //                             null,
+        //                             null,
+        //                             null,
+        //                             null
+        //                         ],
+        //                             "front": [
+        //                             null,
+        //                             null,
+        //                             null,
+        //                             null
+        //                         ],
+        //                             "right": [
+        //                             null,
+        //                             null,
+        //                             null,
+        //                             null
+        //                         ]
+        //                     }
+        //                 }
+        //             }
+        //         },
+        //         "game_tick": 761
+        //     }
+        // }
         that.state = 'state_stopped';
     }
 
