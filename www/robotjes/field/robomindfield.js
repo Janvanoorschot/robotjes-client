@@ -31,7 +31,11 @@
         that.status = null;
         that.viewer = null;
 
-        // state
+        // state: possible states:
+        //      state_uuid_unknown
+        //      state_running
+        //      state_stopped
+        //      state_error
         that.uuid = null;
         that.state = "state_uuid_unknown";
 
@@ -41,8 +45,8 @@
         that.game_tick = 0;
 
         that.assignUUID = function(uuid) {
-            that.uuid = uuid
-            toStateRegistered(that)
+            that.uuid = uuid;
+            toStateRegistered(that);
         }
 
         that.someTimer = function(timerTick) {
@@ -69,26 +73,69 @@
     }
 
     function timerHandler(that, timerTick) {
-        // given a uuid, get the Academy status of our Challenge
-        if(that.uuid) {
-            // collect Bubble info about the UUID we are tracing
-            let url ="/field/status";
-            $.ajax({
-                method: "GET",
-                url: url,
-                async: true,
-                dataType: 'json'
+        // collect Bubble info about the UUID we are tracing
+        let url ="/field/status";
+        $.ajax({
+            method: "GET",
+            url: url,
+            async: true,
+            dataType: 'json'
+        })
+            .done(function(data) {
+                // data.known
+                // data.done
+                // data.firsttime
+                switch(that.state) {
+                    case 'state_uuid_unknown':
+                        if(data.uuid != "") {
+                            toStateRunning(that, data);
+                        } else {
+                            keepStateUuidUnknown(that, data);
+                        }
+                        break;
+                    case 'state_registered':
+                        switch(data.status) {
+                            case 'unknown':
+                                toStateError(that, data);
+                                break;
+                            case 'registered':
+                                keepStateRegistered(that, data);
+                                break;
+                            case 'confirmed':
+                                toStateRunning(that, data);
+                                break;
+                            case 'stopped':
+                                toStateStopped(that, data);
+                                break;
+                        }
+                        break;
+                    case 'state_running':
+                        switch(data.status) {
+                            case 'unknown':
+                                toStateError(that, data);
+                                break;
+                            case 'registered':
+                                toStateError(that, data);
+                                break;
+                            case 'confirmed':
+                                keepStateRunning(that, data);
+                                break;
+                            case 'stopped':
+                                toStateStopped(that, data);
+                                break;
+                        }
+                        break;
+                    case 'state_stopped':
+                        keepStateStopped(that, data);
+                        break;
+                    case 'state_error':
+                        keepStateError(that, data);
+                        break;
+                }
             })
-                .done(function(data) {
-                    if(data.done) {
-                        toStateStopped(that, data);
-                        that.uuid = null;
-                    }
-                })
-                .fail(function(data) {
-                    toStateError(that, data);
-                });
-        }
+            .fail(function(data) {
+                toStateError(that, data);
+            });
         // given a uuid, get the Bubble status of our Challenge
         if(that.uuid) {
             // collect Bubble info about the UUID we are tracing
@@ -146,6 +193,14 @@
                     toStateError(that, data);
                 });
         }
+    }
+
+    function toStateUuidUnknown(that) {
+
+    }
+
+    function keepStateUuidUnknown(that) {
+
     }
 
     function toStateRegistered(that) {

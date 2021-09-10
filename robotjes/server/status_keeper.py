@@ -68,6 +68,28 @@ class StatusKeeper(object):
         elif msg == "CREATED":
             # CREATED event is already handled
             pass
+        elif msg == "PLAYER_REGISTER":
+            player_id = request["data"]["player_id"]
+            if player_id in self.player2reservation:
+                uid = self.player2reservation[player_id]
+                reservation = self.get_reservation(uid)
+                if reservation["status"] != "stopped":
+                    events.append({
+                        "msg": "PLAYER_REGISTER",
+                        "player_id": player_id,
+                        "uuid": uid,
+                        "reservation": reservation})
+        elif msg == "PLAYER_DEREGISTER":
+            player_id = request["data"]["player_id"]
+            if player_id in self.player2reservation:
+                uid = self.player2reservation[player_id]
+                reservation = self.get_reservation(uid)
+                if reservation["status"] != "stopped":
+                    events.append({
+                        "msg": "PLAYER_DEREGISTER",
+                        "player_id": player_id,
+                        "uuid": uid,
+                        "reservation": reservation})
         elif msg == "PLAYER_SUCCESS":
             player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:

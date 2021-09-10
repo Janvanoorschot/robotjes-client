@@ -10,5 +10,7 @@ class GameStatus(Enum):
     DELTAREC = 'deltarec'
     STARTED = 'started'
     STOPPED = 'stopped'
+    PLAYER_REGISTER = 'player_register'
+    PLAYER_DEREGISTER = 'player_deregister'
     PLAYER_SUCCESS = 'player_success'
     PLAYER_FAILURE = 'player_failure'
