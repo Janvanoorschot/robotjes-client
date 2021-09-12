@@ -69,6 +69,7 @@ class StatusKeeper(object):
             # CREATED event is already handled
             pass
         elif msg == "PLAYER_REGISTER":
+            game_id = request["game_id"]
             player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
@@ -76,10 +77,12 @@ class StatusKeeper(object):
                 if reservation["status"] != "stopped":
                     events.append({
                         "msg": "PLAYER_REGISTER",
+                        "game_id": game_id,
                         "player_id": player_id,
                         "uuid": uid,
                         "reservation": reservation})
         elif msg == "PLAYER_DEREGISTER":
+            game_id = request["game_id"]
             player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
@@ -87,10 +90,12 @@ class StatusKeeper(object):
                 if reservation["status"] != "stopped":
                     events.append({
                         "msg": "PLAYER_DEREGISTER",
+                        "game_id": game_id,
                         "player_id": player_id,
                         "uuid": uid,
                         "reservation": reservation})
         elif msg == "PLAYER_SUCCESS":
+            game_id = request["game_id"]
             player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
@@ -98,6 +103,7 @@ class StatusKeeper(object):
                 if reservation["status"] != "stopped":
                     events.append({
                         "msg": "PLAYER_SUCCESS",
+                        "game_id": game_id,
                         "player_id": player_id,
                         "uuid": uid,
                         "reservation": reservation})
@@ -126,6 +132,7 @@ class StatusKeeper(object):
             #    }
             # }},
             # 'data': {'player_id': 'bc0c8705-8375-4bc3-a4ff-15f3a641f441'}}
+            game_id = request["game_id"]
             player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
@@ -133,6 +140,7 @@ class StatusKeeper(object):
                 if reservation["status"] != "stopped":
                     events.append({
                         "msg": "PLAYER_FAILURE",
+                        "game_id": game_id,
                         "player_id": player_id,
                         "uuid": uid,
                         "reservation": reservation})
