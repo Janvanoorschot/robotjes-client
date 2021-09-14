@@ -137,7 +137,7 @@
     }
 
     function exit_game(that) {
-        that.node.empty();
+        stopTimer(that);
     }
 
     function doWaitForGameDestruction(that, timerTick, game_id) {

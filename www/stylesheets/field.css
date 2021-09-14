@@ -1,6 +1,14 @@
 /*
 */
-
+/*.inner {*/
+/*    grid-area: inner-div;*/
+/*}*/
+/*.container {*/
+/*    display: grid;*/
+/*    place-items: center;*/
+/*    grid-template-areas: "inner-div";*/
+/*}*/
 .field .fieldbanner {
     text-align: center;
 }
+

@@ -47,7 +47,7 @@
         that.assignUUID = function(uuid) {
             that.uuid = uuid;
             toStateRegistered(that);
-        }
+        };
 
         that.someTimer = function(timerTick) {
         };
@@ -61,14 +61,15 @@
 
     function populate(that) {
         // create the panes that are used in the different states
-        var fieldnode = $(`
-            <div class="field">
-                <div class="fieldbanner"></div>
-                <div class="fieldstatus"></div>
-                <div class="fieldviewer"></div>
-            </div>
-        `);
-        that.node.append(fieldnode);
+        // var fieldnode = $(`
+        //     <div class="field">
+        //         <div class="fieldbanner"></div>
+        //         <div class="fieldstatus"></div>
+        //         <div class="fieldviewer"></div>
+        //     </div>
+        // `);
+        // that.node.append(fieldnode);
+        toStateUuidUnknown(that);
         that.node.resize();
     }
 
@@ -121,22 +122,31 @@
             });
     }
 
-    function toStateUuidUnknown(that, data) {
-
+    function toStateUuidUnknown(that) {
+        var bannernode = that.node.find('.field .fieldbanner');
+        bannernode.empty();
+        bannernode.append(
+            '<button type=\'submit\' class="btn btn-success" id="activate" name="jvo_activate" value=\'Go\'> <i class="icon-play"></i>Activate</button>'
+        );
+        var statusnode = that.node.find('.field .fieldstatus');
+        statusnode.empty();
+        var viewnode = that.node.find('.field .fieldviewer');
+        viewnode.empty();
     }
 
     function keepStateUuidUnknown(that, data) {
-
+        // do nothing
     }
 
     function toStateRegistered(that, data) {
         var bannernode = that.node.find('.field .fieldbanner');
+        bannernode.empty();
         bannernode.append(`<p>Waiting to enter the Game.</p>`);
         bannernode.append(`<p>UUID: ${that.uuid}</p>`);
         var statusnode = that.node.find('.field .fieldstatus');
         statusnode.empty();
         var viewnode = that.node.find('.field .fieldviewer');
-        statusnode.empty();
+        viewnode.empty();
         that.state = 'state_registered';
     }
 
@@ -161,22 +171,35 @@
     }
 
     function keepStateRunning(that, data) {
+        // do nothing
     }
 
     function toStateStopped(that, data) {
+        var bannernode = that.node.find('.field .fieldbanner');
+        bannernode.empty();
+        var statusnode = that.node.find('.field .fieldstatus');
+        statusnode.empty();
+        var viewnode = that.node.find('.field .fieldviewer');
+        viewnode.empty();
         that.state = 'state_stopped';
     }
 
     function keepStateStopped(that, data) {
-
+        // do nothing
     }
 
     function toStateError(that, data) {
+        var bannernode = that.node.find('.field .fieldbanner');
+        bannernode.empty();
+        var statusnode = that.node.find('.field .fieldstatus');
+        statusnode.empty();
+        var viewnode = that.node.find('.field .fieldviewer');
+        viewnode.empty();
         that.state = 'state_error';
     }
 
     function keepStateError(that, data) {
-
+        // do nothing
     }
 
     function startTimer(that) {
