@@ -145,8 +145,11 @@
         bannernode.append(`<p>UUID: ${that.uuid}</p>`);
         var statusnode = that.node.find('.field .fieldstatus');
         statusnode.empty();
+        statusnode.append(`<p>statusnode.</p>`);
         var viewnode = that.node.find('.field .fieldviewer');
         viewnode.empty();
+        viewnode.empty();
+        viewnode.append(`<p>viewnode.</p>`);
         that.state = 'state_registered';
     }
 

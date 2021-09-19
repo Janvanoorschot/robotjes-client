@@ -11,4 +11,10 @@
 .field .fieldbanner {
     text-align: center;
 }
+.field .fieldstatus {
+    text-align: center;
+}
+.field .fieldviewer {
+    text-align: center;
+}
 
