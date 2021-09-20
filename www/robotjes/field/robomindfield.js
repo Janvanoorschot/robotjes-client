@@ -93,7 +93,7 @@
                         break;
                     case 'state_registered':
                         if(data.uuid != "" && data.started) {
-                            toStateRunning(that, data);
+                            toStateRunning(that, timerTick, data);
                         } else {
                             keepStateRegistered(that, data);
                         }
@@ -102,7 +102,7 @@
                         if(data.uuid != "" && data.done) {
                             toStateStopped(that, data);
                         } else {
-                            keepStateRunning(that, data);
+                            keepStateRunning(that, timerTick, data);
                         }
                         break;
                     case 'state_stopped':
@@ -157,7 +157,7 @@
         // do nothing (maybe spinner?)
     }
 
-    function toStateRunning(that, data) {
+    function toStateRunning(that, timerTick, data) {
         that.game_id = data.info.game_id;
         that.player_id = data.info.player_id;
         var bannernode = that.node.find('.field .fieldbanner');
@@ -165,16 +165,16 @@
         bannernode.append(`<p>Game Running.</p>`);
         var statusnode = that.node.find('.field .fieldstatus');
         statusnode.empty();
-        that.status = $.fn.robotjes.robotjesstatus(statusnode, data);
+        that.status = $.fn.robotjes.robotjesstatus(statusnode, timerTick, data);
         var viewernode = that.node.find('.field .fieldviewer');
         viewernode.empty();
         that.viewer = $.fn.robotjes.robotjesviewer(viewernode, that.game_id, that.player_id, that.url);
-        viewernode.resize();
+        // viewernode.resize();
         that.state = 'state_running';
     }
 
-    function keepStateRunning(that, data) {
-        // do nothing
+    function keepStateRunning(that, timerTick, data) {
+        that.status.newStatus(timerTick, data);
     }
 
     function toStateStopped(that, data) {

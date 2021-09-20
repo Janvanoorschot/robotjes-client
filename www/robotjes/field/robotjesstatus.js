@@ -3,11 +3,10 @@
 (function ($) {
 
     var defaults = {
-        'id': '0',
-        updateDuration: 50       // timer tick every 50 ms (20 times per second)>
+        'bogus': '0',
     };
 
-    $.fn.robotjes.robotjesstatus = function (node, status) {
+    $.fn.robotjes.robotjesstatus = function (node, timerTick, status) {
         let that = {};
         for (let n in defaults) {
             that[n] = defaults[n];
@@ -15,37 +14,35 @@
         that.node = node;
         that.status = status;
 
+        that.newStatus = function(timerTick, status) {
+            doNewStatus(that, timerTick, status)
+        };
+
         populate(that);
         return that;
     };
 
     function populate(that) {
-        that.timerListeners = [];
-        // that.timerListeners.push(that.statusTimer);
-        startTimer(that);
-        return that;
+        var statusnode = $(`
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        First field
+                    </div>
+                    <div class="col-sm">
+                        Second field
+                    </div>
+                    <div class="col-sm">
+                        Third field
+                    </div>
+                </div>
+            </div>
+        `);
+        that.node.append(statusnode);
     }
 
-    function startTimer(that) {
-        stopTimer(that);
-        that.timerTicks = 0;
-        that.timer = setInterval(function () {
-            tickTimer(that, that.timerTicks);
-            that.timerTicks++;
-        }, that.updateDuration);
-    }
+    function doNewStatus(that, timerTick, status) {
 
-    function stopTimer(that) {
-        if (that.timer != null) {
-            clearInterval(that.timer);
-            that.timer = null;
-        }
-    }
-
-    function tickTimer(that, timerTick) {
-        that.timerListeners.forEach(function (listener) {
-            listener(timerTick);
-        });
     }
 
 })(jQuery);
