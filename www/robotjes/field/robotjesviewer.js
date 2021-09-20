@@ -115,8 +115,16 @@
                     }
                 })
                     .then((images) => {
-                        var moviePlayerNode = $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" style="height: 100%; width: 100%;" class="animation"></div></div>');
-                        that.movieplayer = $.fn.rm.movieplayer('movieplayer1', moviePlayerNode.find('#worldsubpane'), that.node, that.skin, that.images);
+                        var moviePlayerNode =
+                            $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" style="height: 100%; width: 100%;" class="animation"></div></div>');
+                        that.movieplayer = $.fn.rm.movieplayer(
+                            'movieplayer1',
+                            moviePlayerNode.find('#worldsubpane'),
+                            that.node,
+                            that.skin,
+                            that.images,
+                            that.node.width(),
+                            that.node.height());
                         that.node.append(moviePlayerNode);
 
                         // get the center options

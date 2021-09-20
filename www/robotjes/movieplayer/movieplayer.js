@@ -21,7 +21,8 @@
      * @param images  the images used by the movieplayer
      * @return the completed 'animator' object
      */
-    $.fn.rm.movieplayer = function(id, node, rootnode, skin, images) {
+    $.fn.rm.movieplayer = function(id, node, rootnode, skin, images, width=600, height=400) {
+
         var that = {};
 
         // initialize data from defaults and constructor arguments
@@ -35,6 +36,8 @@
         //that.ctx = $('.canvas', robomindide)[0].getContext('2d');
         that.skin = skin;
         that.images = images;
+        that.width = width;
+        that.height = height;
         that.center = null;
 
         that.tileSize = determineTileSize(that);
@@ -284,7 +287,7 @@
 
     function populate(that) {
         // create the HTML nodes and the helper subcomponents
-        var canvasNode = $('<canvas class="canvas" width="600" height="400"></canvas>');
+        var canvasNode = $(`<canvas class="canvas" width="${that.width}" height="${that.height}"></canvas>`);
         that.ctx = canvasNode[0].getContext('2d');
         that.node.append(canvasNode);
         var runbbNode = $('<div name="runbuttonbar" class="buttonbar" ></div>');
