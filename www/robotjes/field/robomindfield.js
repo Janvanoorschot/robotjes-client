@@ -7,7 +7,7 @@
 
     let defaults = {
         'id':'0',
-        updateDuration:1000
+        updateDuration:5000
     };
 
     $.fn.robotjes.fieldview = function(node, url="") {
@@ -28,7 +28,6 @@
         that.recordingDelta = (5*1000)/50;  // every 5 seconds (in sync with status_keeper)
 
         // screen components
-        that.status = null;
         that.viewer = null;
 
         // state: possible states:
@@ -163,9 +162,6 @@
         var bannernode = that.node.find('.field .fieldbanner');
         bannernode.empty();
         bannernode.append(`<p>Game Running.</p>`);
-        var statusnode = that.node.find('.field .fieldstatus');
-        statusnode.empty();
-        that.status = $.fn.robotjes.robotjesstatus(statusnode, timerTick, data);
         var viewernode = that.node.find('.field .fieldviewer');
         viewernode.empty();
         that.viewer = $.fn.robotjes.robotjesviewer(viewernode, that.game_id, that.player_id, that.url);
@@ -174,7 +170,7 @@
     }
 
     function keepStateRunning(that, timerTick, data) {
-        that.status.newStatus(timerTick, data);
+        // that.status.newStatus(timerTick, data);
     }
 
     function toStateStopped(that, data) {
