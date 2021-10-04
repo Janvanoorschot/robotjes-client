@@ -151,3 +151,22 @@ class RoboGame:
 
     def get_map_status(self):
         return self.engine.get_map_status()
+
+    def get_player_counters(self, player_id):
+        result = {}
+        for evt in WorldEvent:
+            if "max" in self.counters and evt in self.counters["max"]:
+                if evt in self.player_counters[player_id]:
+                    cnt = self.player_counters[player_id][evt]
+                else:
+                    cnt = 0
+                result[evt.name] = ['max', self.counters["max"][evt], cnt]
+        for evt in WorldEvent:
+            if "min" in self.counters and evt in self.counters["min"]:
+                if evt in self.player_counters[player_id]:
+                    cnt = self.player_counters[player_id][evt]
+                else:
+                    cnt = 0
+                result[evt.name] = ['min', self.counters["min"][evt], cnt]
+        return result
+

@@ -129,7 +129,12 @@ class Field:
     def get_player_status(self, player_id):
         if player_id in self.players:
             player = self.players[player_id]
-            return player.get_status(self.game)
+            status = player.get_status(self.game)
+            if self.game:
+                status['counters'] = self.game.get_player_counters(player_id)
+            else:
+                status['counters'] = {}
+            return status
         else:
             return {}
 
