@@ -1,22 +1,16 @@
 /*
 */
-/*.inner {*/
-/*    grid-area: inner-div;*/
-/*}*/
-/*.container {*/
-/*    display: grid;*/
-/*    place-items: center;*/
-/*    grid-template-areas: "inner-div";*/
-/*}*/
 .field .fieldbanner {
     text-align: center;
 }
 .field .fieldstatus {
     text-align: center;
 }
-.field .fieldviewer {
+.fieldviewer {
     width:100%;
-    height: 400pt;
-    text-align: center;
+    height: 100%;
 }
 
+.worldpane {
+    position: relative;
+}

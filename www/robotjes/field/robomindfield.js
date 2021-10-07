@@ -150,6 +150,7 @@
         that.game_id = data.info.game_id;
         that.player_id = data.info.player_id;
         var statusnode = that.node.find('.left');
+        statusnode.append(`<p>Is this visible.</p>`);
         var viewernode = that.node.find('.right');
         viewernode.empty();
         that.viewer = $.fn.robotjes.robotjesviewer(statusnode, viewernode, that.game_id, that.player_id, that.url);

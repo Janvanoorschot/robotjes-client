@@ -287,7 +287,7 @@
 
     function populate(that) {
         // create the HTML nodes and the helper subcomponents
-        var canvasNode = $(`<canvas class="canvas" width="${that.width}" height="${that.height}"></canvas>`);
+        var canvasNode = $(`<canvas class="canvas""></canvas>`);
         that.ctx = canvasNode[0].getContext('2d');
         that.node.append(canvasNode);
         var runbbNode = $('<div name="runbuttonbar" class="buttonbar" ></div>');
@@ -361,15 +361,13 @@
                     });
             });
         }
-
-
     }
 
     function doStart(that, recording, isRunning, isStepping) {
 
         that.recording = recording;
-        that.width = that.recording.mapWidth;
-        that.height = that.recording.mapHeight;
+        // that.width = that.recording.mapWidth;
+        // that.height = that.recording.mapHeight;
 
         // the painter is responsible for maintaining the scenery and painting the layers
         that.painter = $.fn.rm.painter(that.recording,that.ctx,that.viewport);

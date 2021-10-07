@@ -117,15 +117,13 @@
                 })
                     .then((images) => {
                         var moviePlayerNode =
-                            $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" style="height: 100%; width: 100%;" class="animation"></div></div>');
+                            $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" class="animation"></div></div>');
                         that.movieplayer = $.fn.rm.movieplayer(
                             'movieplayer1',
                             moviePlayerNode.find('#worldsubpane'),
                             that.node,
                             that.skin,
-                            that.images,
-                            that.node.width(),
-                            that.node.height());
+                            that.images);
                         that.node.append(moviePlayerNode);
 
                         // get the center options
@@ -133,7 +131,7 @@
                         var centery = $.fn.rm.sessionstate['centery'];
                         var centerzoom = $.fn.rm.sessionstate['centerzoom'];
                         if(centerx && centerx>0 && centery && centery>0 && centerzoom && centerzoom>0) {
-                            that.movieplayer.setCenter(centerx,centery,centerzoom)
+                            that.movieplayer.setCenter(centerx,centery,centerzoom);
                         }
 
                         that.node.resize();
