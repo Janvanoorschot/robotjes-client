@@ -122,15 +122,12 @@
     }
 
     function toStateUuidUnknown(that) {
-        var bannernode = that.node.find('.field .fieldbanner');
+        var bannernode = that.node.find('.right');
         bannernode.empty();
         bannernode.append(
             '<button type=\'submit\' class="btn btn-success" id="activate" name="jvo_activate" value=\'Go\'> <i class="icon-play"></i>Activate</button>'
         );
-        var statusnode = that.node.find('.field .fieldstatus');
-        statusnode.empty();
-        var viewnode = that.node.find('.field .fieldviewer');
-        viewnode.empty();
+        that.state = 'state_uuid_unknown';
     }
 
     function keepStateUuidUnknown(that, data) {
@@ -138,17 +135,10 @@
     }
 
     function toStateRegistered(that, data) {
-        var bannernode = that.node.find('.field .fieldbanner');
+        var bannernode = that.node.find('.right');
         bannernode.empty();
         bannernode.append(`<p>Waiting to enter the Game.</p>`);
         bannernode.append(`<p>UUID: ${that.uuid}</p>`);
-        var statusnode = that.node.find('.field .fieldstatus');
-        statusnode.empty();
-        statusnode.append(`<p>statusnode.</p>`);
-        var viewnode = that.node.find('.field .fieldviewer');
-        viewnode.empty();
-        viewnode.empty();
-        viewnode.append(`<p>viewnode.</p>`);
         that.state = 'state_registered';
     }
 
@@ -159,13 +149,10 @@
     function toStateRunning(that, timerTick, data) {
         that.game_id = data.info.game_id;
         that.player_id = data.info.player_id;
-        var bannernode = that.node.find('.field .fieldbanner');
-        bannernode.empty();
-        bannernode.append(`<p>Game Running.</p>`);
-        var viewernode = that.node.find('.field .fieldviewer');
+        var statusnode = that.node.find('.left');
+        var viewernode = that.node.find('.right');
         viewernode.empty();
-        that.viewer = $.fn.robotjes.robotjesviewer(viewernode, that.game_id, that.player_id, that.url);
-        // viewernode.resize();
+        that.viewer = $.fn.robotjes.robotjesviewer(statusnode, viewernode, that.game_id, that.player_id, that.url);
         that.state = 'state_running';
     }
 
@@ -174,11 +161,9 @@
     }
 
     function toStateStopped(that, data) {
-        var bannernode = that.node.find('.field .fieldbanner');
-        bannernode.empty();
-        var statusnode = that.node.find('.field .fieldstatus');
+        var statusnode = that.node.find('.left');
         statusnode.empty();
-        var viewnode = that.node.find('.field .fieldviewer');
+        var viewnode = that.node.find('.right');
         viewnode.empty();
         that.state = 'state_stopped';
     }
@@ -188,11 +173,9 @@
     }
 
     function toStateError(that, data) {
-        var bannernode = that.node.find('.field .fieldbanner');
-        bannernode.empty();
-        var statusnode = that.node.find('.field .fieldstatus');
+        var statusnode = that.node.find('.left');
         statusnode.empty();
-        var viewnode = that.node.find('.field .fieldviewer');
+        var viewnode = that.node.find('.right');
         viewnode.empty();
         that.state = 'state_error';
     }

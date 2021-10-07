@@ -9,11 +9,12 @@
     /**
      * Functional constructor for robo.
      */
-    $.fn.robotjes.robotjesviewer = function (node, game_id, player_id, url="") {
+    $.fn.robotjes.robotjesviewer = function (statusnode, node, game_id, player_id, url="") {
         let that = {};
         for (let n in defaults) {
             that[n] = defaults[n];
         }
+        that.statusnode = statusnode;
         that.node = node;
         that.game_id = game_id;
         that.player_id = player_id;
