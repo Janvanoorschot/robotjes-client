@@ -332,8 +332,10 @@
             var ctx = canvasNode[0].getContext('2d');
 
             // resize AND resets transformation
-            canvasNode[0].height = that.node.height();
+            console.log(`canvassize-before: ${canvasNode[0].height}/${canvasNode[0].width}`);
+            canvasNode[0].height = that.node.height()-5;
             canvasNode[0].width = that.node.width();
+            console.log(`canvassize-after: ${canvasNode[0].height}/${canvasNode[0].width}`);
 
             // viewport is still in this mode, update canvas
             ctx.scale(scale, scale);
