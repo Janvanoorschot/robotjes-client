@@ -16,7 +16,7 @@
     /**
      * Functional constructor for the 'movieplayer' object.
      * @param node  html node
-     * @param rootnode  the root-node that will be used to send () / receive (.on(...)) events.
+     * @param rootnoderootnode  the root-node that will be used to send () / receive (.on(...)) events.
      * @param skin  the skin used by the movieplayer
      * @param images  the images used by the movieplayer
      * @return the completed 'animator' object

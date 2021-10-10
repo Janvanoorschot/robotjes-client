@@ -1,38 +1,24 @@
-/*
-*/
+*{ border: 1px solid red; }
 
 #maincomponent {
-    border-style: dotted;
     height:100%;
     width: 100%;
-    min-height: 400px;
-    background-color:rgb(128, 153, 162);
-    position: relative;
-    display: table
 }
 #maincomponent #aform {
-    border-style: dashed;
-    display: table-row;
 }
 
 .fieldviewer {
-    /*border-style: dashed;*/
-    display: table-row;
 }
 
 .fieldviewer .right {
-    /*border-style: solid;*/
-    display: table-column;
-    padding: 0%;
-    width:100%;
-    height: 100%;
 }
 
-.worldpane {
+#worldpane {
+    /* this is to undo the absolute positioning defined in one of the robomind css files */
     position: relative;
-    padding: 0%;
 }
 
-.row {
-    display: flex;
+.canvas {
+    width: 100%;
+    height: auto;
 }
