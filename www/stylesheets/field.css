@@ -1,11 +1,11 @@
-*{ border: 1px solid red; }
+/**{ border: 1px solid red; }*/
 
 #maincomponent {
     height:100%;
     width: 100%;
     min-height: 400px;
     background-color:rgb(128, 153, 162);
+    background:rgb(128, 153, 162);
 }
 #fieldviewer {
-    background-color:rgb(128, 153, 162);
 }

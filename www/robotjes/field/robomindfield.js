@@ -10,7 +10,7 @@
         updateDuration:5000
     };
 
-    $.fn.robotjes.fieldview = function(node, url="") {
+    $.fn.robotjes.fieldview = function(node, statusnode, url="") {
         let that = {};
 
         // set that 'fixed' data
@@ -19,6 +19,7 @@
         }
 
         that.node = node;
+        that.statusnode = statusnode;
         that.url = url;
 
         // timer state
@@ -149,10 +150,10 @@
     function toStateRunning(that, timerTick, data) {
         that.game_id = data.info.game_id;
         that.player_id = data.info.player_id;
-        var statusnode = that.node;
+        var statusnode = that.statusnode;
         var viewernode = that.node;
         viewernode.empty();
-        that.viewer = $.fn.robotjes.robotjesviewer(statusnode, viewernode, that.game_id, that.player_id, that.url);
+        that.viewer = $.fn.robotjes.robotjesviewer(viewernode, statusnode, that.game_id, that.player_id, that.url);
         that.state = 'state_running';
 
     }
