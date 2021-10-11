@@ -3,22 +3,9 @@
 #maincomponent {
     height:100%;
     width: 100%;
+    min-height: 400px;
+    background-color:rgb(128, 153, 162);
 }
-#maincomponent #aform {
-}
-
-.fieldviewer {
-}
-
-.fieldviewer .right {
-}
-
-#worldpane {
-    /* this is to undo the absolute positioning defined in one of the robomind css files */
-    position: relative;
-}
-
-.canvas {
-    width: 100%;
-    height: auto;
+#fieldviewer {
+    background-color:rgb(128, 153, 162);
 }

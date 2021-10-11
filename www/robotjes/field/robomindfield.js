@@ -122,7 +122,7 @@
     }
 
     function toStateUuidUnknown(that) {
-        var bannernode = that.node.find('.right');
+        var bannernode = that.node;
         bannernode.empty();
         bannernode.append(
             '<button type=\'submit\' class="btn btn-success" id="activate" name="jvo_activate" value=\'Go\'> <i class="icon-play"></i>Activate</button>'
@@ -135,7 +135,7 @@
     }
 
     function toStateRegistered(that, data) {
-        var bannernode = that.node.find('.right');
+        var bannernode = that.node;
         bannernode.empty();
         bannernode.append(`<p>Waiting to enter the Game.</p>`);
         bannernode.append(`<p>UUID: ${that.uuid}</p>`);
@@ -149,22 +149,19 @@
     function toStateRunning(that, timerTick, data) {
         that.game_id = data.info.game_id;
         that.player_id = data.info.player_id;
-        var statusnode = that.node.find('.left');
-        statusnode.append(`<p>Is this visible.</p>`);
-        var viewernode = that.node.find('.right');
+        var statusnode = that.node;
+        var viewernode = that.node;
         viewernode.empty();
         that.viewer = $.fn.robotjes.robotjesviewer(statusnode, viewernode, that.game_id, that.player_id, that.url);
         that.state = 'state_running';
+
     }
 
     function keepStateRunning(that, timerTick, data) {
-        // that.status.newStatus(timerTick, data);
     }
 
     function toStateStopped(that, data) {
-        var statusnode = that.node.find('.left');
-        statusnode.empty();
-        var viewnode = that.node.find('.right');
+        var viewnode = that.node;
         viewnode.empty();
         that.state = 'state_stopped';
     }
@@ -174,9 +171,7 @@
     }
 
     function toStateError(that, data) {
-        var statusnode = that.node.find('.left');
-        statusnode.empty();
-        var viewnode = that.node.find('.right');
+        var viewnode = that.node;
         viewnode.empty();
         that.state = 'state_error';
     }

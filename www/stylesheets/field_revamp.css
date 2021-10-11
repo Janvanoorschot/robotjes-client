@@ -1,0 +1,23 @@
+*{ border: 1px solid red; }
+
+#maincomponent {
+    height:100%;
+    width: 100%;
+}
+.fieldviewer {
+    min-width: 100%;
+}
+
+.fieldviewer .right {
+
+}
+
+#worldpane {
+    /* this is to undo the absolute positioning defined in one of the robomind css files */
+    position: relative;
+}
+
+.canvas {
+    width: 100%;
+    height: auto;
+}

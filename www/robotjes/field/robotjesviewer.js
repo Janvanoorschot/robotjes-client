@@ -117,7 +117,7 @@
                 })
                     .then((images) => {
                         var moviePlayerNode =
-                            $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" class="animation"></div></div>');
+                            $('<div id="worldpane" class="worldpane" ><div id="worldsubpane" style="height: 100%; width: 100%;" class="animation"></div></div>');
                         that.movieplayer = $.fn.rm.movieplayer(
                             'movieplayer1',
                             moviePlayerNode.find('#worldsubpane'),
