@@ -34,7 +34,7 @@
         };
 
         that.statusTimer = function (timerTick) {
-            doWaitForGameDestruction(that, timerTick, that.game_id);
+            doWaitForGameDestruction(that, timerTick, that.game_id, that.player_id);
         };
 
         that.movieplayerTimer = function (timerTick) {
@@ -143,25 +143,22 @@
             })
     }
 
-    function update_game(that, status) {
-        var player_game_tick = "";
-        for (var $player in status["players"]) {
-            player_game_tick = status["players"][$player]["game_tick"];
-        }
+    function update_game(that, player_status) {
     }
 
     function exit_game(that) {
         stopTimer(that);
     }
 
-    function doWaitForGameDestruction(that, timerTick, game_id) {
+    function doWaitForGameDestruction(that, timerTick, game_id, player_id) {
         if ((timerTick % 100) == 0) {
-            $.getJSON(`${that.url}/game/${that.game_id}/status`)
-                .then(function (result) {
-                    update_game(that, result);
+            // $.getJSON(`${that.url}/game/${game_id}/player/${player_id}/status`)
+            $.getJSON(`${that.url}/game/${game_id}/status`)
+                .then(function (player_status) {
+                    update_game(that, player_status);
                 }, error => {
-                    // game disappeared 
-                    exit_game(that, that.game_id);
+                    // game or player disappeared
+                    exit_game(that);
                 });
         }
     }

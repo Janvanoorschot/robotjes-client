@@ -178,26 +178,25 @@ class StatusKeeper(object):
             return {}
 
     def get_game_status(self, game_id):
+        game_status = {}
         if game_id in self.games:
-            return self.games[game_id].game_status()
-        else:
-            return {}
+            game_status = self.games[game_id].game_status()
+        return game_status
 
-    def get_game_recording(self, game_id, before_game_time):
-        if game_id in self.games:
-            return self.games[game_id].game_recording(before_game_time)
-        else:
-            return []
-
-    def get_player_status(self, game_id, player_id, game_tick):
+    def get_player_status(self, game_id, player_id):
+        game_status = {}
+        player_status = {}
         if game_id in self.games:
             if player_id in self.games[game_id].players:
-                self.games[game_id].set_player_game_tick(player_id, game_tick)
-                return self.games[game_id].player_status(player_id)
-            else:
-                return {}
-        else:
-            return {}
+                player_status = self.games[game_id].player_status(player_id)
+        player_status["game_status"] = game_status
+        return player_status
+
+    def get_game_recording(self, game_id, before_game_time):
+        game_recording = []
+        if game_id in self.games:
+            game_recording = self.games[game_id].game_recording(before_game_time)
+        return game_recording
 
     def timer(self, now):
         if not self.now or (now - self.now).total_seconds() > 10:
@@ -245,7 +244,6 @@ class GameStatus(object):
         self.recording = []
         self.players = {}
         self.player_result = {}
-        self.player_game_tick = {}
         self.mapstatus = None
         self.data = {}
         self.gametick(now, delta)
@@ -323,17 +321,11 @@ class GameStatus(object):
             "timestamp": now,
         }
 
-    def set_player_game_tick(self, player_id, game_tick):
-        self.player_game_tick[player_id] = game_tick
-
     def game_status(self):
         # short status of the game
-        players = {}
+        players = []
         for player_id, player in self.players.items():
-            players[player["player_name"]] = {}
-            players[player["player_name"]]["game_tick"] = self.player_game_tick[
-                player_id
-            ]
+            players.append(player["player_name"])
 
         return {
             "game_id": self.game_id,
@@ -369,10 +361,6 @@ class GameStatus(object):
                 player_result = self.player_result[player_id]
             else:
                 player_result = {}
-            if player_id in self.player_game_tick:
-                game_tick = self.player_game_tick[player_id]
-            else:
-                game_tick = -1
             return {
                 "game_status": {
                     "game_id": self.game_id,
@@ -386,7 +374,6 @@ class GameStatus(object):
                 },
                 "player_result": player_result,
                 "player_status": player_status,
-                "game_tick": game_tick,
             }
         else:
             return {}
