@@ -184,12 +184,12 @@ class StatusKeeper(object):
         return game_status
 
     def get_player_status(self, game_id, player_id):
-        game_status = self.get_game_status(game_id)
         player_status = {}
         if game_id in self.games:
             if player_id in self.games[game_id].players:
                 player_status = self.games[game_id].player_status(player_id)
-        player_status["game_status"] = game_status
+                game_status = self.get_game_status(game_id)
+                player_status["game_status"] = game_status
         return player_status
 
     def get_game_recording(self, game_id, before_game_time):

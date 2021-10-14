@@ -125,9 +125,7 @@ class RemoteEngineHandler:
     async def game_timer(self, cur_tick):
         game_tick = cur_tick
         while game_tick == cur_tick:
-            status = await self.rest_client.status_player(
-                self.game_id, self.player_id, cur_tick
-            )
+            status = await self.rest_client.status_player(self.game_id, self.player_id, cur_tick)
             if status and 'game_status' in status and 'status' in status['game_status']:
                 game_tick = status["game_status"]["status"]["game_tick"]
         self.game_tick = game_tick

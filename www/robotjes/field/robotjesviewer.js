@@ -152,8 +152,8 @@
 
     function doWaitForGameDestruction(that, timerTick, game_id, player_id) {
         if ((timerTick % 100) == 0) {
-            // $.getJSON(`${that.url}/game/${game_id}/player/${player_id}/status`)
-            $.getJSON(`${that.url}/game/${game_id}/status`)
+            // $.getJSON(`${that.url}/game/${game_id}/status`)
+            $.getJSON(`${that.url}/game/${game_id}/player/${player_id}/status`)
                 .then(function (player_status) {
                     update_game(that, player_status);
                 }, error => {

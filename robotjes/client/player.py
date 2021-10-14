@@ -81,6 +81,8 @@ class Player:
                 self.callback('robo_status', self.game_tick, robo.id, self.robo_status[robo_id])
             if self.timer_lock.locked():
                 self.timer_lock.release()
+        else:
+            print("stopped")
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)
