@@ -128,7 +128,7 @@ class RemoteEngineHandler:
             status = await self.rest_client.status_player(
                 self.game_id, self.player_id, cur_tick
             )
-            if status:
+            if status and 'game_status' in status and 'status' in status['game_status']:
                 game_tick = status["game_status"]["status"]["game_tick"]
         self.game_tick = game_tick
         if self.robo_id is None:

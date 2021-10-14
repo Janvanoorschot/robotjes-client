@@ -184,7 +184,7 @@ class StatusKeeper(object):
         return game_status
 
     def get_player_status(self, game_id, player_id):
-        game_status = {}
+        game_status = self.get_game_status(game_id)
         player_status = {}
         if game_id in self.games:
             if player_id in self.games[game_id].players:
