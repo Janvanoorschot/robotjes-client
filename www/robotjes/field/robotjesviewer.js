@@ -144,6 +144,38 @@
     }
 
     function update_game(that, player_status) {
+        if("player_status" in player_status) {
+            let counters = player_status["player_status"]["counters"];
+            let counternames = Object.keys(counters);
+            for(let ix=0; ix<3; ix++) {
+                let row = $("#fieldstatus .component").children().eq(ix);
+                if(ix < counternames.length) {
+                    row.show();
+                    let vals = counters[counternames[ix]];
+                    let minmax = vals[0];
+                    let extreme = vals[1];
+                    let current = vals[2];
+                    let min = 0;
+                    let max = extreme;
+                    let width = (current/extreme)*100;
+                    let addtype = 'progress-bar-success';
+                    let remtype = 'progress-bar-warning';
+                    if(minmax == "max") {
+                        addtype = 'progress-bar-warning';
+                        remtype = 'progress-bar-success';
+                    }
+                    row.find(".varname").text(counternames[ix].substring(10));
+                    row.find(".varmin").text(min);
+                    row.find(".varmax").text(max);
+                    row.find(".progress-bar").text(current);
+                    row.find(".progress-bar").css("width", `${width}%`);
+                    row.find(".progress-bar").addClass(addtype);
+                    row.find(".progress-bar").removeClass(remtype);
+                } else {
+                    row.hide();
+                }
+            }
+        }
     }
 
     function exit_game(that) {

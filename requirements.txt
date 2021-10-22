@@ -7,6 +7,10 @@ fastapi[all]
 fastapi_utils
 uvicorn
 
+# Output in a simple way
+rich
+textual
+
 # UI for CLI tools
 asciimatics
 
