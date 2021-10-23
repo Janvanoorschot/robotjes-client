@@ -161,16 +161,17 @@
                     let addtype = 'progress-bar-success';
                     let remtype = 'progress-bar-warning';
                     if(minmax == "max") {
+                        width = ((extreme - current)/extreme)*100;
                         addtype = 'progress-bar-warning';
                         remtype = 'progress-bar-success';
                     }
                     row.find(".varname").text(counternames[ix].substring(10));
-                    row.find(".varmin").text(min);
+                    row.find(".varmin").text(current);
                     row.find(".varmax").text(max);
                     row.find(".progress-bar").text(current);
                     row.find(".progress-bar").css("width", `${width}%`);
-                    row.find(".progress-bar").addClass(addtype);
                     row.find(".progress-bar").removeClass(remtype);
+                    row.find(".progress-bar").addClass(addtype);
                 } else {
                     row.hide();
                 }
