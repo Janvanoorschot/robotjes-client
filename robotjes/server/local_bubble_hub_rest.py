@@ -1,4 +1,5 @@
 import os
+import uuid
 from pathlib import Path
 from robotjes.sim import Map
 from starlette.responses import RedirectResponse

@@ -83,6 +83,7 @@ class RemoteEngineHandler:
                         if not result:
                             raise Exception(f"can not join game {self.game_name}")
                         else:
+                            self.game_id = result["game_id"]
                             self.player_id = result["player_id"]
                     else:
                         result = await self.rest_client.register_player(

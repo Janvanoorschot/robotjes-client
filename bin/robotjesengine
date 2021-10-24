@@ -31,7 +31,7 @@ def main(args: map):
     import robotjes.server.local_game_rest
 
     # start the server immediately
-    server.robotjes_engine.start_game()
+    # Starting already done by field: server.robotjes_engine.start_game()
 
     # start the webserver (note the logging configuration)
     import uvicorn
