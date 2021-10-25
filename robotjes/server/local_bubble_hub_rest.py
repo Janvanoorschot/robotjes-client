@@ -1,41 +1,46 @@
 import os
+from uuid import uuid4
+from pathlib import Path
+
 from fastapi import Request, Response
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
+from . import app
+from . import localsession
 
-from pathlib import Path
 from robotjes.sim import Map
 import robotjes.server as server
-# from robotjes.server.model import GameSpec
-from . import app
-rootdir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), os.pardir))
 
+rootdir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), os.pardir))
 templates = Jinja2Templates(directory="templates")
-uuid = ""
+
+localsession["uuid"] = ""
+localsession["player_id"] = ""
+localsession["game_id"] = ""
 
 @app.get("/")
 async def home_page(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "uuid": uuid})
+    return templates.TemplateResponse("index.html", {"request": request, "uuid": localsession["uuid"]})
 
 @app.get("/submit_page")
 async def submit_page(request: Request):
-    global uuid
-    if uuid == "":
-        uuid = 0
-    else:
-        uuid = uuid + 1
-    return templates.TemplateResponse("index.html", {"request": request, "uuid": uuid})
+    # request.query_params['jvo_activate'] == 'Go'
+    if localsession["uuid"] == "" and 'jvo_activate' in request.query_params and request.query_params['jvo_activate'] == 'Go':
+        localsession["uuid"] = str(uuid4())
+    elif localsession["uuid"] != "" and 'jvo_activate' in request.query_params and request.query_params['jvo_activate'] == 'Go':
+        localsession["uuid"] = ''
+    return RedirectResponse("/")
+
 
 @app.get("/field/status")
 async def field_status(request: Request):
-    global uuid
     return {
-        "uuid": uuid,
+        "uuid": localsession["uuid"],
         "started": False,
         "done": False,
         "info": {
-            "player_id": "some_player_id",
-            "game_id": "some_game_id"
+            "player_id": localsession["player_id"],
+            "game_id": localsession["game_id"]
         }
     }
 

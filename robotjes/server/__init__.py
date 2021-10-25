@@ -21,4 +21,6 @@ status_keeper :StatusKeeper = None
 robotjes_engine  :RobotjesEngine = None
 mazes :Mazes = None
 
+localsession :dict = {}
+
 

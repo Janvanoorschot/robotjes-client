@@ -35,6 +35,7 @@
         that.game_tick = 0;
 
         that.assignUUID = function(uuid) {
+            // the viewer pages has started anew and a UUID was passed
             that.uuid = uuid;
             toStateRegistered(that);
         };

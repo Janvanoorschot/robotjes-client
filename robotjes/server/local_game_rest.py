@@ -3,17 +3,19 @@ import uuid
 from robotjes.server import app
 import robotjes.server as server
 from robotjes.server.model import RegistrationSpec, CommandSpec
+from . import localsession
+
 
 @app.post("/confirm/{uid}")
 async def confirm_with_game(uid: str):
-    # Accept any UUID, always return a valid player_id/game_id
-    games = server.status_keeper.list_games()
-    game_id = next(iter(games))
-    player_spec = await register_with_game(game_id, RegistrationSpec(player_name="me", game_password="secret"))
-    player_id = player_spec['player_id']
+    if uid == localsession["uuid"]:
+        games = server.status_keeper.list_games()
+        localsession["game_id"] = next(iter(games))
+        player_spec = await register_with_game(localsession["game_id"], RegistrationSpec(player_name="me", game_password="secret"))
+        localsession["player_id"] = player_spec['player_id']
     return {
-        "player_id": player_id,
-        "game_id": game_id
+        "player_id": localsession["player_id"],
+        "game_id": localsession["game_id"]
     }
 
 
