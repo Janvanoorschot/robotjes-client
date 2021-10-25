@@ -127,12 +127,12 @@
                         that.node.append(moviePlayerNode);
 
                         // get the center options
-                        var centerx = $.fn.rm.sessionstate['centerx'];
-                        var centery = $.fn.rm.sessionstate['centery'];
-                        var centerzoom = $.fn.rm.sessionstate['centerzoom'];
-                        if(centerx && centerx>0 && centery && centery>0 && centerzoom && centerzoom>0) {
-                            that.movieplayer.setCenter(centerx,centery,centerzoom);
-                        }
+                        // var centerx = $.fn.rm.sessionstate['centerx'];
+                        // var centery = $.fn.rm.sessionstate['centery'];
+                        // var centerzoom = $.fn.rm.sessionstate['centerzoom'];
+                        // if(centerx && centerx>0 && centery && centery>0 && centerzoom && centerzoom>0) {
+                        //     that.movieplayer.setCenter(centerx,centery,centerzoom);
+                        // }
 
                         that.node.resize();
                         that.recording = $.fn.rm.recording(that.map, that.skin, that.images);

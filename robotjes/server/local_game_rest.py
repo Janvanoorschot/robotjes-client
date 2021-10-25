@@ -4,6 +4,18 @@ from robotjes.server import app
 import robotjes.server as server
 from robotjes.server.model import RegistrationSpec, CommandSpec
 
+@app.post("/confirm/{uid}")
+async def confirm_with_game(uid: str):
+    # Accept any UUID, always return a valid player_id/game_id
+    games = server.status_keeper.list_games()
+    game_id = next(iter(games))
+    player_spec = await register_with_game(game_id, RegistrationSpec(player_name="me", game_password="secret"))
+    player_id = player_spec['player_id']
+    return {
+        "player_id": player_id,
+        "game_id": game_id
+    }
+
 
 @app.post("/game/{game_id}/player")
 async def register_with_game(game_id: str, specs: RegistrationSpec):
