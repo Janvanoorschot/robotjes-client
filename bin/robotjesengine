@@ -6,6 +6,7 @@ import os
 import logging.config
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
+os.chdir(rootdir)
 
 from robotjes.sim import Mazes
 from robotjes.server import StatusKeeper

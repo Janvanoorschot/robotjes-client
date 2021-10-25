@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="local/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/robotjesviewer.css">
+    <script src="local/jquery-2.2.0.min.js"></script>
+    <script src="local/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!-- monitor -->
+    <script src="robotjes/robotjes.js"></script>
+    <script src="robotjes/util/namespace.js"></script>
+    <script src="robotjes/util/monitor.js"></script>
+
+    <!-- main javascript object of this page -->
+    <script src="robotjes/field/localrobomindfield.js"></script>
+    <script src="robotjes/field/robotjesviewer.js"></script>
+    <script src="robotjes/field/robotjesdashboard.js"></script>
+
+    <!-- movieplayer and requirements -->
+    <script src="robotjes/movieplayer/movieplayer.js"></script>
+    <script src="robotjes/movieplayer/recording.js"></script>
+    <script src="robotjes/movieplayer/frameplayer.js"></script>
+    <script src="robotjes/movieplayer/robo.js"></script>
+    <script src="robotjes/movieplayer/roboimage.js"></script>
+
+    <!-- painter and requirements-->
+    <script src="robotjes/movieplayer/painter.js"></script>
+    <script src="robotjes/movieplayer/scenery.js"></script>
+    <script src="robotjes/movieplayer/scrollingpatternpainter.js"></script>
+    <script src="robotjes/movieplayer/mappainter.js"></script>
+    <script src="robotjes/movieplayer/anis.js"></script>
+    <script src="robotjes/movieplayer/extrapainter.js"></script>
+    <script src="robotjes/movieplayer/beaconpainter.js"></script>
+    <script src="robotjes/movieplayer/paintpainter.js"></script>
+    <script src="robotjes/movieplayer/spritepainter.js"></script>
+
+    <!-- buttonbar and stuff-->
+    <script src="robotjes/buttonbar/rmrunbuttonbar.js"></script>
+    <script src="robotjes/buttonbar/rmspeedbuttonbar.js"></script>
+    <script src="robotjes/buttonbar/rmzoombuttonbar.js"></script>
+    <script src="robotjes/local/howler/howler.min.js"></script>
+    <script src="robotjes/viewport/viewport.js"></script>
+    <script src="robotjes/viewport/hammer.min.js"></script>
+    <script src="robotjes/viewport/mouse.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Robotjes Viewer</title>
+</head>
+
+<body>
+<component>
+    <div id="maincomponent" class="maincomponent">
+        <div class="table-cell-wrapper">
+            <form action="/submit_page">
+                <h1>UUID: {{uuid}}</h1>
+                <div id="fieldviewer" class="robomindide" ></div>
+            </form>
+        </div>
+    </div>
+</component>
+
+<component>
+    <row>
+        <div class="col-md-12">
+            <div style="margin-top: 20px;">
+                <div class="row">
+                    <div id="fieldstatus" style="display:block;">
+                        <div class="component">
+                            <div class="row" id="var1" style="display:none;">
+                                <div class="col-md-4 varname">Variable 1</div>
+                                <div class="col-md-1 varmin">0</div>
+                                <div class="col-md-6 progress">
+                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;">
+                                        40
+                                    </div>
+                                </div>
+                                <div class="col-md-1 varmax">100</div>
+                            </div>
+                            <div class="row" id="var2"  style="display:none;">
+                                <div class="col-md-4 varname">Variable 2</div>
+                                <div class="col-md-1 varmin">0</div>
+                                <div class="col-md-6 progress">
+                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;">
+                                        60
+                                    </div>
+                                </div>
+                                <div class="col-md-1 varmax">100</div>
+                            </div>
+                            <div class="row" id="var3" style="display:none;">
+                                <div class="col-md-4 varname">Variable 3</div>
+                                <div class="col-md-1 varmin">0</div>
+                                <div class="col-md-6 progress">
+                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;">
+                                        80
+                                    </div>
+                                </div>
+                                <div class="col-md-1 varmax">100</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </row>
+</component>
+
+<script>
+    $(document).ready(function () {
+        window.appContext = window.location.origin;
+        var view = $.fn.robotjes.localfieldview($('#fieldviewer'), $('#fieldstatus'), "/");
+        if("{{uuid}}" != "") {
+            view.assignUUID("{{uuid}}")
+        }
+    });
+</script>
+</body>
+
+</html>

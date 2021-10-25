@@ -1,17 +1,43 @@
 import os
+from fastapi import Request, Response
+from fastapi.templating import Jinja2Templates
+from starlette.responses import RedirectResponse
+
 from pathlib import Path
 from robotjes.sim import Map
-from starlette.responses import RedirectResponse
 import robotjes.server as server
-from robotjes.server.model import GameSpec
+# from robotjes.server.model import GameSpec
 from . import app
 rootdir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), os.pardir))
 
-@app.get("/")
-async def redirect():
-    response = RedirectResponse(url='/index.html')
-    return response
+templates = Jinja2Templates(directory="templates")
+uuid = ""
 
+@app.get("/")
+async def home_page(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "uuid": uuid})
+
+@app.get("/submit_page")
+async def submit_page(request: Request):
+    global uuid
+    if uuid == "":
+        uuid = 0
+    else:
+        uuid = uuid + 1
+    return templates.TemplateResponse("index.html", {"request": request, "uuid": uuid})
+
+@app.get("/field/status")
+async def field_status(request: Request):
+    global uuid
+    return {
+        "uuid": uuid,
+        "started": False,
+        "done": False,
+        "info": {
+            "player_id": "some_player_id",
+            "game_id": "some_game_id"
+        }
+    }
 
 @app.get("/games")
 async def list_games():
