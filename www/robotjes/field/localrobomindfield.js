@@ -36,8 +36,10 @@
 
         that.assignUUID = function(uuid) {
             // the viewer pages has started anew and a UUID was passed
-            that.uuid = uuid;
-            toStateRegistered(that);
+            if(that.state == 'state_uuid_unknown') {
+                that.uuid = uuid;
+                toStateRegistered(that);
+            }
         };
 
         populate(that);
