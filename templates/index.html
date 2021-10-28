@@ -49,7 +49,7 @@
 </head>
 
 <body>
-<component>
+<div style="display: table;width:100%;">
     <div id="maincomponent" class="maincomponent">
         <div class="table-cell-wrapper">
             <form action="/submit_page">
@@ -58,7 +58,7 @@
             </form>
         </div>
     </div>
-</component>
+</div>
 
 <component>
     <row>
@@ -109,7 +109,6 @@
     $(document).ready(function () {
         window.appContext = window.location.origin;
         var view = $.fn.robotjes.localfieldview($('#fieldviewer'), $('#fieldstatus'),window.location.origin);
-        // var view = $.fn.robotjes.localfieldview($('#fieldviewer'), $('#fieldstatus'), "/");
         if("{{uuid}}" != "") {
             view.assignUUID("{{uuid}}")
         }

@@ -53,3 +53,39 @@
     table-layout: fixed;
     width: 100%;
 }
+
+/* see movieplater.css */
+
+.robomindide {
+    height: 400pt;
+}
+
+.robomindide .worldpane {
+    position: relative;
+    height: 100%;
+}
+
+.robomindide .worldpane [name="runbuttonbar"]{
+    position: absolute;
+    top: auto;
+    bottom: 0;
+}
+
+.robomindide .worldpane [name="speedbuttonbar"]{
+    top: 0;
+    position: absolute;
+    right: auto;
+    left: 0;
+}
+
+.robomindide .worldpane [name="zoombuttonbar"]{
+    top: 0;
+    position: absolute;
+    right: 0;
+    left: auto;
+}
+
+.robomindide .buttonbar {
+    text-align: left;
+}
+
