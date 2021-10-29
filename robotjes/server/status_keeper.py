@@ -15,9 +15,13 @@ class StatusKeeper(object):
         self.keep_alive = 10
         self.inactive_limit = 10
 
-    def set_reservation(self, request):
-        if "uuid" in request and not request["uuid"] in self.reservations:
-            game_name = request.get("game_name", "unknown")
+    def set_reservation(self, the_uuid, game_name, player_name, password):
+        request = {}
+        request['uuid'] = the_uuid
+        request['game_name'] = game_name
+        request['player_name'] = player_name
+        request['password'] = password
+        if not request["uuid"] in self.reservations:
             for game_id, game in self.games.items():
                 if game_name == game.game_name:
                     request["game_id"] = game_id
@@ -110,28 +114,6 @@ class StatusKeeper(object):
                     self.update_reservation(uid, "stopped")
                     game_status.player_success(self.now, request)
         elif msg == "PLAYER_FAILURE":
-            # {'bubble_id': '8033cc90-4ebb-49d4-8296-202c4142e9b6',
-            # 'game_id': '3981308b-a4b8-4b03-bc2a-63b5bd258e64',
-            # 'game_name': 'eat_three',
-            # 'msg': 'PLAYER_FAILURE',
-            # 'game_status': {'game_tick': 110, 'isStarted': True, 'isStopped': False, 'isSuccess': True},
-            # 'players_status': {
-            #   'bc0c8705-8375-4bc3-a4ff-15f3a641f441': {
-            #       'player_id': 'bc0c8705-8375-4bc3-a4ff-15f3a641f441',
-            #       'player_name': 'Jan Admin',
-            #       'robos': {
-            #           'dcaa924d-a4e5-40d5-b354-cf0855ae489f': {
-            #               'pos': [7, 11],
-            #               'load': 0,
-            #               'dir': 270,
-            #               'recording': [[108, 'right', [1], True], [109, 'right', [1], True], [110, 'right', [1], True]],
-            #               'fog_of_war': {'left': [None, None, None, None],
-            #               'front': [None, None, None, None], 'right': [None, None, None, None]
-            #            }
-            #        }
-            #    }
-            # }},
-            # 'data': {'player_id': 'bc0c8705-8375-4bc3-a4ff-15f3a641f441'}}
             game_id = request["game_id"]
             player_id = request["data"]["player_id"]
             if player_id in self.player2reservation:

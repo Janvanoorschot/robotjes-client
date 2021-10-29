@@ -8,16 +8,27 @@ from . import localsession
 
 @app.post("/confirm/{uid}")
 async def confirm_with_game(uid: str):
-    if uid == localsession["uuid"]:
-        games = server.status_keeper.list_games()
-        localsession["game_id"] = next(iter(games))
-        player_spec = await register_with_game(localsession["game_id"], RegistrationSpec(player_name="me", game_password="secret"))
-        localsession["player_id"] = player_spec['player_id']
-    return {
-        "player_id": localsession["player_id"],
-        "game_id": localsession["game_id"]
-    }
-
+    specs = server.status_keeper.get_reservation(uid)
+    if specs:
+        data = {
+            "cmd": "register",
+            "game_id": specs["game_id"],
+            "player_id": specs["player_id"],
+            "player_name": specs["player_name"],
+            "password": specs["password"]
+        }
+        server.robotjes_engine.register_with_game(data)
+        localsession["game_id"] = specs["game_id"]
+        localsession["player_id"] = specs["player_id"]
+        return {
+            "game_id": specs["game_id"],
+            "player_id": specs["player_id"]
+        }
+    else:
+        return {
+            "game_id": "",
+            "player_id": ""
+        }
 
 @app.post("/game/{game_id}/player")
 async def register_with_game(game_id: str, specs: RegistrationSpec):

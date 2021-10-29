@@ -27,6 +27,12 @@ async def submit_page(request: Request):
     # request.query_params['jvo_activate'] == 'Go'
     if localsession["uuid"] == "" and 'jvo_activate' in request.query_params and request.query_params['jvo_activate'] == 'Go':
         localsession["uuid"] = str(uuid4())
+        server.status_keeper.set_reservation(
+            localsession["uuid"],
+            "eat_three",
+            "me",
+            "secret"
+        )
     elif localsession["uuid"] != "" and 'jvo_activate' in request.query_params and request.query_params['jvo_activate'] == 'Go':
         localsession["uuid"] = ''
     return RedirectResponse("/")

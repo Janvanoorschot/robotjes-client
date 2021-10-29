@@ -45,7 +45,7 @@ class Field:
                 },
                 "max": {
                     WorldEvent.WORLD_EVT_BUMP: 1,
-                    WorldEvent.WORLD_EVT_TIMER: 600
+                    WorldEvent.WORLD_EVT_TIMER: 60
                 }
             }
         elif spec.game_name == 'hit_three':

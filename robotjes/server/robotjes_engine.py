@@ -63,8 +63,10 @@ class RobotjesEngine(object):
             move = data.get("move", {})
             self.moves[player_id] = move
 
-    ######## Used by Field to publish status updates (stored by status_keeper)
-
+    ##############################################################################
+    # Code below is implemented in Bubble and in RobotjesEngine                  #
+    ##############################################################################
+    ######## Called by Field to publish status updates (stored by status_keeper) #
     def publish(self, type: GameStatus, data: map):
         request = self._create_request(type, data)
         self.status_keeper.game_status_event(request)
