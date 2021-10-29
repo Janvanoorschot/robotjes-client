@@ -15,12 +15,9 @@ class StatusKeeper(object):
         self.keep_alive = 10
         self.inactive_limit = 10
 
-    def set_reservation(self, the_uuid, game_name, player_name, password):
-        request = {}
+    def set_reservation(self, the_uuid, request):
+        game_name = request.get("game_name", "unknown")
         request['uuid'] = the_uuid
-        request['game_name'] = game_name
-        request['player_name'] = player_name
-        request['password'] = password
         if not request["uuid"] in self.reservations:
             for game_id, game in self.games.items():
                 if game_name == game.game_name:
@@ -30,6 +27,7 @@ class StatusKeeper(object):
                 # game_name not found
                 raise Exception(f"unknown game: {game_name}")
             request["timestamp"] = datetime.datetime.now()
+            request["regtime"] = datetime.datetime.now()
             request["player_id"] = str(uuid.uuid4())
             request["status"] = "registered"
             self.reservations[request["uuid"]] = request

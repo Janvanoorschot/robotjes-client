@@ -27,12 +27,12 @@ async def submit_page(request: Request):
     # request.query_params['jvo_activate'] == 'Go'
     if localsession["uuid"] == "" and 'jvo_activate' in request.query_params and request.query_params['jvo_activate'] == 'Go':
         localsession["uuid"] = str(uuid4())
-        server.status_keeper.set_reservation(
-            localsession["uuid"],
-            "eat_three",
-            "me",
-            "secret"
-        )
+        request = {}
+        request['uuid'] = localsession["uuid"]
+        request['game_name'] = "eat_three"
+        request['player_name'] = "me"
+        request['password'] = "secret"
+        server.status_keeper.set_reservation(localsession["uuid"], request)
     elif localsession["uuid"] != "" and 'jvo_activate' in request.query_params and request.query_params['jvo_activate'] == 'Go':
         localsession["uuid"] = ''
     return RedirectResponse("/")
