@@ -99,7 +99,7 @@
                         }
                         break;
                     case 'state_running':
-                        if(data.uuid != "" && data.done) {
+                        if(data.done) {
                             toStateStopped(that, data);
                         } else {
                             keepStateRunning(that, timerTick, data);

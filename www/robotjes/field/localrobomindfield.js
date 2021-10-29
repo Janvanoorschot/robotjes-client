@@ -109,6 +109,8 @@
         bannernode.append(
             '<button type=\'submit\' class="btn btn-success" id="activate" name="jvo_activate" value=\'Go\'> <i class="icon-play"></i>Activate</button>'
         );
+        let statusnode = that.statusnode;
+        statusnode.hide();
         that.state = 'state_uuid_unknown';
     }
 
@@ -131,9 +133,10 @@
     function toStateRunning(that, timerTick, data) {
         that.game_id = data.info.game_id;
         that.player_id = data.info.player_id;
-        var statusnode = that.statusnode;
         var viewernode = that.node;
         viewernode.empty();
+        var statusnode = that.statusnode;
+        statusnode.show();
         that.viewer = $.fn.robotjes.robotjesviewer(viewernode, statusnode, that.game_id, that.player_id, that.url);
         that.state = 'state_running';
 

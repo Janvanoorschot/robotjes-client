@@ -239,27 +239,6 @@ class GameStatus(object):
         # self.update(request)
         self.stoptime = now
 
-    # General Request Layout
-    # {
-    #   'game_id': '93fcc3e6-b696-4cb4-adc2-813cb8ffc37d',
-    #   'game_name': 'game2',
-    #   'msg': 'DELTAREC',
-    #   'game_status': {'game_tick': 1, 'isStarted': False, 'isStopped': False, 'isSuccess': False},
-    #   'players_status': {
-    #         'ba8e8d5c-50e8-4591-9076-aae3d5e40942': {
-    #             'player_id': 'ba8e8d5c-50e8-4591-9076-aae3d5e40942',
-    #             'player_name': 'me',
-    #             'player_status': {
-    #                   'fog_of_war': {}
-    #             }
-    #          }
-    #   },
-    #   'data': {
-    #       'recording_delta': {},
-    #       'map_status': {},
-    #   }
-    # }
-
     def gametick(self, now, request):
         self.game_tick = request["game_status"]["game_tick"]
         self.isStarted = request["game_status"]["isStarted"]

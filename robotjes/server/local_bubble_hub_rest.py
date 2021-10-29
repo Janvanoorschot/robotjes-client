@@ -42,21 +42,27 @@ async def submit_page(request: Request):
 async def field_status(request: Request):
     started = False
     done = True
-    if localsession["game_id"] != "" and localsession["player_id"] != "":
+    uuid = localsession["uuid"]
+    game_id = localsession["game_id"]
+    player_id = localsession["player_id"]
+    if game_id != "" and player_id != "":
         player_status = server.status_keeper.get_player_status(localsession["game_id"], localsession["player_id"])
-        if len(player_status) > 0:
+        if len(player_status) > 0 and player_status['player_result']['active']:
             started = True
             done = False
         else:
+            started = True
+            done = True
+            localsession["uuid"]=""
             localsession["game_id"]=""
             localsession["player_id"]=""
     return {
-        "uuid": localsession["uuid"],
+        "uuid": uuid,
         "started": started,
         "done": done,
         "info": {
-            "player_id": localsession["player_id"],
-            "game_id": localsession["game_id"]
+            "game_id": game_id,
+            "player_id": player_id
         }
     }
 
