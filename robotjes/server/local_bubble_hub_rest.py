@@ -11,6 +11,7 @@ from . import localsession
 from robotjes.sim import Map
 import robotjes.server as server
 
+
 rootdir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), os.pardir))
 templates = Jinja2Templates(directory="templates")
 
@@ -112,8 +113,9 @@ async def stopped2running():
 
 @app.post("/game/running2stopped")
 async def running2stopped():
-    if server.robotjes_engine.isRunning():
-        server.robotjes_engine.stop_game()
+    # stop the currently running'player'
+    if localsession['player_id']!="" and localsession['game_id']!="":
+        server.robotjes_engine.deregister_with_game(localsession['player_id'])
 
 @app.post("/game/running2paused")
 async def running2paused():
