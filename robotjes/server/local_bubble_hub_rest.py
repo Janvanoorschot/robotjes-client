@@ -1,6 +1,7 @@
 import os
 from uuid import uuid4
 from pathlib import Path
+import pyperclip
 
 from fastapi import Request, Response
 from fastapi.templating import Jinja2Templates
@@ -28,6 +29,7 @@ async def submit_page(request: Request):
     # request.query_params['jvo_activate'] == 'Go'
     if localsession["uuid"] == "" and 'jvo_activate' in request.query_params and request.query_params['jvo_activate'] == 'Go':
         localsession["uuid"] = str(uuid4())
+        pyperclip.copy(localsession["uuid"])
         request = {}
         request['uuid'] = localsession["uuid"]
         request['game_name'] = "eat_three"

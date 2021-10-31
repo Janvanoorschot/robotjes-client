@@ -11,8 +11,13 @@ uvicorn
 rich
 textual
 
+# Clipboard handling
+# note: on ubuntu/linux you need to do 'sudo apt-get install xsel'
+# see: https://pyperclip.readthedocs.io/en/latest/index.html#not-implemented-error
+pyperclip
+
 # UI for CLI tools
-asciimatics
+# asciimatics
 
 # support for Pypi releasing
 wheel
