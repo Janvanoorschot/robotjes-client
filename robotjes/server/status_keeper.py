@@ -54,8 +54,11 @@ class StatusKeeper(object):
         return request
 
     def remove_reservation(self, uuid):
-        del(self.reservations[uuid])
-        del(self.done_reservations[uuid])
+        if uuid in self.reservations:
+            res = self.reservations[uuid]
+            player_id = res["player_id"]
+            if player_id in self.player2reservation:
+                del self.player2reservation[player_id]
 
     def game_status_event(self, request):
         events = []
@@ -208,10 +211,7 @@ class StatusKeeper(object):
             # check for reservation timeouts
             for uid, request in self.reservations.copy.items():
                 if request["status"] == "registered" and (now - request["regtime"] > self.inactive_limit):
-                    player_id = request["player_id"]
-                    del self.reservations[uid]
-                    del self.player2reservation[player_id]
-
+                    self.remove_reservation(uid)
 
 
 class GameStatus(object):
