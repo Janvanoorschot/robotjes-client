@@ -33,6 +33,7 @@ class Player:
             self.robos[robo.id] = robo
             # switch from async python mode to sync mode (in thread)
             await self.loop.run_in_executor(self.executor, execute, robo)
+            self.callback('done_robo', self.game_tick, robo_id)
         else:
             raise Exception("Failed to create Robo")
 

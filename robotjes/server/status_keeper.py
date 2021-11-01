@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 class StatusKeeper(object):
     def __init__(self):
         self.reservations: dict(str, map) = {}
+        self.done_reservations: dict(str, str) = {}
         self.player2reservation: dict(str, str) = {}
         self.games: dict(str, GameStatus) = {}
         self.lastseen = {}
@@ -35,6 +36,13 @@ class StatusKeeper(object):
         else:
             raise Exception(f"illegal reservation request")
 
+    def confirm_reservation(self, uuid):
+        if uuid not in self.done_reservations:
+            self.done_reservations[uuid] = uuid
+            return self.reservations.get(uuid, None)
+        else:
+            return None
+
     def get_reservation(self, uuid):
         return self.reservations.get(uuid, None)
 
@@ -44,6 +52,10 @@ class StatusKeeper(object):
             request["status"] = status
             self.reservations[request["uuid"]] = request
         return request
+
+    def remove_reservation(self, uuid):
+        del(self.reservations[uuid])
+        del(self.done_reservations[uuid])
 
     def game_status_event(self, request):
         events = []

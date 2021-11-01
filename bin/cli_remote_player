@@ -18,13 +18,21 @@ class PlayerClient:
     def __init__(self):
         pass
 
+    def create_robo(self, game_tick, robo_id):
+        print(f"create_robo[{game_tick}][{robo_id}]")
+        # pass
+
+    def done_robo(self, game_tick, robo_id):
+        print(f"done_robo[{game_tick}][{robo_id}]")
+        # pass
+
     def robo_status(self, game_tick, robo_id, robo_status):
-        # print(f"status[{robo_status}]")
-        pass
+        print(f"robo_status[{game_tick}][{robo_id}][{robo_status}]")
+        # pass
 
     def issue_command(self, game_tick, robo_id, cmd, reply):
-        # print(f"cmd[{game_tick}]")
-        pass
+        print(f"issue_command[{game_tick}][{robo_id}][{cmd}][{reply}]")
+        # pass
 
 
 def load_client(module_name):
@@ -56,6 +64,7 @@ async def run(args, uuid, loop):
 def uuid_from_clipboard():
     clpb = pyperclip.paste()
     if clpb and re.match("^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", clpb):
+        pyperclip.copy("")
         return clpb
     else:
         return None

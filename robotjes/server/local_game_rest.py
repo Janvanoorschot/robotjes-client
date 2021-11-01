@@ -8,7 +8,7 @@ from . import localsession
 
 @app.post("/confirm/{uid}")
 async def confirm_with_game(uid: str):
-    specs = server.status_keeper.get_reservation(uid)
+    specs = server.status_keeper.confirm_reservation(uid)
     if specs:
         data = {
             "cmd": "register",
