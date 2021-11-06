@@ -83,7 +83,8 @@ class Player:
             if self.timer_lock.locked():
                 self.timer_lock.release()
         else:
-            print("stopped")
+            # print("stopped")
+            pass
 
     def callback(self, cmd, *args):
         invert_op = getattr(self.client, cmd, None)
