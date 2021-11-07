@@ -40,9 +40,9 @@ class LocalEngineHandler:
         status = reply[1][0][1]
         return [b, status, {'active': True}]
 
-    async def game_timer(self, cur_tick):
+    async def update_status(self, cur_tick):
         next_tick = cur_tick + 1
-        self.engine.game_timer(next_tick)
+        self.engine.update_status(next_tick)
         return next_tick
 
     def get_robo_status(self, robo_id):
@@ -123,7 +123,7 @@ class RemoteEngineHandler:
             b = False
         return [b, robo_status, player_result]
 
-    async def game_timer(self, cur_tick):
+    async def update_status(self, cur_tick):
         game_tick = cur_tick
         while game_tick == cur_tick:
             status = await self.rest_client.status_player(self.game_id, self.player_id, cur_tick)

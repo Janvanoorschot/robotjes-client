@@ -27,12 +27,12 @@ class PlayerClient:
         # pass
 
     def robo_status(self, game_tick, robo_id, robo_status):
-        print(f"robo_status[{game_tick}][{robo_id}][{robo_status}]")
-        # pass
+        # print(f"robo_status[{game_tick}][{robo_id}][{robo_status}]")
+        pass
 
     def issue_command(self, game_tick, robo_id, cmd, reply):
-        print(f"issue_command[{game_tick}][{robo_id}][{cmd}][{reply}]")
-        # pass
+        # print(f"issue_command[{game_tick}][{robo_id}][{cmd}][{reply}]")
+        pass
 
 
 def load_client(module_name):
@@ -56,8 +56,8 @@ async def run(args, uuid, loop):
     player = client.Player(handler, loop, clnt)
     timer = Timer(0.1, player.timer, True)
     f1 = loop.create_task(player.run_one_robo(script))
-    f2 = loop.create_task(player.run_runtime())
-    await asyncio.wait([f1, f2])
+    # f2 = loop.create_task(player.run_runtime())
+    await asyncio.wait([f1])
     timer.cancel()
 
 

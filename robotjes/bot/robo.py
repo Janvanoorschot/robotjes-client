@@ -34,6 +34,12 @@ class Robo(object):
     def _set_id(self, robo_id):
         self.id = robo_id
 
+    def stop(self):
+        self.is_running = False
+
+    def active(self):
+        return self.is_running
+
     # A result looks like this (at least in run-simulation, still need to do cli_remote_player. cli_local_player)
     # [[6, '06264681-6bac-4a91-9a88-73f70ae1f942', 'right', 2],
     #  ([[True, 0],
@@ -53,13 +59,13 @@ class Robo(object):
     def _handle_result(self, result):
         player_result = result[2]
         robo_status = result[1]
-        if not player_result['active']:
+        if 'active' in player_result and not player_result['active']:
             self.is_running = False
         return robo_status
 
     def _handle_boolean_result(self, result):
-        if not self.is_running:
-            self.stop()
+        if 'active' in player_result and not player_result['active']:
+            self.is_running = False
         return result[0]
 
     def forward(self, steps=1):
@@ -201,12 +207,6 @@ class Robo(object):
 
     def error(self, message):
         self.requestor.execute([self.id, 'error', message])
-
-    def stop(self):
-        self.requestor.close()
-
-    def active(self):
-        return self.is_running
 
     @staticmethod
     def is_observation(cmd):

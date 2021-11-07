@@ -124,6 +124,7 @@
                             that.node,
                             that.skin,
                             that.images);
+                        that.movieplayer.keepCenterPlayer(true)
                         that.node.append(moviePlayerNode);
 
                         // get the center options

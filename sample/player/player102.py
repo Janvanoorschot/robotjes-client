@@ -5,6 +5,9 @@ from pprint import pprint
 def execute(robo):
 
     while robo.active():
-        status = robo.right()
-        # pprint(status)
+        robo.right()
+        robo.forward()
+        robo.backward()
+
+    robo.stop()
 
