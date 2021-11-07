@@ -91,10 +91,11 @@
         that.moveToPlayer = function () {
             var tileSize = that.recording.tileSize;
             var toX, toY;
-            if(that.frameplayer && 'robo' in that.frameplayer){
-                if(that.frameplayer.robo.currentMinimation){
-                    toX = (that.frameplayer.robo.currentMinimation.curX +0.5)*tileSize;
-                    toY = (that.frameplayer.robo.currentMinimation.curY +0.5)*tileSize;
+            if(that.frameplayer){
+                var robo = that.frameplayer.getCurrentRobo()
+                if(robo && robo.currentMinimation){
+                    toX = (robo.currentMinimation.curX +0.5)*tileSize;
+                    toY = (robo.currentMinimation.curY +0.5)*tileSize;
                     if(!isNaN(toX + toY)){
                         that.viewport.moveTo(toX,toY);
                     }

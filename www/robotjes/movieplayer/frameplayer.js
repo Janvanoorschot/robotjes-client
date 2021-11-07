@@ -86,6 +86,7 @@
         that.breakpoints = [];
 
         // that droids
+        that.currentDroid = null;
         that.droids = {};
 
         // public API
@@ -163,6 +164,14 @@
                 that.listeners.splice(idx,1);
             }
         };
+
+        that.getCurrentRobo = function() {
+            if(that.currentDroid) {
+                return that.droids[that.currentDroid];
+            } else {
+                return null;
+            }
+        }
 
         /**
          * Return the duration of the current recording in milliseconds
@@ -491,6 +500,7 @@
                             // an unknown bot with sufficient info. Create it.
                             let robo = $.fn.rm.robo(robo_id, that.recording, init_x, init_y, init_dir);
                             robo.addListener(that);
+                            that.currentDroid = robo_id;
                             that.droids[robo_id] = robo;
                             that.droidsCommandTime[robo_id] = 0;
                             that.droidsCommandTimePassed[robo_id] = 0;
