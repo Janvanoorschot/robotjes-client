@@ -64,7 +64,7 @@ class Robo(object):
         return robo_status
 
     def _handle_boolean_result(self, result):
-        if 'active' in player_result and not player_result['active']:
+        if 'active' in result and not result['active']:
             self.is_running = False
         return result[0]
 
