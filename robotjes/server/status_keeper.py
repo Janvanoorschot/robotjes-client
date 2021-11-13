@@ -88,6 +88,7 @@ class StatusKeeper(object):
         elif msg == "PLAYER_REGISTER":
             game_id = request["game_id"]
             player_id = request["data"]["player_id"]
+            player_name = request["data"]["player_name"]
             if player_id in self.player2reservation:
                 uid = self.player2reservation[player_id]
                 reservation = self.get_reservation(uid)
@@ -98,6 +99,7 @@ class StatusKeeper(object):
                         "player_id": player_id,
                         "uuid": uid,
                         "reservation": reservation})
+            game_status.player_register(now, player_id, player_name, request)
         elif msg == "PLAYER_DEREGISTER":
             game_id = request["game_id"]
             player_id = request["data"]["player_id"]
@@ -111,6 +113,7 @@ class StatusKeeper(object):
                         "player_id": player_id,
                         "uuid": uid,
                         "reservation": reservation})
+            game_status.player_deregister(now, player_id, request)
         elif msg == "PLAYER_SUCCESS":
             game_id = request["game_id"]
             player_id = request["data"]["player_id"]
@@ -125,7 +128,7 @@ class StatusKeeper(object):
                         "uuid": uid,
                         "reservation": reservation})
                     self.update_reservation(uid, "stopped")
-                    game_status.player_success(self.now, request)
+            game_status.player_success(now, player_id, request)
         elif msg == "PLAYER_FAILURE":
             game_id = request["game_id"]
             player_id = request["data"]["player_id"]
@@ -140,7 +143,7 @@ class StatusKeeper(object):
                         "uuid": uid,
                         "reservation": reservation})
                     self.update_reservation(uid, "stopped")
-                    game_status.player_failure(self.now, request)
+            game_status.player_failure(now, player_id, request)
         elif msg == "IDLE":
             pass
         else:
@@ -235,7 +238,6 @@ class GameStatus(object):
         self.isSuccess = False
         self.recording = []
         self.players = {}
-        self.player_result = {}
         self.mapstatus = None
         self.data = {}
         self.gametick(now, delta)
@@ -244,28 +246,51 @@ class GameStatus(object):
         return self.stoptime is not None
 
     def started(self, now, request):
-        # self.update(request)
         pass
 
     def stopped(self, now, request):
-        # self.update(request)
         self.stoptime = now
+
+    def player_register(self, now, player_id, player_name, request):
+        self.players[player_id] = {
+            "player_id": player_id,
+            "player_name": player_name,
+            "active": True,
+            "success": False,
+            "first_seen": now,
+            "last_seen": now,
+            "first_tick": request["game_status"]["game_tick"],
+            "last_tick": -1
+        }
+
+    def player_deregister(self, now, player_id, request):
+        if player_id in self.players:
+            self.players[player_id]["last_seen"] = now
+            self.players[player_id]["active"] = False
+            self.players[player_id]["last_tick"] = request["game_status"]["game_tick"]
+
+    def player_success(self, now, player_id, request):
+        if player_id in self.players:
+            self.players[player_id]["last_seen"] = now
+            self.players[player_id]["success"] = True
+            self.players[player_id]["last_tick"] = request["game_status"]["game_tick"]
+
+    def player_failure(self, now, player_id, request):
+        if player_id in self.players:
+            self.players[player_id]["last_seen"] = now
+            self.players[player_id]["success"] = False
+            self.players[player_id]["last_tick"] = request["game_status"]["game_tick"]
 
     def gametick(self, now, request):
         self.game_tick = request["game_status"]["game_tick"]
         self.isStarted = request["game_status"]["isStarted"]
         self.isStopped = request["game_status"]["isStopped"]
         self.isSuccess = request["game_status"]["isSuccess"]
-        self.players.clear()
-        for player_id, player in request["players_status"].items():
-            self.players[player_id] = player
-            if player_id not in self.player_result:
-                self.player_result[player_id] = {
-                    "player_id": player_id,
-                    "active": True,
-                    "success": False,
-                    "timestamp": now,
-                }
+        for player_id, player_status in request["players_status"].items():
+            if player_id in self.players:
+                self.players[player_id]["last_seen"] = now
+                # do we want to copy more?
+                pass
 
     def deltarec(self, now, request):
         recording_delta = request["data"]
@@ -273,24 +298,6 @@ class GameStatus(object):
         self.recording.append(recording_delta)
         if len(self.recording) > 10:
             self.recording.pop(0)
-
-    def player_success(self, now, request):
-        player_id = request["player_id"]
-        self.player_result[player_id] = {
-            "player_id": player_id,
-            "active": False,
-            "success": True,
-            "timestamp": now,
-        }
-
-    def player_failure(self, now, request):
-        player_id = request["data"]["player_id"]
-        self.player_result[player_id] = {
-            "player_id": player_id,
-            "active": False,
-            "success": False,
-            "timestamp": now,
-        }
 
     def game_status(self):
         # short status of the game
@@ -328,22 +335,8 @@ class GameStatus(object):
                 player_status = self.players[player_id]
             else:
                 player_status = {}
-            if player_id in self.player_result:
-                player_result = self.player_result[player_id]
-            else:
-                player_result = {}
             return {
-                "game_status": {
-                    "game_id": self.game_id,
-                    "game_name": self.game_name,
-                    "status": {
-                        "game_tick": self.game_tick,
-                        "isStarted": self.isStarted,
-                        "isStopped": self.isStopped,
-                        "isSuccess": self.isSuccess,
-                    },
-                },
-                "player_result": player_result,
+                "game_status": self.game_status(),
                 "player_status": player_status,
             }
         else:

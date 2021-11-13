@@ -86,6 +86,10 @@ class Field:
     def registered(self, player_id, player_name):
         player = Player(player_id, player_name)
         self.game.registered(player_id)
+        self.owner.publish(GameStatus.PLAYER_REGISTER, {
+            "player_id": player_id,
+            "player_name": player_name
+        })
         robo_id = self.game.create_robo(player.player_id)
         if robo_id:
             player.robos.append(robo_id)
@@ -100,6 +104,9 @@ class Field:
             for robo_id in player.robos:
                 self.game.destroy_robo(robo_id)
             self.game.deregistered(player_id)
+            self.owner.publish(GameStatus.PLAYER_DEREGISTER, {
+                "player_id": player_id
+            })
             del self.players[player_id]
 
     def is_stopped(self):

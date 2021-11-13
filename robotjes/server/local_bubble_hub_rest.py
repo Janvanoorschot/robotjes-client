@@ -50,7 +50,7 @@ async def field_status(request: Request):
     player_id = localsession["player_id"]
     if game_id != "" and player_id != "":
         player_status = server.status_keeper.get_player_status(localsession["game_id"], localsession["player_id"])
-        if len(player_status) > 0 and player_status['player_result']['active']:
+        if len(player_status) > 0 and player_status['player_status']['active']:
             started = True
             done = False
         else:
