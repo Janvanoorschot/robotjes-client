@@ -289,8 +289,8 @@ class GameStatus(object):
         for player_id, player_status in request["players_status"].items():
             if player_id in self.players:
                 self.players[player_id]["last_seen"] = now
-                # do we want to copy more?
-                pass
+                self.players[player_id]["counters"] = player_status["counters"]
+                self.players[player_id]["robos"] = player_status["robos"]
 
     def deltarec(self, now, request):
         recording_delta = request["data"]

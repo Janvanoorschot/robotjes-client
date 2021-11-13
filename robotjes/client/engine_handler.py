@@ -69,7 +69,7 @@ class RemoteEngineHandler:
         self.robo_id = None
         self.game_tick = 0
         self.robo_status = {}
-        self.player_result = {}
+        self.player_status = {}
         self.register_lock = asyncio.Lock()
 
     async def start_player(self):
@@ -113,7 +113,7 @@ class RemoteEngineHandler:
 
     async def execute(self, game_tick, robo_id, cmd):
         robo_status = self.robo_status.get(robo_id, None)
-        player_result = self.player_result
+        player_status = self.player_status
         if Robo.is_observation(cmd) and robo_status:
             b = Robo.observation(robo_status, cmd)
         else:
@@ -121,7 +121,7 @@ class RemoteEngineHandler:
                 self.game_id, self.player_id, cmd
             )
             b = False
-        return [b, robo_status, player_result]
+        return [b, robo_status, player_status]
 
     async def update_status(self, cur_tick):
         game_tick = cur_tick
@@ -130,18 +130,19 @@ class RemoteEngineHandler:
             if status and 'game_status' in status and 'status' in status['game_status']:
                 game_tick = status["game_status"]["status"]["game_tick"]
         self.game_tick = game_tick
-        if self.robo_id is None:
+        if self.robo_id is None and "robos" in status["player_status"]:
             # first status. set 'our' bot
             for robo_id, robo_status in status["player_status"]["robos"].items():
                 self.robo_id = robo_id
                 self.register_lock.release()
-        for robo_id, robo_status in status["player_status"]["robos"].items():
-            self.robo_status[robo_id] = robo_status
-        self.player_result = status["player_result"]
+        if "robos" in status["player_status"]:
+            for robo_id, robo_status in status["player_status"]["robos"].items():
+                self.robo_status[robo_id] = robo_status
+        self.player_status = status["player_status"]
         if (
             self.started
             and not self.is_stopped
-            and not status["player_result"]["active"]
+            and not status["player_status"]["active"]
         ):
             # we are done
             self.is_stopped = True
