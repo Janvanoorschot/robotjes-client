@@ -70,6 +70,14 @@
             doTimerTick(that);
         };
 
+        that.currentGameTick = function() {
+            if(that.frameplayer) {
+                return that.frameplayer.currentGameTick();
+            } else {
+                return -1;
+            }
+        }
+
         that.stopped = function () {
             var node = $('#myrobomindide');
             node.removeClass('RunModeRunning');

@@ -165,6 +165,10 @@
             }
         };
 
+        that.currentGameTick = function() {
+            return that.game_tick;
+        }
+
         that.getCurrentRobo = function() {
             if(that.currentDroid) {
                 return that.droids[that.currentDroid];

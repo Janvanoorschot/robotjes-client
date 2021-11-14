@@ -48,6 +48,7 @@ async def field_status(request: Request):
     uuid = localsession["uuid"]
     game_id = localsession["game_id"]
     player_id = localsession["player_id"]
+    player_status = {}
     if game_id != "" and player_id != "":
         player_status = server.status_keeper.get_player_status(localsession["game_id"], localsession["player_id"])
         if len(player_status) > 0 and player_status['player_status']['active']:
@@ -56,9 +57,7 @@ async def field_status(request: Request):
         else:
             started = True
             done = True
-            localsession["uuid"]=""
-            localsession["game_id"]=""
-            localsession["player_id"]=""
+            localsession["uuid"] = ""
     return {
         "uuid": uuid,
         "started": started,
@@ -66,7 +65,8 @@ async def field_status(request: Request):
         "info": {
             "game_id": game_id,
             "player_id": player_id
-        }
+        },
+        "status": player_status
     }
 
 @app.get("/games")

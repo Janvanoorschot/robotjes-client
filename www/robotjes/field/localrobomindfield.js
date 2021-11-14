@@ -80,14 +80,14 @@
                         }
                         break;
                     case 'state_running':
-                        if(data.uuid != "" && data.done) {
+                        if(data.uuid != "" && isDone(that, data)) {
                             toStateStopped(that, data);
                         } else {
                             keepStateRunning(that, timerTick, data);
                         }
                         break;
                     case 'state_stopped':
-                        if(data.uuid != "" && data.done) {
+                        if(data.uuid != "" && isDone(that, data)) {
                             keepStateStopped(that, data);
                         } else {
                             toStateUuidUnknown(that, data);
@@ -101,6 +101,14 @@
             .fail(function(data) {
                 toStateError(that, data);
             });
+    }
+
+    function isDone(that, data) {
+        var last_game_tick = data["status"]["player_status"]["last_tick"];
+        var current_game_tick = that.viewer.currentGameTick();
+
+        console.log(`{last_game_tick}/{current_game_tick}`);
+
     }
 
     function toStateUuidUnknown(that) {

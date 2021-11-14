@@ -43,6 +43,14 @@
             }
         };
 
+        that.currentGameTick = function() {
+            if(that.movieplayer) {
+                return that.movieplayer.currentGameTick();
+            } else {
+                return -1;
+            }
+        }
+
         populate(that);
         init_game(that, that.game_id);
 

@@ -588,7 +588,7 @@
             return (tick - that.first_tick)*1000;
         }
 
-        function F(that, t) {
+        function t2tick(that, t) {
             return that.first_tick + Math.floor(t/1000);
         }
 
