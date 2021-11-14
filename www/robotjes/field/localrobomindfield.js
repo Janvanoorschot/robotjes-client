@@ -106,9 +106,12 @@
     function isDone(that, data) {
         var last_game_tick = data["status"]["player_status"]["last_tick"];
         var current_game_tick = that.viewer.currentGameTick();
-
-        console.log(`{last_game_tick}/{current_game_tick}`);
-
+        console.log(`${last_game_tick}/${current_game_tick}`);
+        if(last_game_tick > 0 && last_game_tick < current_game_tick) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     function toStateUuidUnknown(that) {

@@ -153,7 +153,7 @@
     }
 
     function update_game(that, player_status) {
-        if("player_status" in player_status) {
+        if("player_status" in player_status && "counters" in player_status["player_status"]) {
             let counters = player_status["player_status"]["counters"];
             let counternames = Object.keys(counters);
             for(let ix=0; ix<3; ix++) {

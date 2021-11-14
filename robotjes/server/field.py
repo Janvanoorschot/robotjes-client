@@ -45,7 +45,7 @@ class Field:
                 },
                 "max": {
                     WorldEvent.WORLD_EVT_BUMP: 1,
-                    WorldEvent.WORLD_EVT_TIMER: 600
+                    WorldEvent.WORLD_EVT_TIMER: 15
                 }
             }
         elif spec.game_name == 'hit_three':
@@ -101,12 +101,12 @@ class Field:
     def deregistered(self, player_id):
         if player_id in self.players:
             player = self.players[player_id]
-            for robo_id in player.robos:
-                self.game.destroy_robo(robo_id)
-            self.game.deregistered(player_id)
             self.owner.publish(GameStatus.PLAYER_DEREGISTER, {
                 "player_id": player_id
             })
+            for robo_id in player.robos:
+                self.game.destroy_robo(robo_id)
+            self.game.deregistered(player_id)
             del self.players[player_id]
 
     def is_stopped(self):
