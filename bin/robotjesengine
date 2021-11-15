@@ -8,6 +8,7 @@ rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 os.chdir(rootdir)
 
+import robotjes
 from robotjes.sim import Mazes
 from robotjes.server import StatusKeeper
 from robotjes.server import RobotjesEngine
@@ -50,7 +51,10 @@ if __name__ == "__main__":
     parser.add_argument('--name', type=str, default="eat_three", help='name of the game to join')
     parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
     parser.add_argument('--maze', type=str, default="default", help='name of the maze to use')
+    parser.add_argument('-d', '--debug', action='store_true', help="Allows debugging of client code.")
     input_args = parser.parse_args()
+    if input_args.debug:
+        robotjes.debug_mode = True
     # init logging
     logging.config.fileConfig(input_args.logconf)
     logger = logging.getLogger(__name__)

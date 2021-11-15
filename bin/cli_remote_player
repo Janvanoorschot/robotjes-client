@@ -3,7 +3,6 @@
 import sys
 import os
 import re
-import argparse
 import asyncio
 import importlib
 import pyperclip
@@ -11,8 +10,8 @@ import pyperclip
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
-from robotjes import client, Timer
-
+import robotjes
+from robotjes import client, Timer, debug_mode
 
 class PlayerClient:
     def __init__(self):
@@ -47,18 +46,29 @@ def load_client(module_name):
         exit(1)
     return execute_entrypoint
 
+rest_client = None
+player = None
+
+
+async def timer():
+    if player:
+        await player.timer()
+    if rest_client and robotjes.debug_mode:
+        await rest_client.timer_tick()
+
 
 async def run(args, uuid, loop):
+    global player, rest_client
     script = load_client(args.module)
     clnt = PlayerClient()
     rest_client = client.RestClient(loop, args.url)
     handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password, uuid)
     player = client.Player(handler, loop, clnt)
-    timer = Timer(0.1, player.timer, True)
+    global_timer = Timer(0.1, timer, True)
     f1 = loop.create_task(player.run_one_robo(script))
     # f2 = loop.create_task(player.run_runtime())
     await asyncio.wait([f1])
-    timer.cancel()
+    global_timer.cancel()
 
 
 def uuid_from_clipboard():
@@ -85,6 +95,7 @@ async def main(args, loop):
 
 if __name__ == "__main__":
     # get commandline arguments
+    import argparse
     parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Player')
     parser.add_argument('--url', type=str, default='http://localhost:8765', help='url of the robotjes REST entrypoint')
     parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
@@ -92,8 +103,10 @@ if __name__ == "__main__":
     parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
     parser.add_argument('--module', type=str, default="sample.player.player102", help='module containing the player logic')
     parser.add_argument('--uuid', default=None, help='pre-registration uuid')
+    parser.add_argument('-d', '--debug', action='store_true', help="Allows debugging of client code.")
     cmd_args = parser.parse_args()
-
+    if cmd_args.debug:
+        robotjes.debug_mode = True
     aloop = asyncio.get_event_loop()
     aloop.run_until_complete(main(cmd_args, aloop))
     aloop.close()

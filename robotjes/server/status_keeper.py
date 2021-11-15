@@ -1,6 +1,7 @@
 import datetime
 import logging
 import uuid
+import robotjes
 
 logger = logging.getLogger(__name__)
 
@@ -197,7 +198,7 @@ class StatusKeeper(object):
         return game_recording
 
     def timer(self, now):
-        if not self.now or (now - self.now).total_seconds() > 10:
+        if not robotjes.debug_mode and (not self.now or (now - self.now).total_seconds() > 10):
             self.now = now
             # check for game timeouts
             for game_id, game in self.games.copy().items():

@@ -107,10 +107,8 @@
         var last_game_tick = data["status"]["player_status"]["last_tick"];
         var current_game_tick = that.viewer.currentGameTick();
         if(last_game_tick > 0 && last_game_tick < current_game_tick) {
-            console.log(`localrobomindfile is done: ${last_game_tick}/${current_game_tick}`);
             return true;
         } else {
-            console.log(`localrobomindfile is not done: ${last_game_tick}/${current_game_tick}`);
             return false;
         }
     }

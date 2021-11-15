@@ -10,6 +10,13 @@ class RestClient:
         self.url = url
         self.last_move = {}
 
+    async def timer_tick(self):
+        reply = await self.loop.run_in_executor(None, requests.post, self.create_url('timertick'))
+        if reply.status_code == 200:
+            return {}
+        else:
+            raise Exception(f"failed rest call timer_tick: {reply.reason}")
+
     async def list_games(self):
         reply = await self.loop.run_in_executor(None, requests.get, self.create_url('games'))
         if reply.status_code == 200:
