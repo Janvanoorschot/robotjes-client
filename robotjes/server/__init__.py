@@ -25,10 +25,9 @@ localsession :dict = {}
 
 def timer_task():
     # the global timer-task function (executed 10 times per second)
-    if not robotjes.debug_mode:
-        now = datetime.datetime.now()
-        status_keeper.timer(now)
-        robotjes_engine.timer(now)
+    now = datetime.datetime.now()
+    status_keeper.timer(now)
+    robotjes_engine.timer(now)
 
 
 

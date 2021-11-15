@@ -11,7 +11,7 @@ rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
 import robotjes
-from robotjes import client, Timer, debug_mode
+from robotjes import client, Timer
 
 class PlayerClient:
     def __init__(self):
@@ -51,24 +51,26 @@ player = None
 
 
 async def timer():
-    if player:
-        await player.timer()
+    global player, rest_client
     if rest_client and robotjes.debug_mode:
         await rest_client.timer_tick()
+    if player:
+        print("enter player.timer")
+        await player.timer()
+        print("exit player.timer")
 
 
 async def run(args, uuid, loop):
     global player, rest_client
     script = load_client(args.module)
     clnt = PlayerClient()
-    rest_client = client.RestClient(loop, args.url)
     handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password, uuid)
     player = client.Player(handler, loop, clnt)
-    global_timer = Timer(0.1, timer, True)
     f1 = loop.create_task(player.run_one_robo(script))
     # f2 = loop.create_task(player.run_runtime())
     await asyncio.wait([f1])
-    global_timer.cancel()
+    await player.stop()
+    player = None
 
 
 def uuid_from_clipboard():
@@ -81,6 +83,9 @@ def uuid_from_clipboard():
 
 
 async def main(args, loop):
+    global player, rest_client
+    rest_client = client.RestClient(loop, args.url)
+    global_timer = Timer(0.1, timer, True)
     if args.uuid:
         # run one time using the uuid passed via the arguments
         await run(args, args.uuid, loop)
@@ -91,6 +96,8 @@ async def main(args, loop):
             uuid = uuid_from_clipboard()
             if uuid:
                 await run(args, uuid, loop)
+    print("player stop")
+    global_timer.cancel()
 
 
 if __name__ == "__main__":

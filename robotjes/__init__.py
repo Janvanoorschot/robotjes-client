@@ -7,6 +7,8 @@ import asyncio
 debug_mode = False
 
 class Timer:
+
+
     def __init__(self, timeout, callback, repeat=False):
         self.timeout = timeout
         self.callback = callback

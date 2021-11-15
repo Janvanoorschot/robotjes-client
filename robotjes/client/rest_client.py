@@ -11,9 +11,10 @@ class RestClient:
         self.last_move = {}
 
     async def timer_tick(self):
-        reply = await self.loop.run_in_executor(None, requests.post, self.create_url('timertick'))
+        reply = await self.loop.run_in_executor(None, requests.get, self.create_url('timertick'))
         if reply.status_code == 200:
-            return {}
+            result = reply.json()
+            return result
         else:
             raise Exception(f"failed rest call timer_tick: {reply.reason}")
 

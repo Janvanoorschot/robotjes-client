@@ -18,6 +18,6 @@ async def fastapi_timer_task():
         server.timer_task()
 
 
-@app.post("/timertick")
+@app.get("/timertick")
 async def timer_tick(request: Request):
     server.timer_task()

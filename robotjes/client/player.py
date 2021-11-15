@@ -66,20 +66,19 @@ class Player:
         return True
 
     async def stop(self):
-        for robo_id, robo in self.robos.items():
-           await robo.requestor.close()
         self.stopped = True
 
     async def timer(self):
         if not self.stopped:
-            # update all timers
-            self.game_tick = await self.handler.update_status(self.game_tick)
-            # collect the status of mice and store it
-            for robo_id, robo in self.robos.items():
-                self.robo_status[robo_id] = self.handler.get_robo_status(robo_id)
-                self.callback('robo_status', self.game_tick, robo.id, self.robo_status[robo_id])
-            # handle the communication for the robo's
-            await self.run_runtime()
+            cur_tick = await self.handler.update_status(self.game_tick)
+            if cur_tick > self.game_tick:
+                self.game_tick = cur_tick
+                # collect the status of mice and store it
+                for robo_id, robo in self.robos.items():
+                    self.robo_status[robo_id] = self.handler.get_robo_status(robo_id)
+                    self.callback('robo_status', self.game_tick, robo.id, self.robo_status[robo_id])
+                # handle the communication for the robo's
+                await self.run_runtime()
         else:
             print("stopped")
 
