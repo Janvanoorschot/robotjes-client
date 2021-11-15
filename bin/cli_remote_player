@@ -55,9 +55,7 @@ async def timer():
     if rest_client and robotjes.debug_mode:
         await rest_client.timer_tick()
     if player:
-        print("enter player.timer")
         await player.timer()
-        print("exit player.timer")
 
 
 async def run(args, uuid, loop):
