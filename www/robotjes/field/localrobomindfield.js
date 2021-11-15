@@ -80,14 +80,14 @@
                         }
                         break;
                     case 'state_running':
-                        if(data.uuid != "" && isDone(that, data)) {
+                        if(isDone(that, data)) {
                             toStateStopped(that, data);
                         } else {
                             keepStateRunning(that, timerTick, data);
                         }
                         break;
                     case 'state_stopped':
-                        if(data.uuid != "" && isDone(that, data)) {
+                        if(data.uuid != "") {
                             keepStateStopped(that, data);
                         } else {
                             toStateUuidUnknown(that, data);
@@ -106,10 +106,11 @@
     function isDone(that, data) {
         var last_game_tick = data["status"]["player_status"]["last_tick"];
         var current_game_tick = that.viewer.currentGameTick();
-        console.log(`${last_game_tick}/${current_game_tick}`);
         if(last_game_tick > 0 && last_game_tick < current_game_tick) {
+            console.log(`localrobomindfile is done: ${last_game_tick}/${current_game_tick}`);
             return true;
         } else {
+            console.log(`localrobomindfile is not done: ${last_game_tick}/${current_game_tick}`);
             return false;
         }
     }
