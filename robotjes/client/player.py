@@ -42,7 +42,7 @@ class Player:
     async def run_runtime(self):
         # handle the communications for all robo's
         for robo_id, robo in self.robos.items():
-            if not robo.requestor.empty():
+            if not robo.requestor.empty() or robo_id in self.robos_longcmd:
                 if robo_id in self.robos_longcmd:
                     prevcmd = self.robos_longcmd[robo_id]
                     cmd = list(prevcmd)
@@ -62,7 +62,8 @@ class Player:
                     break
                 reply = await self.handler.execute(self.game_tick, robo.id, cmd)
                 self.callback('issue_command', self.game_tick, robo.id, cmd, reply)
-                await robo.requestor.put(reply)
+                if robo_id not in self.robos_longcmd:
+                    await robo.requestor.put(reply)
         return True
 
     async def stop(self):
