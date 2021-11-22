@@ -67,6 +67,7 @@ class Player:
         return True
 
     async def stop(self):
+        await self.handler.stop_player()
         self.stopped = True
 
     async def timer(self):

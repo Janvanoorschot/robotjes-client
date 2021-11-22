@@ -52,7 +52,7 @@ player = None
 
 async def timer():
     global player, rest_client
-    if rest_client and robotjes.debug_mode:
+    if player and rest_client and robotjes.debug_mode:
         await rest_client.timer_tick()
     if player:
         await player.timer()

@@ -48,11 +48,7 @@ async def register_with_game(game_id: str, specs: RegistrationSpec):
 @app.delete("/game/{game_id}/player/{player_id}")
 async def deregister_with_game(game_id: str, player_id: str):
     """Deregister from a game"""
-    request = {
-        "cmd": "deregister",
-        "game_id": game_id,
-        "player_id": player_id,
-    }
+    server.robotjes_engine.deregister_with_game(player_id)
 
 
 @app.put("/game/{game_id}/stop")
