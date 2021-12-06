@@ -455,7 +455,9 @@
         for (var droidid in that.droidsCommandTimePassed) {
             if(that.droidsCommandTimePassed[droidid] < that.droidsCommandTime[droidid]) {
                 that.droidsCommandTimePassed[droidid] = that.droidsCommandTimePassed[droidid] + tinc;
-                that.droids[droidid].progressCommand(that.droidsCommandTime[droidid],that.droidsCommandTimePassed[droidid]);
+                if(that.droidsCommandTimePassed[droidid] <= that.droidsCommandTime[droidid]) {
+                    that.droids[droidid].progressCommand(that.droidsCommandTime[droidid],that.droidsCommandTimePassed[droidid]);
+                }
             }
         }
     }

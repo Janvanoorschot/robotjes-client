@@ -390,6 +390,10 @@
                 let droid_frame = frame[i];
                 let cmd = droid_frame.action[0];
                 let sub_duration = $.fn.rm.commandDuration[cmd];
+                if(cmd == 's' && droid_frame.action[1] == 'front'){
+                    // override duration to be short for front looking actions
+                    sub_duration *= 0.2;
+                }
                 if(cmd in $.fn.rm.argCommands) {
                     let cnt = parseInt(droid_frame.action[1]);
                     sub_duration = sub_duration*cnt;
