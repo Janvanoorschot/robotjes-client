@@ -100,7 +100,7 @@ async def get_map():
     mapfile = Path(rootdir) / 'www' / 'images'/ 'maps' / 'default.map'
     map = Map.fromfile(mapfile)
     return [
-        'robo.server.DefaultResult',
+        'net.robomind.server.DefaultResult',
         {
             "results":  {
                 "map": map.toMazeMap()
