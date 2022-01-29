@@ -630,7 +630,8 @@
         that.recording.rewind();
         let totalDuration = 0;
         while(that.recording.hasNext()) {
-            let frame = that.recording.getNext();
+            let frame_array = that.recording.getNext();
+            let frame = frame_array[0];
             let command = frame.action[0];
             let duration = commandDuration[command];
             let commandCnt = 1;

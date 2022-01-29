@@ -93,7 +93,10 @@ async def main(args, loop):
             await asyncio.sleep(1)
             uuid = uuid_from_clipboard()
             if uuid:
+                print(f"found uuid: {uuid}")
                 await run(args, uuid, loop)
+            else:
+                print(f"no uuid found")
     print("player stop")
     global_timer.cancel()
 
