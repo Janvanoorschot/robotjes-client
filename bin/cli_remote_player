@@ -115,6 +115,7 @@ if __name__ == "__main__":
     cmd_args = parser.parse_args()
     if cmd_args.debug:
         robotjes.debug_mode = True
+    # asyncio.run(main(cmd_args))
     aloop = asyncio.get_event_loop()
     aloop.run_until_complete(main(cmd_args, aloop))
     aloop.close()
