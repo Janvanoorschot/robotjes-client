@@ -46,7 +46,7 @@ class AsyncRestClient:
     # Content-Type: application/x-www-form-urlencoded
     # X-Requested-With: XMLHttpRequest
     #
-    # username=jan@janvanoorschot.nl&password=Gen42Ius
+    # username=some@one.com&password=secret
     #
     # ###
     async def login(self, username, password):
