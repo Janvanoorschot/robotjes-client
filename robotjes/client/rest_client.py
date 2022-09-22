@@ -53,7 +53,7 @@ class RestClient:
         else:
             raise Exception(f"failed rest call delete_game:{reply.text}")
 
-    async def confirm_player(self, uuid):
+    async def confirm_field_uuid(self, uuid):
         reply = await self.loop.run_in_executor(
             None, functools.partial(requests.post, self.create_url(f'confirm/{uuid}')))
         if reply.status_code == 200:

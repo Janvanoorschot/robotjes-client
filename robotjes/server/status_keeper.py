@@ -19,8 +19,12 @@ class StatusKeeper(object):
 
     def set_reservation(self, the_uuid, request):
         game_name = request.get("game_name", "unknown")
-        request['uuid'] = the_uuid
+        # request['uuid'] = the_uuid
         if not request["uuid"] in self.reservations:
+            # test if this oidid is already present in the reservations
+            us = [u for u,r in self.reservations.items() if r.get('oidid','') == request.get('oidid','')]
+            for u in us:
+                self.remove_reservation(u)
             for game_id, game in self.games.items():
                 if game_name == game.game_name:
                     request["game_id"] = game_id
@@ -60,6 +64,7 @@ class StatusKeeper(object):
             player_id = res["player_id"]
             if player_id in self.player2reservation:
                 del self.player2reservation[player_id]
+            del self.reservations[uuid]
 
     def game_status_event(self, request):
         events = []

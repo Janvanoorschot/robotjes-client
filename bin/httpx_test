@@ -10,12 +10,17 @@ sys.path.append(rootdir)
 
 
 async def main(args):
-    client = async_rest_client.AsyncRestClient(args.url)
+    client = async_rest_client.AsyncRestClient(args.url, debug=True)
     login_reply = await client.login(args.username, args.password)
-    uuid = await client.request_field_uuid()
+    uuid = None
+    for i in range(10):
+        uuid = await client.request_field_uuid()
+    confirm = await client.confirm_field_uuid(uuid)
+    player_id = confirm['player_id']
+    game_id = confirm['game_id']
     games = await client.list_games()
     logout_reply = await client.logout()
-    print(f"everything ok, uuid: {uuid}")
+    print(f"everything ok, uuid: {uuid}/{game_id}/{player_id}")
     await client.close()
 
 if __name__ == "__main__":
