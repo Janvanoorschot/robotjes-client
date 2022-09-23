@@ -9,9 +9,8 @@ from robotjes.local import LocalRequestor
 
 class Player:
 
-    def __init__(self, handler, loop, client):
+    def __init__(self, handler, client):
         self.handler = handler
-        self.loop = loop
         self.client = client
 
         self.executor = concurrent.futures.ThreadPoolExecutor()
@@ -29,11 +28,11 @@ class Player:
         robo_id = await self.handler.start_player()
         self.callback('create_robo', self.game_tick, robo_id)
         if(robo_id):
-            self.requestors[robo_id] = LocalRequestor(self.loop)
+            self.requestors[robo_id] = LocalRequestor()
             robo = Robo(self.requestors[robo_id], id=robo_id)
             self.robos[robo.id] = robo
             # start (in executor/seperate_thread) the user *script* with `robo` as argument.
-            await self.loop.run_in_executor(self.executor, script, robo)
+            await asyncio.get_running_loop().run_in_executor(self.executor, script, robo)
             self.callback('done_robo', self.game_tick, robo_id)
             await self.requestors[robo_id].stop()
         else:

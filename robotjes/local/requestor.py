@@ -5,8 +5,7 @@ from inspect import getframeinfo, stack
 
 class LocalRequestor(object):
 
-    def __init__(self, loop):
-        self.loop = loop
+    def __init__(self):
         self.command_queue = asyncio.Queue()
         self.reply_queue = asyncio.Queue()
 
@@ -15,7 +14,7 @@ class LocalRequestor(object):
         lineno = caller.lineno
         cmd.insert(0, lineno)
         # switch to the async environment
-        future = asyncio.run_coroutine_threadsafe(self.async_execute(cmd), self.loop)
+        future = asyncio.run_coroutine_threadsafe(self.async_execute(cmd), asyncio.get_event_loop())
         return future.result()
 
     async def async_execute(self, cmd):

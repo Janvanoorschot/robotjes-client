@@ -56,14 +56,11 @@ class LocalEngineHandler:
 
 
 class RemoteEngineHandler:
-    def __init__(self, rest_client, player_name, game_name, password, uuid):
+    def __init__(self, rest_client, uuid, game_id, player_id):
         self.rest_client = rest_client
-        self.player_name = player_name
-        self.game_name = game_name
-        self.password = password
         self.uuid = uuid
-        self.game_id = None
-        self.player_id = None
+        self.game_id = game_id
+        self.player_id = player_id
         self.is_started = False
         self.is_stopped = False
         self.robo_id = None
@@ -73,40 +70,16 @@ class RemoteEngineHandler:
         self.register_lock = asyncio.Lock()
 
     async def start_player(self):
-        if self.game_id is None:
-            list = await self.rest_client.list_games()
-            for id, name in list.items():
-                if self.game_name == name:
-                    self.game_id = id
-                    if self.uuid:
-                        result = await self.rest_client.confirm_field_uuid(self.uuid)
-                        if not result:
-                            raise Exception(f"can not join game {self.game_name}")
-                        else:
-                            self.game_id = result["game_id"]
-                            self.player_id = result["player_id"]
-                    else:
-                        result = await self.rest_client.register_player(
-                            self.player_name, self.game_id, self.password
-                        )
-                        if not result:
-                            raise Exception(f"can not join game {self.game_name}")
-                        else:
-                            self.player_id = result["player_id"]
-                    break
-            else:
-                raise Exception(f"no such game {self.game_name}")
-            # now wait for the registration info to come in (during timer)
-            await self.register_lock.acquire()
-            await self.register_lock.acquire()
-            if self.robo_id:
-                self.is_started = True
-                self.is_stopped = False
-                return self.robo_id
-            else:
-                return None
+        # now wait for the registration info to come in (during timer)
+        await self.register_lock.acquire()
+        await self.register_lock.acquire()
+        if self.robo_id:
+            self.is_started = True
+            self.is_stopped = False
+            return self.robo_id
         else:
             return None
+
 
     async def stop_player(self):
         await self.rest_client.deregister_player(self.game_id, self.player_id)

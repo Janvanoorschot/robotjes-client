@@ -10,8 +10,10 @@ import pyperclip
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
 
+from robotjes.client import async_rest_client
 import robotjes
 from robotjes import client, Timer
+
 
 class PlayerClient:
     def __init__(self):
@@ -58,64 +60,63 @@ async def timer():
         await player.timer()
 
 
-async def run(args, uuid, loop):
+async def run(args, rclient, uuid, game_id, player_id):
     global player, rest_client
+    rest_client = rclient
     script = load_client(args.module)
     clnt = PlayerClient()
-    handler = client.RemoteEngineHandler(rest_client, args.player, args.name, args.password, uuid)
-    player = client.Player(handler, loop, clnt)
-    f1 = loop.create_task(player.run_one_robo(script))
-    # f2 = loop.create_task(player.run_runtime())
+    handler = client.RemoteEngineHandler(rest_client, uuid, game_id, player_id)
+    player = client.Player(handler, clnt)
+
+    global_timer = Timer(0.1, timer, True)
+
+    f1 = asyncio.create_task(player.run_one_robo(script))
     await asyncio.wait([f1])
     await player.stop()
     player = None
-
-
-def uuid_from_clipboard():
-    clpb = pyperclip.paste()
-    if clpb and re.match("^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", clpb):
-        pyperclip.copy("")
-        return clpb
-    else:
-        return None
-
-
-async def main(args, loop):
-    global player, rest_client
-    rest_client = client.RestClient(loop, args.url)
-    global_timer = Timer(0.1, timer, True)
-    if args.uuid:
-        # run one time using the uuid passed via the arguments
-        await run(args, args.uuid, loop)
-    else:
-        # loop waiting for a UUID in the clipboard
-        while True:
-            await asyncio.sleep(1)
-            uuid = uuid_from_clipboard()
-            if uuid:
-                print(f"found uuid: {uuid}")
-                await run(args, uuid, loop)
-            else:
-                print(f"no uuid found")
-    print("player stop")
     global_timer.cancel()
+
+
+async def main(args):
+    # create connection to the server
+    # rest_client = client.RestClient(loop, args.url)
+    rest_client = async_rest_client.AsyncRestClient(args.url, debug=True)
+    login_reply = await rest_client.login(args.username, args.password)
+
+    # get and confirm a and run
+    uuid = await rest_client.request_field_uuid()
+    confirm = await rest_client.confirm_field_uuid(uuid)
+    player_id = confirm['player_id']
+    game_id = confirm['game_id']
+    await run(args, rest_client, uuid, game_id, player_id)
 
 
 if __name__ == "__main__":
     # get commandline arguments
     import argparse
     parser = argparse.ArgumentParser(description='CommandLineInterface (CLI) for Player')
-    parser.add_argument('--url', type=str, default='http://localhost:8765', help='url of the robotjes REST entrypoint')
-    parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
-    parser.add_argument('--name', type=str, default="eat_three", help='name of the game to join')
-    parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
-    parser.add_argument('--module', type=str, default="sample.player.player102", help='module containing the player logic')
-    parser.add_argument('--uuid', default=None, help='pre-registration uuid')
+    parser.add_argument('--url', type=str, default='https://localhost:8888', help='url of robomind academy')
+    parser.add_argument('--username', type=str, default='some@one.com', help='username')
+    parser.add_argument('--password', type=str, default='secret', help='password')
     parser.add_argument('-d', '--debug', action='store_true', help="Allows debugging of client code.")
+    parser.add_argument('--module', type=str, default="sample.player.player102", help='module containing the player logic')
+
+    # parser.add_argument('--url', type=str, default='https://localhost:8888', help='url of robomind academy')
+    # parser.add_argument('--url', type=str, default='http://localhost:8765', help='url of the robotjes REST entrypoint')
+    # parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
+    # parser.add_argument('--name', type=str, default="eat_three", help='name of the game to join')
+    # parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
+    # parser.add_argument('--uuid', default=None, help='pre-registration uuid')
+    # parser.add_argument('-d', '--debug', action='store_true', help="Allows debugging of client code.")
+
     cmd_args = parser.parse_args()
     if cmd_args.debug:
         robotjes.debug_mode = True
-    # asyncio.run(main(cmd_args))
-    aloop = asyncio.get_event_loop()
-    aloop.run_until_complete(main(cmd_args, aloop))
-    aloop.close()
+
+    # run the main function
+    asyncio.run(main(cmd_args))
+
+    # old loop-based async
+    # aloop = asyncio.get_event_loop()
+    # aloop.run_until_complete(main(cmd_args, aloop))
+    # aloop.close()

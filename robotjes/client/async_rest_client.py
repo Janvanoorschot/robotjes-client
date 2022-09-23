@@ -101,7 +101,7 @@ class AsyncRestClient:
         return result
 
     async def timer_tick(self):
-        reply = await self.client.get(self.create_url('timertick'))
+        reply = await self.client.get(self.create_url('bubble/timertick'))
         self.handle_error_reply(reply, "failed rest call timer_tick")
         result = reply.json()
         return result
@@ -114,7 +114,7 @@ class AsyncRestClient:
             "maze_id": maze
         }
         reply = await self.client.post(
-            self.create_url('games'),
+            self.create_url('bubble/games'),
             headers=self.set_headers(),
             json=spec)
         self.handle_error_reply(reply, "failed to create game")
@@ -123,7 +123,7 @@ class AsyncRestClient:
 
     async def delete_game(self, game_id):
         reply = await self.client.put(
-            self.create_url(f"game/{game_id}/stop"),
+            self.create_url(f"bubble/game/{game_id}/stop"),
             headers=self.set_headers())
         self.handle_error_reply(reply, "failed to delete game")
         result = reply.json()
@@ -135,7 +135,7 @@ class AsyncRestClient:
             "game_password": password,
         }
         reply = await self.client.post(
-            self.create_url(f"game/{game_id}/player"),
+            self.create_url(f"bubble/game/{game_id}/player"),
             headers=self.set_headers(),
             json=spec)
         self.handle_error_reply(reply, "failed rest call register_player")
@@ -147,9 +147,8 @@ class AsyncRestClient:
         spec = {
         }
         reply = await self.client.delete(
-            self.create_url(f"game/{game_id}/player/{player_id}"),
-            headers=self.set_headers(),
-            json=spec)
+            self.create_url(f"bubble/game/{game_id}/player/{player_id}"),
+            headers=self.set_headers())
         self.handle_error_reply(reply, "failed rest call deregister_player")
         result = reply.json()
         return result
@@ -159,7 +158,7 @@ class AsyncRestClient:
             'move': move
         }
         reply = await self.client.put(
-            self.create_url(f"game/{game_id}/player/{player_id}"),
+            self.create_url(f"bubble/game/{game_id}/player/{player_id}"),
             headers=self.set_headers(),
             json=spec)
         self.handle_error_reply(reply, "failed rest call issue_command")
@@ -168,7 +167,7 @@ class AsyncRestClient:
 
     async def map_game(self, game_id):
         reply = await self.client.get(
-            self.create_url(f"game/{game_id}/map"),
+            self.create_url(f"bubble/game/{game_id}/map"),
             headers=self.set_headers())
         self.handle_error_reply(reply, "failed rest call issue_command")
         result = reply.json()
@@ -176,7 +175,7 @@ class AsyncRestClient:
 
     async def status_game(self, game_id):
         reply = await self.client.get(
-            self.create_url(f"game/{game_id}/status"),
+            self.create_url(f"bubble/game/{game_id}/status"),
             headers=self.set_headers())
         self.handle_error_reply(reply, "failed rest call status_game")
         result = reply.json()
@@ -184,7 +183,7 @@ class AsyncRestClient:
 
     async def recording_game(self, game_id, before_game_time):
         reply = await self.client.get(
-            self.create_url(f"game/{game_id}/recording/{before_game_time}"),
+            self.create_url(f"bubble/game/{game_id}/recording/{before_game_time}"),
             headers=self.set_headers())
         self.handle_error_reply(reply, "failed rest call recording_game")
         result = reply.json()
@@ -192,7 +191,7 @@ class AsyncRestClient:
 
     async def status_player(self, game_id, player_id, game_tick):
         reply = await self.client.get(
-            self.create_url(f"game/{game_id}/player/{player_id}/status"),
+            self.create_url(f"bubble/game/{game_id}/player/{player_id}/status"),
             headers=self.set_headers())
         self.handle_error_reply(reply, "failed rest call status_player")
         result = reply.json()
