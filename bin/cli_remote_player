@@ -32,8 +32,8 @@ class PlayerClient:
         pass
 
     def issue_command(self, game_tick, robo_id, cmd, reply):
-        # print(f"issue_command[{game_tick}][{robo_id}][{cmd}][{reply}]")
-        pass
+        print(f"issue_command[{game_tick}][{robo_id}][{cmd}]->[{reply}]")
+        # pass
 
 
 def load_client(module_name):

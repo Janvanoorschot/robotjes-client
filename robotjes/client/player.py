@@ -28,7 +28,7 @@ class Player:
         robo_id = await self.handler.start_player()
         self.callback('create_robo', self.game_tick, robo_id)
         if(robo_id):
-            self.requestors[robo_id] = LocalRequestor()
+            self.requestors[robo_id] = LocalRequestor(asyncio.get_running_loop())
             robo = Robo(self.requestors[robo_id], id=robo_id)
             self.robos[robo.id] = robo
             # start (in executor/seperate_thread) the user *script* with `robo` as argument.
