@@ -20,3 +20,4 @@ asciimatics
 requests
 
 tracelog
+*.log

@@ -38,5 +38,3 @@ class MyApp(App):
 
 
 MyApp.run(title="Simple App", log="textual.log")
-
-print("eikel")
