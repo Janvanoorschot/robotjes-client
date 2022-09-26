@@ -2,10 +2,8 @@
 
 import sys
 import os
-import re
 import asyncio
 import importlib
-import pyperclip
 
 rootdir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.append(rootdir)
@@ -101,22 +99,9 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', action='store_true', help="Allows debugging of client code.")
     parser.add_argument('--module', type=str, default="sample.player.player102", help='module containing the player logic')
 
-    # parser.add_argument('--url', type=str, default='https://localhost:8888', help='url of robomind academy')
-    # parser.add_argument('--url', type=str, default='http://localhost:8765', help='url of the robotjes REST entrypoint')
-    # parser.add_argument('--player', type=str, default="me", help='name or id of the umpire')
-    # parser.add_argument('--name', type=str, default="eat_three", help='name of the game to join')
-    # parser.add_argument('--password', type=str, default="secret1", help='password needed to enter the game')
-    # parser.add_argument('--uuid', default=None, help='pre-registration uuid')
-    # parser.add_argument('-d', '--debug', action='store_true', help="Allows debugging of client code.")
-
     cmd_args = parser.parse_args()
     if cmd_args.debug:
         robotjes.debug_mode = True
 
     # run the main function
     asyncio.run(main(cmd_args))
-
-    # old loop-based async
-    # aloop = asyncio.get_event_loop()
-    # aloop.run_until_complete(main(cmd_args, aloop))
-    # aloop.close()
