@@ -620,7 +620,7 @@
         });
 
         // breakpoint
-        if(nextFrame && nextFrame.src && that.hasBreakpoint(nextFrame.src)) {
+        if(nextFrame[0] && nextFrame[0].src && that.hasBreakpoint(nextFrame[0].src)) {
             that.pause();
             $(that.rootnode).triggerHandler('runmodechanged', {intent:'pause',source:'frameplayer',oldmode:'running',newmode:'paused',nextframe: nextFrame});
         }
